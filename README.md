@@ -12,9 +12,9 @@ Ein PvE- oder PvP spiel, in dem die Spieler Panzer steuern und in verschiedenen 
 - **Unterschiedliche Panzergegner**: Die feindlichen Panzer können entweder stationär, fahrend oder teleportierend sein, um den Schwierigkeitsgrad und die Strategie zu variieren.
 - **Artstyle**: Vielleicht Pixelart oder so (wir haben noch keine Ahnung)
 
-## Modus
+## Gamemodes
 
-- **PvE**: Soloplayer
+- **PvE**: Singleplayer
 - **PvP**: 1v1 local Co-op gegeneinander
 
 ## Repo klonen:
