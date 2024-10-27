@@ -1,7 +1,7 @@
 
 # Wee-Tanks
 
-Ein PvE- oder PvP spiel, in dem die Spieler Panzer steuern und in verschiedenen Leveln Gegner besiegen müssen. Jedes Spiel beginnt mit RNG Updgrades, welche verschiedene Möglichkeiten bietet, das Gameplay zu beeinflussen.
+Ein PvE- oder PvP spiel, in dem die Spieler Panzer steuern und in verschiedenen Leveln Gegner besiegen müssen. Jedes Spiel beginnt mit RNG Upgrades, welche verschiedene Möglichkeiten bietet, das Gameplay zu beeinflussen.
 
 ## Features
 
