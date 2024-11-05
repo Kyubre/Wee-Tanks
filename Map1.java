@@ -8,7 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.image.ImageView;
 
 
 public class Map1 extends Application {
@@ -26,6 +28,7 @@ public class Map1 extends Application {
   private boolean dGedrueckt = false;
   private ImageView turret = new ImageView();
   private Image turretImage = new Image(getClass().getResourceAsStream("images/96.png"));
+  private ImageView shot;
   // Ende Attribute
   
   public void start(Stage primaryStage) { 
@@ -71,7 +74,7 @@ public class Map1 extends Application {
           break;
         default: 
           break;  
-      } // end of switch
+      }
       updateMovement();
     });
     
@@ -79,11 +82,25 @@ public class Map1 extends Application {
       turret.setRotate(p1.turretRotation(event, panzer));
     });
     
+    scene.setOnMouseClicked((event) -> {;
+      if (event.getButton().equals(MouseButton.PRIMARY)) {
+        shot = new ImageView();
+        Image shotImage = new Image(getClass().getResourceAsStream("images/96.png"));
+        shot.setX(turret.getX()+turret.getFitWidth());
+        shot.setY(turret.getY()+turret.getFitHeight());
+        shot.setFitHeight(30);
+        shot.setFitWidth(80);
+        shot.setRotate(turret.getRotate());
+        shot.setImage(shotImage);
+        root.getChildren().add(shot);
+      } // end of if
+    });
     
-    border.setX(0);
-    border.setY(0);
-    border.setWidth(scene.getWidth());
-    border.setHeight(scene.getHeight());
+    
+    border.setX(scene.getWidth()-border.getWidth());
+    border.setY(scene.getHeight()-border.getHeight());
+    border.setWidth(1920);
+    border.setHeight(1080);
     root.getChildren().add(border);
     Color color = Color.TRANSPARENT;
     border.setFill(color);
@@ -127,60 +144,55 @@ public class Map1 extends Application {
   
   // Anfang Methoden
   public void updateMovement() {
-    if (panzer.intersects(wall1.getBoundsInParent()) || panzer.intersects(wall2.getBoundsInParent()) || !panzer.intersects(border.getBoundsInParent())) {
-      //Keine Bewegung weil Position des Panzers in einer Wand wäre
-      System.out.println("Darf nicht bewegen");
+    
+    if (wGedrueckt && aGedrueckt) {
+      panzer.setY(panzer.getY()-10);
+      panzer.setX(panzer.getX()-10);
+      panzer.setRotate(225);         
+      turret.setY(turret.getY()-10);
+      turret.setX(turret.getX()-10);
+    } 
+    else if (wGedrueckt && dGedrueckt) {
+      panzer.setY(panzer.getY()-10);
+      panzer.setX(panzer.getX()+10);
+      panzer.setRotate(315);
+      turret.setY(turret.getY()-10);
+      turret.setX(turret.getX()+10);
+    } 
+    else if (sGedrueckt && aGedrueckt) {
+      panzer.setY(panzer.getY()+10);
+      panzer.setX(panzer.getX()-10);
+      panzer.setRotate(135);
+      turret.setY(turret.getY()+10);
+      turret.setX(turret.getX()-10);
+    } 
+    else if (sGedrueckt && dGedrueckt) {
+      panzer.setY(panzer.getY()+10);
+      panzer.setX(panzer.getX()+10);
+      panzer.setRotate(45);
+      turret.setY(turret.getY()+10);
+      turret.setX(turret.getX()+10);
+    } 
+    else if (wGedrueckt) {
+      panzer.setY(panzer.getY()-10);
+      panzer.setRotate(270);
+      turret.setY(turret.getY()-10);
+    } 
+    else if (aGedrueckt) {
+      panzer.setX(panzer.getX()-10);
+      panzer.setRotate(180);
+      turret.setX(turret.getX()-10);
+    } 
+    else if (sGedrueckt) {
+      panzer.setY(panzer.getY()+10);
+      panzer.setRotate(90);
+      turret.setY(turret.getY()+10);
+    } 
+    else if (dGedrueckt) {
+      panzer.setX(panzer.getX()+10);
+      panzer.setRotate(0);
+      turret.setX(turret.getX()+10);
     }
-    else {
-      if (wGedrueckt && aGedrueckt) {
-        panzer.setY(panzer.getY()-10);
-        panzer.setX(panzer.getX()-10);
-        panzer.setRotate(315);
-        turret.setY(turret.getY()-10);
-        turret.setX(turret.getX()-10);
-      } 
-      else if (wGedrueckt && dGedrueckt) {
-        panzer.setY(panzer.getY()-10);
-        panzer.setX(panzer.getX()+10);
-        panzer.setRotate(45);
-        turret.setY(turret.getY()-10);
-        turret.setX(turret.getX()+10);
-      } 
-      else if (sGedrueckt && aGedrueckt) {
-        panzer.setY(panzer.getY()+10);
-        panzer.setX(panzer.getX()-10);
-        panzer.setRotate(225);
-        turret.setY(turret.getY()+10);
-        turret.setX(turret.getX()-10);
-      } 
-      else if (sGedrueckt && dGedrueckt) {
-        panzer.setY(panzer.getY()+10);
-        panzer.setX(panzer.getX()+10);
-        panzer.setRotate(135);
-        turret.setY(turret.getY()+10);
-        turret.setX(turret.getX()+10);
-      } 
-      else if (wGedrueckt) {
-        panzer.setY(panzer.getY()-10);
-        panzer.setRotate(315);
-        turret.setY(turret.getY()-10);
-      } 
-      else if (aGedrueckt) {
-        panzer.setX(panzer.getX()-10);
-        panzer.setRotate(0);
-        turret.setX(turret.getX()-10);
-      } 
-      else if (sGedrueckt) {
-        panzer.setY(panzer.getY()+10);
-        panzer.setRotate(180);
-        turret.setY(turret.getY()+10);
-      } 
-      else if (dGedrueckt) {
-        panzer.setX(panzer.getX()+10);
-        panzer.setRotate(90);
-        turret.setX(turret.getX()+10);
-      }
-    } // end of if-else
   }
 
   

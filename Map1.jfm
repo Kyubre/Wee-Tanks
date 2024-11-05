@@ -1,10 +1,10 @@
 object FGUIForm: TFXGuiForm
-  Left = 2556
-  Top = 314
+  Left = -259
+  Top = 320
   BorderIcons = [biSystemMenu]
   Caption = 'Map1'
-  ClientHeight = 1042
-  ClientWidth = 1908
+  ClientHeight = 846
+  ClientWidth = 1544
   Color = clBtnFace
   ParentFont = True
   FormStyle = fsStayOnTop

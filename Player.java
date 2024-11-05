@@ -30,7 +30,10 @@ public class Player{
     return angle;
   }
   
-  
+  public void shoot(Player panzer){
+    
+  }
+
   
   public double getX(){
     return xPos;
