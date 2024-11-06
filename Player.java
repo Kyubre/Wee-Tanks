@@ -2,6 +2,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.image.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.shape.Rectangle;
 
 public class Player{
   private double xPos;
@@ -12,6 +14,8 @@ public class Player{
   private boolean aGedrueckt = false;
   private boolean sGedrueckt = false;
   private boolean dGedrueckt = false;
+  private double geschwindigkeitX = 0;
+  private double geschwindigkeitY = 0;
   
   public Player(ImageView panzer){
     this.xPos = panzer.getX();
@@ -35,46 +39,76 @@ public class Player{
     return angle;
   }
   
-  public void shoot(Player panzer){
-    
+  //Schießen (wird ausgeführt wenn Linksklick)
+  public boolean schießen(MouseEvent evt, ImageView schuss){
+    //Koordinaten vom Mauszeiger
+    double eventX = evt.getX();
+    double eventY = evt.getY();
+    //Rotation in Grad umwandeln in Radiant
+    double radiant = Math.toRadians(schuss.getRotate());
+    //Sinus und Cosinus benutzen um Radiant in X & Y Vektoren umzurechnen
+    double vektorX = Math.cos(radiant);
+    double vektorY = Math.sin(radiant);
+    //Satz des Pythagoras (A^2 + B^2 = C^2) anwenden um Vektoren X^2 & Y^2 zu Z^2 zu machen
+    //Math.sqrt berechnet automatisch die Quadratwurzel aus der Rechnung (C^2 bzw. Z^2 wird zu C bzw. Z)
+    double pythagoras = Math.sqrt(vektorX * vektorX + vektorY * vektorY);
+    //Geschwindigkeit berechnen mit anpassbaren Werten
+    geschwindigkeitX = (vektorX / pythagoras) * 2;     //2 wird angepasst bis alle mit dem Speed fine sind
+    geschwindigkeitY = (vektorY / pythagoras) * 2;     //2 wird angepasst bis alle mit dem Speed fine sind
+    //false wird in Map1 für den boolean "Kollision" eingesetzt
+    return false;
   }
+  
+  //Kollisionsüberprüfung mit Boundaries
+  public boolean kollisionsCheck(ImageView schuss, Rectangle wand1, Rectangle wand2, Rectangle border){
+    //Schuss bewegt sich in die ausgerechnete Richtung
+    schuss.setX(schuss.getX() + geschwindigkeitX);
+    schuss.setY(schuss.getY() + geschwindigkeitY);
+    //Überprüfung, ob der Schuss mit den Wänden kollidiert
+    if (schuss.intersects(wand1.getBoundsInParent()) || schuss.intersects(wand2.getBoundsInParent()) || !schuss.intersects(border.getBoundsInParent())) {
+      System.out.println("Boom!");
+      return true;
+    }
+    return false;
+  }
+
   
   public void tasteGedrueckt(KeyEvent evt){
     switch (evt.getCode()) {
-        case W: 
-          wGedrueckt = true;
-          break;
-        case A: 
-          aGedrueckt = true;
-          break;
-        case S: 
-          sGedrueckt = true;
-          break;
-        case D: 
-          dGedrueckt = true;
-          break;
-        default: 
-          break;  
-      }
+      case W: 
+        wGedrueckt = true;
+        break;
+      case A: 
+        aGedrueckt = true;
+        break;
+      case S: 
+        sGedrueckt = true;
+        break;
+      case D: 
+        dGedrueckt = true;
+        break;
+      default: 
+        break;  
+    }
   }
   
   public void tasteLosgelassen(KeyEvent evt){
     switch (evt.getCode()) {
-        case W: 
-          wGedrueckt = false;
-          break;
-        case A: 
-          aGedrueckt = false;
-          break;
-        case S: 
-          sGedrueckt = false;
-          break;
-        case D: 
-          dGedrueckt = false;
-          break;
-        default: 
-          break;  
-      }
+      case W: 
+        wGedrueckt = false;
+        break;
+      case A: 
+        aGedrueckt = false;
+        break;
+      case S: 
+        sGedrueckt = false;
+        break;
+      case D: 
+        dGedrueckt = false;
+        break;
+      default: 
+        break;  
+    }
   }
 
   

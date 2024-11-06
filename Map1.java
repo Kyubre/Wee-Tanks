@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.image.ImageView;
+import javafx.animation.AnimationTimer;
 
 
 public class Map1 extends Application {
@@ -20,16 +21,16 @@ public class Map1 extends Application {
   private Rectangle wall1 = new Rectangle();
   private Rectangle wall2 = new Rectangle();
   private ImageView panzer = new ImageView();
-  private Image panzerImage = new Image(getClass().getResourceAsStream("images/96.gif"));
+  private Image panzerImage = new Image(getClass().getResourceAsStream("images/panzer.gif"));
   private Player p1 = new Player(panzer);
   private ImageView turret = new ImageView();
-  private Image turretImage = new Image(getClass().getResourceAsStream("images/96.png"));
+  private Image turretImage = new Image(getClass().getResourceAsStream("images/turret.png"));
   private ImageView shot;
   // Ende Attribute
   
   public void start(Stage primaryStage) { 
     Pane root = new Pane();
-    Scene scene = new Scene(root, 1904, 1042);
+    Scene scene = new Scene(root, 1920, 1080);
     // Anfang Komponenten
     primaryStage.setMaximized(true);
     primaryStage.resizableProperty();
@@ -50,23 +51,41 @@ public class Map1 extends Application {
     
     scene.setOnMouseClicked((event) -> {;
       if (event.getButton().equals(MouseButton.PRIMARY)) {
+        //Schuss wird grafisch erstellt
         shot = new ImageView();
-        Image shotImage = new Image(getClass().getResourceAsStream("images/96.png"));
-        shot.setX(turret.getX()+turret.getFitWidth());
-        shot.setY(turret.getY()+turret.getFitHeight());
+        Image shotImage = new Image(getClass().getResourceAsStream("images/turret.png"));
+        shot.setX(turret.getX());
+        shot.setY(turret.getY());
         shot.setFitHeight(30);
         shot.setFitWidth(80);
         shot.setRotate(turret.getRotate());
         shot.setImage(shotImage);
         root.getChildren().add(shot);
-      } // end of if
+        //Methode für Schuss aufrufen
+        boolean kollision = p1.schießen(event, shot);
+        //Idk man timer ist halt besser als while, außerdem frag nicht was das macht hab selber keine ahnung
+        AnimationTimer schussTimer = new AnimationTimer() {
+          @Override
+          public void handle(long now) {
+            boolean kollision = p1.kollisionsCheck(shot, wall1, wall2, border);
+            if (kollision == true) {
+              this.stop();
+              root.getChildren().remove(shot);
+            }
+          }
+          
+        };
+        schussTimer.start();  
+      }
     });
     
     
-    border.setX(scene.getWidth()-border.getWidth());
-    border.setY(scene.getHeight()-border.getHeight());
+    //Border, also Rand erstellen
+    //Später ersetzen durch ImageViews (Sobald Rand Images erstellt sind)
     border.setWidth(1920);
     border.setHeight(1080);
+    border.setX((scene.getWidth())-border.getWidth());
+    border.setY((scene.getHeight())-border.getHeight());
     root.getChildren().add(border);
     Color color = Color.TRANSPARENT;
     border.setFill(color);
@@ -74,6 +93,7 @@ public class Map1 extends Application {
     border.setStroke(color);
     border.setStrokeWidth(5.0);
     
+    //Anfang Wände
     wall1.setX(480);
     wall1.setY(144);
     wall1.setWidth(120);
@@ -82,12 +102,14 @@ public class Map1 extends Application {
     root.getChildren().add(wall1);
     
     wall2.setX(592);
-    wall2.setY(560);
+    wall2.setY(552);
     wall2.setWidth(648);
     wall2.setHeight(120);
     wall2.setSmooth(false);
     root.getChildren().add(wall2);
+    //Ende Wände
     
+    //Panzer erstellen
     panzer.setX(1448);
     panzer.setY(120);
     panzer.setFitWidth(120);
@@ -97,13 +119,14 @@ public class Map1 extends Application {
     
     primaryStage.setResizable(false);
     
+    //Turret erstellen
     turret.setX(1448);
     turret.setY(128);
     turret.setFitWidth(120);
     turret.setFitHeight(80);
     turret.setImage(turretImage);
     root.getChildren().add(turret);
-    // Ende Komponenten
+    
     primaryStage.setOnCloseRequest(e -> System.exit(0));
     primaryStage.setTitle("Wee Tanks");
     primaryStage.setScene(scene);
@@ -118,3 +141,4 @@ public class Map1 extends Application {
   
   // Ende Methoden
 } // end of class Map1
+  
