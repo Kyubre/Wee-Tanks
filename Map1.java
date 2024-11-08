@@ -53,6 +53,12 @@ public class Map1 extends Application {
     
     scene.setOnMouseClicked((event) -> {;
       if (event.getButton().equals(MouseButton.PRIMARY)) {
+        //Schuss löschen, falls noch einer existiert
+        for (int i = 0;i < root.getChildren().size(); i++) {
+          if (root.getChildren().get(i).equals(shot)) {
+            root.getChildren().remove(shot);
+          }
+        }
         //Schuss wird grafisch erstellt
         shot = new ImageView();
         Image shotImage = new Image(getClass().getResourceAsStream("images/turret.png"));
