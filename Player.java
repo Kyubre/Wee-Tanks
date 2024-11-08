@@ -53,8 +53,8 @@ public class Player{
     //Math.sqrt berechnet automatisch die Quadratwurzel aus der Rechnung (C^2 bzw. Z^2 wird zu C bzw. Z)
     double pythagoras = Math.sqrt(vektorX * vektorX + vektorY * vektorY);
     //Geschwindigkeit berechnen mit anpassbaren Werten
-    geschwindigkeitX = (vektorX / pythagoras) * 3;     
-    geschwindigkeitY = (vektorY / pythagoras) * 3;     
+    geschwindigkeitX = (vektorX / pythagoras) * 10;     
+    geschwindigkeitY = (vektorY / pythagoras) * 10;     
     //false wird in Map1 für den boolean "Kollision" eingesetzt
     return false;
   }

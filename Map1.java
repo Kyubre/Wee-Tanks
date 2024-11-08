@@ -27,11 +27,12 @@ public class Map1 extends Application {
   private ImageView turret = new ImageView();
   private Image turretImage = new Image(getClass().getResourceAsStream("images/turret.png"));
   private ImageView shot;
+  private ImageView gegner = new ImageView();
   // Ende Attribute
   
   public void start(Stage primaryStage) { 
     Pane root = new Pane();
-    Scene scene = new Scene(root, 1920, 1080);
+    Scene scene = new Scene(root, 1416, 851);
     // Anfang Komponenten
     primaryStage.setMaximized(true);
     primaryStage.resizableProperty();
@@ -62,7 +63,6 @@ public class Map1 extends Application {
         shot.setRotate(turret.getRotate());
         shot.setImage(shotImage);
         root.getChildren().add(shot);
-        System.out.println();
         //Methode für Schuss aufrufen
         boolean kollision = p1.schießen(event, shot);
         //Idk man timer ist halt besser als while, außerdem frag nicht was das macht hab selber keine ahnung
@@ -118,6 +118,13 @@ public class Map1 extends Application {
     panzer.setFitHeight(100);
     panzer.setImage(panzerImage);
     root.getChildren().add(panzer);
+    
+    gegner.setX(40);
+    gegner.setY(800);
+    gegner.setFitWidth(120);
+    gegner.setFitHeight(100);
+    gegner.setImage(panzerImage);
+    root.getChildren().add(gegner);
     
     primaryStage.setResizable(false);
     
