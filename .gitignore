@@ -1,0 +1,11 @@
+# Ignore all .bat files
+*.bat
+
+# Ignore all .class files (typically for compiled Java files)
+*.class
+
+# Ignore all .~ava files
+*.~ava
+
+# Ignore all .~fm files
+*.~fm
