@@ -70,6 +70,14 @@ public class Player{
     }
     return false;
   }
+  
+  public boolean trefferCheck(ImageView schuss, ImageView gegner){
+    //Überprüfung, ob der Schuss mit dem Gegner kollidiert
+    if (schuss.intersects(gegner.getBoundsInParent())) {
+      return true;
+    }
+    return false;
+  }
 
   
   public void tasteGedrueckt(KeyEvent evt){
@@ -161,22 +169,4 @@ public class Player{
       turret.setX(turret.getX()+10);
     }
   }
-
-  
-  public double getX(){
-    return xPos;
-  }
-
-  public double getY(){
-    return yPos;
-  }
-  
-  public double getCenterX(){
-    return centerPosX;
-  }
-  
-  public double getCenterY(){
-    return centerPosY;
-  }
-
 }

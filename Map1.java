@@ -32,7 +32,7 @@ public class Map1 extends Application {
   
   public void start(Stage primaryStage) { 
     Pane root = new Pane();
-    Scene scene = new Scene(root, 1416, 851);
+    Scene scene = new Scene(root, 1920, 1080);
     // Anfang Komponenten
     primaryStage.setMaximized(true);
     primaryStage.resizableProperty();
@@ -69,6 +69,12 @@ public class Map1 extends Application {
         AnimationTimer schussTimer = new AnimationTimer() {
           @Override
           public void handle(long now) {
+            boolean treffer = p1.trefferCheck(shot, gegner);
+            if (treffer == true) {
+              this.stop();
+              root.getChildren().remove(shot);
+              root.getChildren().remove(gegner);
+            } // end of if
             boolean kollision = p1.kollisionsCheck(shot, wall1, wall2, border);
             if (kollision == true) {
               this.stop();
