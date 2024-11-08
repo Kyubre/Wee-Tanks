@@ -23,6 +23,7 @@ public class Map1 extends Application {
   private ImageView panzer = new ImageView();
   private Image panzerImage = new Image(getClass().getResourceAsStream("images/panzer.gif"));
   private Player p1 = new Player(panzer);
+  private Gegner g1 = new Gegner();
   private ImageView turret = new ImageView();
   private Image turretImage = new Image(getClass().getResourceAsStream("images/turret.png"));
   private ImageView shot;
@@ -61,6 +62,7 @@ public class Map1 extends Application {
         shot.setRotate(turret.getRotate());
         shot.setImage(shotImage);
         root.getChildren().add(shot);
+        System.out.println();
         //Methode für Schuss aufrufen
         boolean kollision = p1.schießen(event, shot);
         //Idk man timer ist halt besser als while, außerdem frag nicht was das macht hab selber keine ahnung

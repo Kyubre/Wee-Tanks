@@ -1,6 +1,7 @@
 object FGUIForm: TFXGuiForm
-  Left = -259
-  Top = 320
+  Tag = 180
+  Left = 250
+  Top = 998
   BorderIcons = [biSystemMenu]
   Caption = 'Map1'
   ClientHeight = 846
@@ -8,12 +9,13 @@ object FGUIForm: TFXGuiForm
   Color = clBtnFace
   ParentFont = True
   FormStyle = fsStayOnTop
-  OldCreateOrder = True
   Position = poDesigned
   Visible = True
-  OnCanResize = FormCanResize
+  OnAfterMonitorDpiChanged = FormAfterMonitorDpiChanged
+  OnBeforeMonitorDpiChanged = FormBeforeMonitorDpiChanged
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
   OnMouseActivate = FormMouseActivate
   OnResize = FormResize
   FrameType = 8
@@ -32,8 +34,7 @@ object FGUIForm: TFXGuiForm
   MinHeight = 0
   MinWidth = 0
   showing = ''
-  PixelsPerInch = 96
-  TextHeight = 15
+  TextHeight = 20
   object wall1: TFXRectangle
     Tag = 162
     Left = 480
@@ -151,5 +152,7 @@ object FGUIForm: TFXGuiForm
     Smooth = False
     X = 1448.00000000000000000
     Y = 128.00000000000000000
+  end
+  object GNUgettextMarker: TGnuGettextComponentMarker
   end
 end
