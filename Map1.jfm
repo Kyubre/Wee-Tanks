@@ -1,25 +1,23 @@
 object FGUIForm: TFXGuiForm
-  Tag = 180
-  Left = 211
-  Top = 109
+  Left = 184
+  Top = 87
   BorderIcons = [biSystemMenu]
   Caption = 'Map1'
-  ClientHeight = 1055
-  ClientWidth = 1768
+  ClientHeight = 1248
+  ClientWidth = 2150
   Color = clBtnFace
   ParentFont = True
   FormStyle = fsStayOnTop
+  OldCreateOrder = True
   Position = poDesigned
   Visible = True
-  OnAfterMonitorDpiChanged = FormAfterMonitorDpiChanged
-  OnBeforeMonitorDpiChanged = FormBeforeMonitorDpiChanged
+  OnCanResize = FormCanResize
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
-  OnCreate = FormCreate
   OnMouseActivate = FormMouseActivate
   OnResize = FormResize
   FrameType = 8
-  Modified = True
+  Modified = False
   Resizable = False
   Undecorated = False
   Background = clBtnFace
@@ -35,7 +33,71 @@ object FGUIForm: TFXGuiForm
   MinWidth = 0
   showing = ''
   PixelsPerInch = 120
-  TextHeight = 20
+  TextHeight = 15
+  object panzer: TFXImageView
+    Tag = 147
+    Left = 1810
+    Top = 150
+    Width = 150
+    Height = 125
+    Hint = 'imageView1'
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Dialog'
+    Font.Style = []
+    Foreground = clBlack
+    Background = clBtnFace
+    JavaType = 'ImageView'
+    LayoutX = 1810
+    LayoutY = 150
+    Disable = False
+    Cache = False
+    dragOver = ''
+    FitHeight = 100.00000000000000000
+    FitWidth = 120.00000000000000000
+    Image = 'images/panzer.gif'
+    PreserveRatio = False
+    Smooth = False
+    X = 1448.00000000000000000
+    Y = 120.00000000000000000
+  end
+  object turret: TFXImageView
+    Tag = 147
+    Left = 1808
+    Top = 160
+    Width = 150
+    Height = 100
+    Hint = 'imageView1'
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Dialog'
+    Font.Style = []
+    Foreground = clBlack
+    Background = clBtnFace
+    JavaType = 'ImageView'
+    LayoutX = 1808
+    LayoutY = 160
+    Disable = False
+    Cache = False
+    dragOver = ''
+    FitHeight = 80.00000000000000000
+    FitWidth = 120.00000000000000000
+    Image = 'images/turret.png'
+    PreserveRatio = False
+    Smooth = False
+    X = 1448.00000000000000000
+    Y = 128.00000000000000000
+  end
   object wall1: TFXRectangle
     Tag = 162
     Left = 600
@@ -73,8 +135,8 @@ object FGUIForm: TFXGuiForm
   end
   object wall2: TFXRectangle
     Tag = 162
-    Left = 740
-    Top = 700
+    Left = 736
+    Top = 688
     Width = 810
     Height = 150
     Hint = 'rectangle1'
@@ -90,8 +152,8 @@ object FGUIForm: TFXGuiForm
     Foreground = clBlack
     Background = clBlack
     JavaType = 'Rectangle'
-    LayoutX = 740
-    LayoutY = 700
+    LayoutX = 736
+    LayoutY = 688
     Disable = False
     Cache = False
     dragOver = ''
@@ -103,73 +165,7 @@ object FGUIForm: TFXGuiForm
     StrokeMiterLimit = 10.00000000000000000
     StrokeType = _TA_CENTERED
     StrokeWidth = 1.00000000000000000
-    X = 592.00000000000000000
-    Y = 560.00000000000000000
-  end
-  object panzer: TFXImageView
-    Tag = 147
-    Left = 1810
-    Top = 150
-    Width = 150
-    Height = 125
-    Hint = 'imageView1'
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -15
-    Font.Name = 'Dialog'
-    Font.Style = []
-    Foreground = clBlack
-    Background = clBtnFace
-    JavaType = 'ImageView'
-    LayoutX = 1810
-    LayoutY = 150
-    Disable = False
-    Cache = False
-    dragOver = ''
-    FitHeight = 100.00000000000000000
-    FitWidth = 120.00000000000000000
-    Image = 'images/96.gif'
-    PreserveRatio = False
-    Smooth = False
-    X = 1448.00000000000000000
-    Y = 120.00000000000000000
-  end
-  object turret: TFXImageView
-    Tag = 147
-    Left = 1810
-    Top = 160
-    Width = 150
-    Height = 100
-    Hint = 'imageView1'
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -15
-    Font.Name = 'Dialog'
-    Font.Style = []
-    Foreground = clBlack
-    Background = clBtnFace
-    JavaType = 'ImageView'
-    LayoutX = 1810
-    LayoutY = 160
-    Disable = False
-    Cache = False
-    dragOver = ''
-    FitHeight = 80.00000000000000000
-    FitWidth = 120.00000000000000000
-    Image = 'images/96.png'
-    PreserveRatio = False
-    Smooth = False
-    X = 1448.00000000000000000
-    Y = 128.00000000000000000
-  end
-  object GNUgettextMarker: TGnuGettextComponentMarker
+    X = 736.00000000000000000
+    Y = 688.00000000000000000
   end
 end
