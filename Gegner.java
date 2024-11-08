@@ -1,3 +1,5 @@
+import javafx.scene.shape.Rectangle;
+import javafx.scene.image.ImageView;
 
 public class Gegner{
   private int xPos;
@@ -20,10 +22,19 @@ public class Gegner{
   }
   
   
-  public void ai(ImageView gegner, ImageView spieler){
-    double richtungX = gegner.getX() - spieler.getX();
-    double richtungY = gegner.getY() - spieler.getY();
-    
+  public void ai(ImageView gegner, ImageView spieler, Rectangle wand1, Rectangle wand2){
+    boolean siehtSpieler = false;
+    if (gegner.getX() < spieler.getX() && gegner.getY() < spieler.getY()) {
+      for (double i = gegner.getX(); i < spieler.getX(); i++) {
+        for (double j = gegner.getY(); j < spieler.getY(); j++) {
+          if (!wand1.intersects(i,j,1,1)) {
+            siehtSpieler = true;
+            break;
+          }
+        }
+      }
+      siehtSpieler = false;
+    }
   }
 
 }
