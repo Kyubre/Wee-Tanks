@@ -28,10 +28,7 @@ public class Player{
   
   
   public Player(ImageView panzer){
-    this.xPos = panzer.getX();
-    this.yPos = panzer.getY();
-    this.centerPosX = xPos + (panzer.getFitWidth() / 2);
-    this.centerPosY = yPos + (panzer.getFitHeight() / 2);
+    
   }
   
   public double turretRotation(MouseEvent evnt, ImageView panzer){
@@ -136,11 +133,7 @@ public class Player{
     AnimationTimer bewegungsTimer = new AnimationTimer(){
       @Override
       public void handle(long now){
-        panzerAltX = panzer.getX();
-        panzerAltY = panzer.getY();
-        turretAltX = turret.getX();
-        turretAltY = turret.getY();
-        altRotation = panzer.getRotate();       
+        
         if (wGedrueckt && aGedrueckt) {
           panzer.setY(panzer.getY()-speed/2);
           panzer.setX(panzer.getX()-speed/2);
@@ -190,13 +183,7 @@ public class Player{
           turret.setX(turret.getX()+speed);
         }
         
-        if (panzerKollision(panzer, wand1, wand2, border)) {
-          panzer.setX(panzerAltX);
-          panzer.setY(panzerAltY);
-          turret.setX(turretAltX);
-          turret.setY(turretAltY);
-          panzer.setRotate(altRotation);
-        }
+        
       }
     };
     bewegungsTimer.start();
@@ -212,6 +199,18 @@ public class Player{
   }
   
   public void movement(ImageView panzer, ImageView turret, Rectangle wand1, Rectangle wand2, Rectangle border){    
+    panzerAltX = panzer.getX();
+    panzerAltY = panzer.getY();
+    turretAltX = turret.getX();
+    turretAltY = turret.getY();
+    altRotation = panzer.getRotate();
     bewegungsTimerErstellen(panzer, turret, wand1, wand2, border);
+    if (panzerKollision(panzer, wand1, wand2, border)) {
+      panzer.setX(panzerAltX);
+      panzer.setY(panzerAltY);
+      turret.setX(turretAltX);
+      turret.setY(turretAltY);
+      panzer.setRotate(altRotation);
+    }
   }
 }

@@ -32,7 +32,7 @@ public class Map1 extends Application {
   
   public void start(Stage primaryStage) { 
     Pane root = new Pane();
-    Scene scene = new Scene(root, 2146, 1248);
+    Scene scene = new Scene(root, 1600, 900);
     // Anfang Komponenten
     primaryStage.setMaximized(true);
     primaryStage.resizableProperty();
