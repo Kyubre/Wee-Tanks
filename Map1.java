@@ -21,26 +21,26 @@ public class Map1 extends Application {
   private Rectangle wall1 = new Rectangle();
   private Rectangle wall2 = new Rectangle();
   private ImageView panzer = new ImageView();
-    private Image panzerImage = new Image(getClass().getResourceAsStream("images/panzer.gif"));
+  private Image panzerImage = new Image(getClass().getResourceAsStream("images/panzer.gif"));
   private Player p1 = new Player(panzer);
   private Gegner g1 = new Gegner();
   private ImageView turret = new ImageView();
-    private Image turretImage = new Image(getClass().getResourceAsStream("images/turret.png"));
+  private Image turretImage = new Image(getClass().getResourceAsStream("images/turret.png"));
   private ImageView shot;
   private ImageView gegner = new ImageView();
+  private Image gegnerImage = new Image(getClass().getResourceAsStream("images/panzer.gif"));
   // Ende Attribute
   
   public void start(Stage primaryStage) { 
     Pane root = new Pane();
-    Scene scene = new Scene(root, 1600, 900);
+    Scene scene = new Scene(root, 1200, 800);
     // Anfang Komponenten
-    primaryStage.setMaximized(true);
+    primaryStage.setMaximized(false);
     primaryStage.resizableProperty();
     
     scene.setOnKeyPressed((KeyEvent event) -> {;
       p1.tasteGedrueckt(event);
       p1.movement(panzer, turret, wall1, wall2, border);
-      System.out.println(g1.siehtSpieler(panzer, gegner, wall1, wall2));
     });
     
     scene.setOnKeyReleased((KeyEvent event) -> {;
@@ -83,6 +83,7 @@ public class Map1 extends Application {
               root.getChildren().remove(gegner);
               gegner.setX(10000);
               gegner.setY(10000);
+              //Gewonnen Image einfügen, Restart Button einfügen
             } // end of if
             boolean kollision = p1.kollisionsCheck(shot, wall1, wall2, border);
             if (kollision == true) {
@@ -113,46 +114,45 @@ public class Map1 extends Application {
     border.setStrokeWidth(5.0);
     
     //Anfang Wände
-    wall1.setX(480 + border.getX());
-    wall1.setY(150 + border.getY());
+    wall1.setX(620);
+    wall1.setY(150);
     wall1.setWidth(120);
-    wall1.setHeight(530);
+    wall1.setHeight(400);
     wall1.setSmooth(false);
     root.getChildren().add(wall1);
     
-    wall2.setX(600 + border.getX());
-    wall2.setY(530 + border.getY());
-    wall2.setWidth(810);
-    wall2.setHeight(150);
+    wall2.setX(520);
+    wall2.setY(150);
+    wall2.setWidth(110);
+    wall2.setHeight(400);
     wall2.setSmooth(false);
     root.getChildren().add(wall2);
     //Ende Wände
     
     //Panzer erstellen
-    panzer.setX(1450 + border.getX());
-    panzer.setY(120 + border.getY());
-    panzer.setFitWidth(120);
-    panzer.setFitHeight(100);
+    panzer.setX(70);
+    panzer.setY(300);
+    panzer.setFitWidth(150);
+    panzer.setFitHeight(125);
     panzer.setImage(panzerImage);
     root.getChildren().add(panzer);
-    
-    gegner.setX(40 + border.getX());
-    gegner.setY(800 + border.getY());
-    gegner.setFitWidth(120);
-    gegner.setFitHeight(100);
-    gegner.setImage(panzerImage);
-    root.getChildren().add(gegner);
     
     primaryStage.setResizable(false);
     
     //Turret erstellen
-    turret.setX(1450 + border.getX());
-    turret.setY(120 + border.getY());
-    turret.setFitWidth(120);
+    turret.setX(68);
+    turret.setY(310);
+    turret.setFitWidth(150);
     turret.setFitHeight(100);
     turret.setImage(turretImage);
     root.getChildren().add(turret);
     
+    gegner.setX(870);
+    gegner.setY(310);
+    gegner.setFitWidth(180);
+    gegner.setFitHeight(120);
+    gegner.setImage(gegnerImage);
+    root.getChildren().add(gegner);
     // Ende Komponenten
     primaryStage.setOnCloseRequest(e -> System.exit(0));
     primaryStage.setTitle("Wee Tanks");
