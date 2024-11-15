@@ -12,6 +12,7 @@ public class Gegner {
     System.out.println(siehtSpieler(spieler, gegner, wand1, wand2));
   }
   
+  //Test hab eine Line geadded
   public boolean siehtSpieler(ImageView spieler, ImageView gegner, Rectangle wand1, Rectangle wand2){
     Line lineOfSight = new Line(gegner.getX(), gegner.getY(), spieler.getX(), spieler.getY());
     return false;
