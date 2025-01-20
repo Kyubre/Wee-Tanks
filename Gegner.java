@@ -133,11 +133,11 @@ public class Gegner {
     double deltaX = spieler.getX() - gegner.getX();
     double deltaY = spieler.getY() - gegner.getY();
     double winkel = Math.toDegrees(Math.atan2(deltaY, deltaX));
-    if(gegnerTurret.getRotate() != winkel%360) {
-      if(gegnerTurret.getRotate() < winkel%360) {
+    if(gegnerTurret.getRotate()%360 <= winkel-2 || gegnerTurret.getRotate()%360 >= winkel+2) {
+      if(gegnerTurret.getRotate()%360 < winkel) {
         gegnerTurret.setRotate(gegnerTurret.getRotate()+1);
       }
-      else if(gegnerTurret.getRotate() > winkel%360) {
+      else if(gegnerTurret.getRotate()%360 > winkel) {
         gegnerTurret.setRotate(gegnerTurret.getRotate()-1);
       }
     }

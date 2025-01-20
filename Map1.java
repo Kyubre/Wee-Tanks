@@ -20,18 +20,22 @@ import javafx.event.*;
 import javafx.scene.text.*;
 import javafx.scene.text.Font;
 import javafx.application.Platform;
+import javafx.stage.Screen;
 
 
 
 public class Map1 {
   // Anfang Attribute
-  Color borderColor = Color.BLACK;  
+  Color borderColor = Color.BLACK;
+  private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
+  private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();  
   private Rectangle borderwall1 = new Rectangle();
   private Rectangle borderwall2 = new Rectangle();
   private Rectangle borderwall3 = new Rectangle();
   private Rectangle borderwall4 = new Rectangle();
   private ImageView wall1 = new ImageView();
   private ImageView wall2 = new ImageView();
+  private Image wandImage = new Image(getClass().getResourceAsStream("images/wand.jpg"));
   private ImageView panzer = new ImageView();
   private Image panzerImage = new Image(getClass().getResourceAsStream("images/panzer.gif"));
   private Player p1 = new Player(panzer);
@@ -53,10 +57,12 @@ public class Map1 {
   
   public void initialize(Stage stage) { 
     Pane root = new Pane();
-    Scene scene = new Scene(root, 1920, 1080);
+    Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
     // Anfang Komponenten
     stage.setX(0);
     stage.setY(0);
+    stage.setWidth(bildschirmBreite);
+    stage.setHeight(bildschirmHoehe);
     stage.setMaximized(false);
     stage.resizableProperty();
     stage.setFullScreen(true);
@@ -213,6 +219,7 @@ public class Map1 {
     wall1.setFitWidth(120);
     wall1.setFitHeight(400);
     wall1.setSmooth(false);
+    wall1.setImage(wandImage);
     root.getChildren().add(wall1);
     wandListe.add(wall1);
     
@@ -221,6 +228,7 @@ public class Map1 {
     wall2.setFitWidth(110);
     wall2.setFitHeight(400);
     wall2.setSmooth(false);
+    wall2.setImage(wandImage);
     root.getChildren().add(wall2);
     wandListe.add(wall2);
     //Ende Wände

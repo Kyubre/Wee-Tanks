@@ -10,6 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.control.Button;
 import javafx.scene.image.*;
 import javafx.scene.image.ImageView;
+import javafx.stage.Screen;
 
 
 public class Hauptmenu extends Application {
@@ -18,18 +19,20 @@ public class Hauptmenu extends Application {
   private Image imageView1Image = new Image(getClass().getResourceAsStream("images/background.png"));
   private Button startenButton = new Button();
   private Stage stage;
+  private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
+  private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();
   // Ende Attribute
   
   public void start(Stage primaryStage) {
     stage = primaryStage;
     Pane root = new Pane();
-    Scene scene = new Scene(root, 1920, 1080);
+    Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
     // Anfang Komponenten
     
     imageView1.setX(0);
     imageView1.setY(0);
-    imageView1.setFitWidth(1920);
-    imageView1.setFitHeight(1080);
+    imageView1.setFitWidth(bildschirmBreite);
+    imageView1.setFitHeight(bildschirmHoehe);
     imageView1.setImage(imageView1Image);
     root.getChildren().add(imageView1);
     startenButton.setLayoutX(696);
@@ -44,8 +47,8 @@ public class Hauptmenu extends Application {
     root.getChildren().add(startenButton);
     // Ende Komponenten
     primaryStage.setResizable(false);
-    primaryStage.setWidth(1920);
-    primaryStage.setHeight(1080);
+    primaryStage.setWidth(bildschirmBreite);
+    primaryStage.setHeight(bildschirmHoehe);
     primaryStage.setFullScreen(true);
     
     primaryStage.setOnCloseRequest(e -> System.exit(0));
