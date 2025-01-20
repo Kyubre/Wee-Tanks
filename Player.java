@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.image.*;
 import javafx.scene.image.ImageView;
@@ -5,6 +6,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.animation.AnimationTimer;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
+import javafx.event.Event;
 
 public class Player{
   private double xPos;
@@ -18,18 +22,21 @@ public class Player{
   private boolean bewegungsTimerErstellt = false;
   private double geschwindigkeitX = 0;
   private double geschwindigkeitY = 0;
+  private double iGeschwindigkeitX = 5;
+  private double iGeschwindigkeitY = 5;
   private final double speed = 5;
-  double panzerAltX;
-  double panzerAltY;
-  double turretAltX;
-  double turretAltY;
-  double altRotation;
-  
-  
+  private double panzerAltX;
+  private double panzerAltY;
+  private double turretAltX;
+  private double turretAltY;
+  private double altRotation;
+  private ArrayList<Schuss> schussListe;
+  private Schuss s1 = new Schuss();
+  private FpsLimiter fpsLimiter = new FpsLimiter(60);
   
   public Player(ImageView panzer){
-    
-  }
+    schussListe = new ArrayList<Schuss>();
+  }           
   
   public double turretRotation(MouseEvent evnt, ImageView panzer){
     double eventX = evnt.getX();
@@ -48,34 +55,12 @@ public class Player{
   
   //Schießen (wird ausgeführt wenn Linksklick)
   public boolean schießen(MouseEvent evt, ImageView schuss){
-    //Koordinaten vom Mauszeiger
-    double eventX = evt.getX();
-    double eventY = evt.getY();
-    //Rotation in Grad umwandeln in Radiant
-    double radiant = Math.toRadians(schuss.getRotate());
-    //Sinus und Cosinus benutzen um Radiant in X & Y Vektoren umzurechnen
-    double vektorX = Math.cos(radiant);
-    double vektorY = Math.sin(radiant);
-    //Satz des Pythagoras (A^2 + B^2 = C^2) anwenden um Vektoren X^2 & Y^2 zu Z^2 zu machen
-    //Math.sqrt berechnet automatisch die Quadratwurzel aus der Rechnung (C^2 bzw. Z^2 wird zu C bzw. Z)
-    double pythagoras = Math.sqrt(vektorX * vektorX + vektorY * vektorY);
-    //Geschwindigkeit berechnen mit anpassbaren Werten
-    geschwindigkeitX = (vektorX / pythagoras) * 5;     
-    geschwindigkeitY = (vektorY / pythagoras) * 5;     
-    //false wird in Map1 für den boolean "Kollision" eingesetzt
-    return false;
+    return s1.schiessen(evt, schuss);
   }
   
   //Kollisionsüberprüfung vom Schuss
-  public boolean kollisionsCheck(ImageView schuss, Rectangle wand1, Rectangle wand2, Rectangle border){
-    //Schuss bewegt sich in die ausgerechnete Richtung
-    schuss.setX(schuss.getX() + geschwindigkeitX);
-    schuss.setY(schuss.getY() + geschwindigkeitY);
-    //Überprüfung, ob der Schuss mit den Wänden kollidiert
-    if (schuss.intersects(wand1.getBoundsInParent()) || schuss.intersects(wand2.getBoundsInParent()) || !schuss.intersects(border.getBoundsInParent())) {
-      return true;
-    }
-    return false;
+  public boolean kollisionsCheck(ImageView schuss, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
+    return s1.kollisionsCheck(schuss, wandListe, borderListe);
   }
   
   //Trefferüberprüfung vom Schuss
@@ -86,7 +71,7 @@ public class Player{
     }
     return false;
   }
-
+  
   
   public void tasteGedrueckt(KeyEvent evt){
     switch (evt.getCode()) {
@@ -127,12 +112,14 @@ public class Player{
   }
   
   //AnimationTimer erstellen für movement jeden Frame
-  public void bewegungsTimerErstellen(ImageView panzer, ImageView turret, Rectangle wand1, Rectangle wand2, Rectangle border){
+  public void bewegungsTimerErstellen(ImageView panzer, ImageView turret, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
     if (!bewegungsTimerErstellt) {
       AnimationTimer bewegungsTimer = new AnimationTimer(){
         @Override
         public void handle(long now){
-          movement(panzer, turret, wand1, wand2, border);
+          if (fpsLimiter.canRender(now)) {
+            movement(panzer, turret, wandListe, borderListe);
+          }
         }
       };
       bewegungsTimer.start();
@@ -141,15 +128,25 @@ public class Player{
   }
 
   
-  public boolean panzerKollision(ImageView panzer, Rectangle wand1, Rectangle wand2, Rectangle border) {
-    if (panzer.intersects(wand1.getBoundsInParent()) || panzer.intersects(wand2.getBoundsInParent()) || !panzer.intersects(border.getBoundsInParent())) {
-      return true;
+  public boolean panzerKollision(ImageView panzer, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
+    for (ImageView wand : wandListe) {
+      if (panzer.intersects(wand.getBoundsInParent())) {
+        return true;
+      }
     }
+    
+    for (Rectangle border : borderListe) {
+      if (panzer.intersects(border.getBoundsInParent())) {
+        return true;
+      }
+    }
+    
     return false;
+    
   }
       
-  public void movement(ImageView panzer, ImageView turret, Rectangle wand1, Rectangle wand2, Rectangle border){    
-    bewegungsTimerErstellen(panzer, turret, wand1, wand2, border);
+  public void movement(ImageView panzer, ImageView turret, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){    
+    bewegungsTimerErstellen(panzer, turret, wandListe, borderListe);
     
     panzerAltX = panzer.getX();
     panzerAltY = panzer.getY();
@@ -206,7 +203,7 @@ public class Player{
       turret.setX(turret.getX()+speed);
     }
     
-    if (panzerKollision(panzer, wand1, wand2, border)) {
+    if (panzerKollision(panzer, wandListe, borderListe)) {
       panzer.setX(panzerAltX);
       panzer.setY(panzerAltY);
       turret.setX(turretAltX);
