@@ -8,26 +8,25 @@ import javafx.scene.shape.Rectangle;
 import javafx.animation.AnimationTimer;
 
 public class Schuss{
+  private final double SPEED = 5;
   private double geschwindigkeitX;
   private double geschwindigkeitY;
-  
-  public Schuss(){
-    
+  private static ArrayList<Schuss> schussListe = new ArrayList<>();
+   
+  public Schuss(ImageView schuetzeTurret){
+    schussListe.add(this);
   }
   
-  public boolean kollisionsCheck(ImageView schuss, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
-    //Schuss bewegt sich in die ausgerechnete Richtung
-    schuss.setX(schuss.getX() + geschwindigkeitX);
-    schuss.setY(schuss.getY() + geschwindigkeitY);
+  public boolean kollisionsCheck(ImageView schussBild, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
     //Überprüfung, ob der Schuss mit den Wänden kollidiert
     for (ImageView wand : wandListe) {
-      if (schuss.intersects(wand.getBoundsInParent())) {
+      if (schussBild.intersects(wand.getBoundsInParent())) {
         return true;
       }
     }
     
     for (Rectangle border : borderListe) {
-      if (schuss.intersects(border.getBoundsInParent())) {
+      if (schussBild.intersects(border.getBoundsInParent())) {
         return true;
       }
     }
@@ -35,12 +34,22 @@ public class Schuss{
     return false;
   }
   
-  public boolean schiessen(MouseEvent evt, ImageView schuss){
+  public boolean trefferCheck(ImageView schussBild, ImageView player){
+    //Überprüfung, ob der Schuss mit dem Spieler kollidiert
+//    schussBild.setX(schussBild.getX() + geschwindigkeitX);
+//    schussBild.setY(schussBild.getY() + geschwindigkeitY);    
+    if (schussBild.intersects(player.getBoundsInParent())) {
+      return true;
+    }
+    return false;
+  }
+  
+  public boolean schiessen(MouseEvent evt, ImageView schussBild){
     //Koordinaten vom Mauszeiger
     double eventX = evt.getX();
     double eventY = evt.getY();
     //Rotation in Grad umwandeln in Radiant
-    double radiant = Math.toRadians(schuss.getRotate());
+    double radiant = Math.toRadians(schussBild.getRotate());
     //Sinus und Cosinus benutzen um Radiant in X & Y Vektoren umzurechnen
     double vektorX = Math.cos(radiant);
     double vektorY = Math.sin(radiant);
@@ -48,8 +57,8 @@ public class Schuss{
     //Math.sqrt berechnet automatisch die Quadratwurzel aus der Rechnung (C^2 bzw. Z^2 wird zu C bzw. Z)
     double pythagoras = Math.sqrt(vektorX * vektorX + vektorY * vektorY);
     //Geschwindigkeit berechnen mit anpassbaren Werten
-    geschwindigkeitX = (vektorX / pythagoras) * 5;     
-    geschwindigkeitY = (vektorY / pythagoras) * 5;     
+    geschwindigkeitX = (vektorX / pythagoras) * SPEED;     
+    geschwindigkeitY = (vektorY / pythagoras) * SPEED;     
     //false wird in Map1 für den boolean "Kollision" eingesetzt
     return false;
   }
@@ -67,10 +76,16 @@ public class Schuss{
     //Math.sqrt berechnet automatisch die Quadratwurzel aus der Rechnung (C^2 bzw. Z^2 wird zu C bzw. Z)
     double pythagoras = Math.sqrt(vektorX * vektorX + vektorY * vektorY);
     //Geschwindigkeit berechnen mit anpassbaren Werten
-    geschwindigkeitX = (vektorX / pythagoras) * 5;     
-    geschwindigkeitY = (vektorY / pythagoras) * 5;     
+    geschwindigkeitX = (vektorX / pythagoras) * SPEED;     
+    geschwindigkeitY = (vektorY / pythagoras) * SPEED;     
     //false wird in Map1 für den boolean "Kollision" eingesetzt
     return false;
   }
+  
+  public void fliegen(ImageView schussBild){
+    schussBild.setX(schussBild.getX()+geschwindigkeitX);
+    schussBild.setY(schussBild.getY()+geschwindigkeitY);
+  }
+
 
 }

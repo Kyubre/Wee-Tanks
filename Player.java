@@ -31,11 +31,12 @@ public class Player{
   private double turretAltY;
   private double altRotation;
   private ArrayList<Schuss> schussListe;
-  private Schuss s1 = new Schuss();
+  private Schuss s1;
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
   
-  public Player(ImageView panzer){
+  public Player(ImageView panzer, ImageView panzerTurret){
     schussListe = new ArrayList<Schuss>();
+    s1 = new Schuss(panzerTurret);
   }           
   
   public double turretRotation(MouseEvent evnt, ImageView panzer){
@@ -57,12 +58,7 @@ public class Player{
   public boolean schießen(MouseEvent evt, ImageView schuss){
     return s1.schiessen(evt, schuss);
   }
-  
-  //Kollisionsüberprüfung vom Schuss
-  public boolean kollisionsCheck(ImageView schuss, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
-    return s1.kollisionsCheck(schuss, wandListe, borderListe);
-  }
-  
+    
   //Trefferüberprüfung vom Schuss
   public boolean trefferCheck(ImageView schuss, ImageView gegner){
     //Überprüfung, ob der Schuss mit dem Gegner kollidiert

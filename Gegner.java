@@ -14,7 +14,7 @@ import javafx.util.Duration;
 */
 
 public class Gegner {
-  Schuss s2 = new Schuss();
+  Schuss s2;
   
   private final String FARBE;
   private boolean isAlive;
@@ -26,10 +26,11 @@ public class Gegner {
   private boolean update = false;
   private FpsLimiter fpsLimiter = new FpsLimiter(60);  
   
-  public Gegner(String i_Farbe){
+  public Gegner(String i_Farbe, ImageView gegnerTurret){
     this.FARBE = i_Farbe;
     this.nachgeladen = false;
     started = false;
+    s2 = new Schuss(gegnerTurret);
   }
   
   public boolean getUpdate(){
@@ -43,11 +44,7 @@ public class Gegner {
   public boolean getAlive(){
     return isAlive;
   }
-  
-  public boolean gegnerSchießen(ImageView gegner, ImageView gegnerTurret, ImageView player){
-    return s2.schiessenGegner(gegner, gegnerTurret, player);
-  }
-  
+    
   public boolean trefferCheck(ImageView schuss, ImageView player){
     //Überprüfung, ob der Schuss mit dem Spieler kollidiert
     if (schuss.intersects(player.getBoundsInParent())) {
@@ -143,7 +140,7 @@ public class Gegner {
     }
     
     else {
-      PauseTransition nachladen = new PauseTransition(Duration.seconds(0.5));
+      PauseTransition nachladen = new PauseTransition(Duration.seconds(2.5));
       if(nachgeladen) {
         update = true;
       }
@@ -158,27 +155,7 @@ public class Gegner {
     }
     return false;
   }
-  
-  public boolean kollisionsCheck(ImageView schuss, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
-    //Schuss bewegt sich in die ausgerechnete Richtung
-    schuss.setX(schuss.getX() + schussX);
-    schuss.setY(schuss.getY() + schussY);
-    //Überprüfung, ob der Schuss mit den Wänden kollidiert
-    for (ImageView wand : wandListe) {
-      if (schuss.intersects(wand.getBoundsInParent())) {
-        return true;
-      }
-    }
-    
-    for (Rectangle border : borderListe) {
-      if (schuss.intersects(border.getBoundsInParent())) {
-        return true;
-      }
-    }
-    
-    return false;
-  }
-   
+     
   public void idlen(ImageView gegnerTurret){
     int nullOderEins = 1;
     if (gegnerTurret.getRotate()%50 == 0) {
