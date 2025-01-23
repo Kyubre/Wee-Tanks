@@ -50,6 +50,7 @@ public class Hauptmenu extends Application {
     primaryStage.setWidth(bildschirmBreite);
     primaryStage.setHeight(bildschirmHoehe);
     primaryStage.setFullScreen(true);
+    primaryStage.setFullScreenExitHint("");
     
     primaryStage.setOnCloseRequest(e -> System.exit(0));
     primaryStage.setTitle("Hauptmenu");
@@ -61,12 +62,13 @@ public class Hauptmenu extends Application {
   
   public static void main(String[] args) {
     launch(args);
-  } // end of main
+  } 
   
   public void startenButton_Action(Event evt) {
     Map1 map1 = new Map1();
     map1.initialize(stage);
-  } // end of startenButton_Action
+    stage.setFullScreen(true);
+  } 
 
-  // Ende Methoden
-} // end of class Hauptmenu
+  
+} 
