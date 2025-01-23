@@ -35,8 +35,8 @@ public class Hauptmenu extends Application {
     imageView1.setFitHeight(bildschirmHoehe);
     imageView1.setImage(imageView1Image);
     root.getChildren().add(imageView1);
-    startenButton.setLayoutX(696);
-    startenButton.setLayoutY(376);
+    startenButton.setLayoutX(bildschirmBreite/2);
+    startenButton.setLayoutY(bildschirmHoehe/2);
     startenButton.setPrefHeight(33);
     startenButton.setPrefWidth(113);
     startenButton.setText("Spiel starten");

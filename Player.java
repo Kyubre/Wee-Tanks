@@ -30,13 +30,11 @@ public class Player{
   private double turretAltX;
   private double turretAltY;
   private double altRotation;
-  private ArrayList<Schuss> schussListe;
-  private Schuss s1;
+
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
   
   public Player(ImageView panzer, ImageView panzerTurret){
-    schussListe = new ArrayList<Schuss>();
-    s1 = new Schuss(panzerTurret);
+
   }           
   
   public double turretRotation(MouseEvent evnt, ImageView panzer){
@@ -52,20 +50,6 @@ public class Player{
     
     double angle = Math.toDegrees(Math.atan2(eventY - centerPosY, eventX - centerPosX));
     return angle;
-  }
-  
-  //Schießen (wird ausgeführt wenn Linksklick)
-  public boolean schießen(MouseEvent evt, ImageView schuss){
-    return s1.schiessen(evt, schuss);
-  }
-    
-  //Trefferüberprüfung vom Schuss
-  public boolean trefferCheck(ImageView schuss, ImageView gegner){
-    //Überprüfung, ob der Schuss mit dem Gegner kollidiert
-    if (schuss.intersects(gegner.getBoundsInParent())) {
-      return true;
-    }
-    return false;
   }
   
   

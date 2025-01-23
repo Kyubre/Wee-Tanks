@@ -15,32 +15,32 @@ import javafx.scene.image.ImageView;
 import javafx.animation.AnimationTimer;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
-import java.util.ArrayList;
 import javafx.event.*;
 import javafx.scene.text.*;
 import javafx.scene.text.Font;
 import javafx.application.Platform;
 import javafx.stage.Screen;
+import java.util.HashMap;
 
 
 
 public class Map1 {
   // Anfang Attribute
-  private Color borderColor = Color.BLACK;
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
   private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();  
   private Rectangle borderwall1 = new Rectangle();
   private Rectangle borderwall2 = new Rectangle();
   private Rectangle borderwall3 = new Rectangle();
   private Rectangle borderwall4 = new Rectangle();
+  private ImageView hintergrund = new ImageView();
+  private Image hintergrundBild = new Image(getClass().getResourceAsStream("images/bg.png"));
   private ImageView wall1 = new ImageView();
   private ImageView wall2 = new ImageView();
-  private Image wandImage = new Image(getClass().getResourceAsStream("images/wand.jpg"));
+  private Image wandImage = new Image(getClass().getResourceAsStream("images/placeholder.png"));
   private ImageView panzer = new ImageView();
   private Image panzerImage = new Image(getClass().getResourceAsStream("images/panzer.gif"));
   private ImageView turret = new ImageView();
   private Image turretImage = new Image(getClass().getResourceAsStream("images/Turret.png"));
-  private ImageView shot;
   private ImageView gegner = new ImageView();
   private Image gegnerImage = new Image(getClass().getResourceAsStream("images/Panzer.gif"));
   private ImageView gegnerTurret = new ImageView();
@@ -49,18 +49,16 @@ public class Map1 {
   private boolean gegnerNachgeladen = true;
   private Player p1 = new Player(panzer, turret);
   private Gegner g1 = new Gegner("rot", gegnerTurret);
-  //Noch private machen mit getter und setter
-  public ArrayList<ImageView> schussListe = new ArrayList<ImageView>();
-  public ArrayList<ImageView> wandListe = new ArrayList<ImageView>();
-  public ArrayList<Rectangle> borderListe = new ArrayList<Rectangle>();
+  private ArrayList<ImageView> schuesse = new ArrayList<ImageView>();
+  private HashMap<ImageView, Schuss> schussDaten = new HashMap<>();
+  private ArrayList<ImageView> wandListe = new ArrayList<ImageView>();
+  private ArrayList<Rectangle> borderListe = new ArrayList<Rectangle>();
   private Button bExit = new Button();
   private Button bRestart = new Button();
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
-  private Stage stage1;
   // Ende Attribute
   
   public void initialize(Stage stage) { 
-    stage1 = stage;
     Pane root = new Pane();
     Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
     // Anfang Komponenten
@@ -77,21 +75,22 @@ public class Map1 {
       public void handle(long now){
         //Gegner Schuss
         if (g1.getUpdate() && gegnerNachgeladen) {
-          schussErstellen(gegner, gegnerTurret);
-          root.getChildren().add(shot);
-          Schuss sGegner = new Schuss(gegnerTurret);
-          boolean kollision = sGegner.schiessenGegner(gegner, gegnerTurret, shot);
+          ImageView gegnerSchuss = gegnerSchussErstellen(gegner, gegnerTurret);
+          root.getChildren().add(gegnerSchuss);
+          Schuss sGegner = new Schuss(gegnerTurret, false);
+          addSchuss(gegnerSchuss, sGegner);          
+          boolean kollision = false;
           AnimationTimer schussTimer = new AnimationTimer() {
             @Override
             public void handle(long now2) {
               if (fpsLimiter.canRender(now2)) {
-                sGegner.fliegen(shot);
-                boolean treffer = g1.trefferCheck(shot, panzer);
+                sGegner.fliegen(gegnerSchuss);
+                boolean treffer = sGegner.trefferCheck(gegnerSchuss, panzer);
                 if (treffer == true) {
                   this.stop();
-                  root.getChildren().remove(shot);
-                  shot.setX(10000);
-                  shot.setY(10000);
+                  root.getChildren().remove(gegnerSchuss);
+                  gegnerSchuss.setX(10000);
+                  gegnerSchuss.setY(10000);
                   root.getChildren().remove(panzer);
                   panzer.setX(7000);
                   panzer.setY(7000);
@@ -103,12 +102,12 @@ public class Map1 {
                   bRestart.setVisible(true);
                   this.stop();
                 } // end of if
-                boolean kollision = sGegner.kollisionsCheck(shot, wandListe, borderListe);
+                boolean kollision = sGegner.kollisionsCheck(gegnerSchuss, wandListe, borderListe);
                 if (kollision == true) {                                                                          
                   this.stop();
-                  root.getChildren().remove(shot);
-                  shot.setX(10000);
-                  shot.setY(10000);
+                  root.getChildren().remove(gegnerSchuss);
+                  gegnerSchuss.setX(10000);
+                  gegnerSchuss.setY(10000);
                 }
               }
             }
@@ -128,6 +127,66 @@ public class Map1 {
     };
     gameplayLoop.start();
     
+    AnimationTimer schussAnimation = new AnimationTimer() {
+      @Override
+      public void handle(long now) {
+        if (fpsLimiter.canRender(now)) {
+          for (int i = 0; i < schuesse.size(); i++) {
+            ImageView schuss = schuesse.get(i);
+            Schuss sObj = schussDaten.get(schuss);
+            sObj.fliegen(schuss);
+            
+            if (sObj.getSpieler()) {
+              boolean treffer = sObj.trefferCheck(schuss, gegner);
+              if (treffer) {
+                root.getChildren().remove(schuss);
+                removeSchuss(schuss);
+                root.getChildren().remove(gegner);
+                gegner.setX(-100);
+                gegner.setY(0);
+                root.getChildren().remove(gegnerTurret);
+                gegnerTurret.setX(-100);
+                gegnerTurret.setY(0);
+                g1.setAlive(false);
+                i--;
+                continue;
+              }
+                          
+              boolean kollision = sObj.kollisionsCheck(schuss, wandListe, borderListe);
+              if (kollision) {
+                root.getChildren().remove(schuss);
+                removeSchuss(schuss);
+                i--;
+              }
+            }
+            
+            else {
+              
+              boolean treffer = sObj.trefferCheck(schuss, panzer);
+              if (treffer) {
+                root.getChildren().remove(schuss);
+                removeSchuss(schuss);
+                root.getChildren().remove(panzer);
+                root.getChildren().remove(turret);
+                i--; 
+                continue;
+              }
+              
+              boolean kollision = sObj.kollisionsCheck(schuss, wandListe, borderListe);
+              if (kollision) {
+                root.getChildren().remove(schuss);
+                removeSchuss(schuss);
+                i--;
+              }
+            }
+          }
+          
+        }
+      }
+    };
+    schussAnimation.start();
+    
+    
     scene.setOnKeyPressed((KeyEvent event) -> {;
       p1.tasteGedrueckt(event);
       p1.movement(panzer, turret, wandListe, borderListe);
@@ -145,22 +204,23 @@ public class Map1 {
     scene.setOnMouseClicked((event) -> {;
       if (event.getButton().equals(MouseButton.PRIMARY) && istNachgeladen == true) {
         //Schuss wird grafisch erstellt
-        schussErstellen(panzer, turret);
-        root.getChildren().add(shot);
-        Schuss sPlayer = new Schuss(turret);
+        ImageView schussNeu = schussErstellen(panzer, turret);
+        root.getChildren().add(schussNeu);
+        Schuss sPlayer = new Schuss(turret, true);
+        addSchuss(schussNeu, sPlayer);
         //Methode für Schuss aufrufen
-        boolean kollision = sPlayer.schiessen(event, shot);
         AnimationTimer schussTimer = new AnimationTimer() {
           @Override
           public void handle(long now) {
             if (fpsLimiter.canRender(now)) {
-              sPlayer.fliegen(shot);
-              boolean treffer = p1.trefferCheck(shot, gegner);
+              sPlayer.fliegen(schussNeu);
+              boolean treffer = sPlayer.trefferCheck(schussNeu, gegner);
               if (treffer == true) {
                 this.stop();
-                root.getChildren().remove(shot);
-                shot.setX(10000);
-                shot.setY(10000);
+                root.getChildren().remove(schussNeu);
+                removeSchuss(schussNeu);
+                schussNeu.setX(10000);
+                schussNeu.setY(10000);
                 root.getChildren().remove(gegner);
                 gegner.setX(10000);
                 gegner.setY(10000);
@@ -169,15 +229,20 @@ public class Map1 {
                 gegnerTurret.setY(5000);
                 g1.setAlive(false);
                 //Gewonnen Image einfügen, Restart Button einfügen
-                bRestart.setVisible(true);
+                //bRestart.setVisible(true);
+                this.stop();
+                gameplayLoop.stop();
+                
               } // end of if
               //ArrayList gemacht, muss angepasst werden!
-              boolean kollision = sPlayer.kollisionsCheck(shot, wandListe, borderListe);
+              boolean kollision = sPlayer.kollisionsCheck(schussNeu, wandListe, borderListe);
               if (kollision == true) {
                 this.stop();
-                root.getChildren().remove(shot);
-                shot.setX(10000);
-                shot.setY(10000);
+                root.getChildren().remove(schussNeu);
+                removeSchuss(schussNeu);
+                schussNeu.setX(10000);
+                schussNeu.setY(10000);
+                this.stop();
               }
             }
           }
@@ -197,41 +262,47 @@ public class Map1 {
     });
     
     
+    
+    
+    //ImageView für Hintergrundbild
+    hintergrund.setX(0);
+    hintergrund.setY(0);
+    hintergrund.setFitHeight(bildschirmHoehe);
+    hintergrund.setFitWidth(bildschirmBreite);
+    hintergrund.setImage(hintergrundBild);
+    root.getChildren().add(hintergrund);    
+    
     //Border erstellen
-    borderwall1.setWidth(4000);
+    borderwall1.setWidth(bildschirmBreite);
     borderwall1.setHeight(1);
     borderwall1.setX(1);
     borderwall1.setY(1);
     borderwall1.setSmooth(false);
     root.getChildren().add(borderwall1);
-    borderwall1.setStroke(borderColor);
     borderListe.add(borderwall1);
     
     borderwall2.setWidth(20);
-    borderwall2.setHeight(3000);
+    borderwall2.setHeight(bildschirmHoehe);
     borderwall2.setX(bildschirmBreite-1);
     borderwall2.setY(1);
     borderwall2.setSmooth(false);
     root.getChildren().add(borderwall2);
-    borderwall2.setStroke(borderColor);
     borderListe.add(borderwall2);
     
-    borderwall3.setWidth(4000);
+    borderwall3.setWidth(bildschirmBreite);
     borderwall3.setHeight(20);
     borderwall3.setX(0);
     borderwall3.setY(bildschirmHoehe-1);
     borderwall3.setSmooth(false);
     root.getChildren().add(borderwall3);
-    borderwall3.setStroke(borderColor);
     borderListe.add(borderwall3);
     
     borderwall4.setWidth(1);
-    borderwall4.setHeight(3000);
+    borderwall4.setHeight(bildschirmHoehe);
     borderwall4.setX(1);
     borderwall4.setY(1);
     borderwall4.setSmooth(false);
     root.getChildren().add(borderwall4);
-    borderwall4.setStroke(borderColor);
     borderListe.add(borderwall4);
     
     //Anfang Wände
@@ -254,6 +325,8 @@ public class Map1 {
     wandListe.add(wall2);
     //Ende Wände
     
+    
+    
     //Panzer erstellen
     panzer.setX(70);
     panzer.setY(300);
@@ -261,8 +334,6 @@ public class Map1 {
     panzer.setFitHeight(125);
     panzer.setImage(panzerImage);
     root.getChildren().add(panzer);
-    
-    stage.setResizable(false);
     
     //Turret erstellen
     turret.setX(68);
@@ -316,8 +387,8 @@ public class Map1 {
     stage.show();
   } // end of public Map1
   
-  public void schussErstellen(ImageView panzer, ImageView turret){
-    shot = new ImageView();
+  public ImageView schussErstellen(ImageView panzer, ImageView turret){
+    ImageView shot = new ImageView();
     Image shotImage = new Image(getClass().getResourceAsStream("images/bullet.png"));
     shot.setX(panzer.getX() + (panzer.getFitWidth()/2) - 40);
     shot.setY(panzer.getY() + (panzer.getFitHeight()/2) - 15);
@@ -325,20 +396,33 @@ public class Map1 {
     shot.setFitWidth(80);
     shot.setRotate(turret.getRotate());
     shot.setImage(shotImage);
-    //root.getChildren().add(shot);
-    addSchuss(shot);
+    return shot;
   }
   
-  public void addSchuss(ImageView schuss){
-    schussListe.add(schuss);
+  public ImageView gegnerSchussErstellen(ImageView gegner, ImageView gegnerTurret){
+    ImageView shot = new ImageView();
+    Image shotImage = new Image(getClass().getResourceAsStream("images/bullet.png"));
+    shot.setX(gegner.getX() + (gegner.getFitWidth()/2) - 40);
+    shot.setY(gegner.getY() + (gegner.getFitHeight()/2) - 15);
+    shot.setFitHeight(30);
+    shot.setFitWidth(80);
+    shot.setRotate(gegnerTurret.getRotate());
+    shot.setImage(shotImage);
+    return shot;
+  }
+  
+  public void addSchuss(ImageView schuss, Schuss schussObjekt){
+    schuesse.add(schuss);
+    schussDaten.put(schuss, schussObjekt);
   }
   
   public void removeSchuss(ImageView schuss){
-    schussListe.remove(schuss);
+    schuesse.remove(schuss);
+    schussDaten.remove(schuss);
   }
   
   public void bRestart_Action(Event evt) {
-    initialize(stage1);
+    //initialize(stage1);
     
   }
   

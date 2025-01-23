@@ -1,5 +1,4 @@
 object FGUIForm: TFXGuiForm
-  Tag = 180
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
@@ -13,13 +12,12 @@ object FGUIForm: TFXGuiForm
   Font.Name = 'Segoe UI'
   Font.Style = []
   FormStyle = fsStayOnTop
+  OldCreateOrder = True
   Position = poDesigned
   Visible = True
-  OnAfterMonitorDpiChanged = FormAfterMonitorDpiChanged
-  OnBeforeMonitorDpiChanged = FormBeforeMonitorDpiChanged
+  OnCanResize = FormCanResize
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
-  OnCreate = FormCreate
   OnMouseActivate = FormMouseActivate
   OnResize = FormResize
   FrameType = 8
@@ -110,7 +108,5 @@ object FGUIForm: TFXGuiForm
     action = 'startenButton_Action'
     CancelButton = False
     DefaultButton = False
-  end
-  object GNUgettextMarker: TGnuGettextComponentMarker
   end
 end

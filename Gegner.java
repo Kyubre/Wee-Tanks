@@ -30,27 +30,21 @@ public class Gegner {
     this.FARBE = i_Farbe;
     this.nachgeladen = false;
     started = false;
-    s2 = new Schuss(gegnerTurret);
   }
   
   public boolean getUpdate(){
     return update;
   }
   
+  
+  
   public void setAlive(boolean neu){
     isAlive = neu;
+    update = neu;
   }
   
   public boolean getAlive(){
     return isAlive;
-  }
-    
-  public boolean trefferCheck(ImageView schuss, ImageView player){
-    //Überprüfung, ob der Schuss mit dem Spieler kollidiert
-    if (schuss.intersects(player.getBoundsInParent())) {
-      return true;
-    }
-    return false;
   }
   
   public void start(ImageView gegner, ImageView gegnerTurret, ImageView spieler, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
@@ -157,6 +151,7 @@ public class Gegner {
   }
      
   public void idlen(ImageView gegnerTurret){
+    update = false;
     int nullOderEins = 1;
     if (gegnerTurret.getRotate()%50 == 0) {
       Random random = new Random();
