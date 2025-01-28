@@ -12,9 +12,9 @@ public class Schuss{
   private double geschwindigkeitX;
   private double geschwindigkeitY;
   private boolean istSpieler;
+  private int bounces;
    
   public Schuss(ImageView schuetzeTurret, boolean spieler){
-    //Temporäre Zahlen um Vektoren in X und Y Richtung auszurechnen
     double radiant = Math.toRadians(schuetzeTurret.getRotate());
     double vektorX = Math.cos(radiant);
     double vektorY = Math.sin(radiant);
@@ -22,6 +22,7 @@ public class Schuss{
     this.istSpieler = spieler;
     this.geschwindigkeitX = (vektorX / pythagoras) * SPEED;     
     this.geschwindigkeitY = (vektorY / pythagoras) * SPEED;
+    this.bounces = 0;
   }
   
   public boolean getSpieler(){
@@ -30,52 +31,127 @@ public class Schuss{
 
   
   public boolean kollisionsCheck(ImageView schussBild, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
-    //Überprüfung, ob der Schuss mit den Wänden kollidiert
     for (ImageView wand : wandListe) {
-      if (schussBild.intersects(wand.getBoundsInParent())) {
-        return true;
+      if (schussBild.intersects(wand.getBoundsInParent()) && bounces < 3) {
+        if(wand.getBoundsInParent().getWidth() > wand.getBoundsInParent().getHeight()) {
+          geschwindigkeitX = -geschwindigkeitX; // Invertiere X-Geschwindigkeit
+          bounces++;
+          System.out.println(bounces);
+          return true;
+        } 
+        if(wand.getBoundsInParent().getWidth() < wand.getBoundsInParent().getHeight()) {
+          geschwindigkeitY = -geschwindigkeitY; // Invertiere Y-Geschwindigkeit
+          bounces++;
+          System.out.println(bounces);
+          return true;
+        }
+        return false;
       }
     }
     
     for (Rectangle border : borderListe) {
-      if (schussBild.intersects(border.getBoundsInParent())) {
-        return true;
+      if (schussBild.intersects(border.getBoundsInParent()) && bounces < 3) {
+        if (border.getWidth() > border.getHeight()) {
+          geschwindigkeitX = -geschwindigkeitX; // Invertiere X-Geschwindigkeit
+          bounces++;
+          System.out.println(bounces);
+          return true;
+        } 
+        if(border.getWidth() < border.getHeight()) {
+          System.out.println(geschwindigkeitY);
+          geschwindigkeitY = -geschwindigkeitY; // Invertiere Y-Geschwindigkeit
+          System.out.println(geschwindigkeitY);
+          bounces++;
+          System.out.println(bounces);
+          return true;
+        }
+        
       }
     }
     
     return false;
   }
-  
-  public boolean trefferCheck(ImageView schussBild, ImageView player){
-    //Überprüfung, ob der Schuss mit dem Spieler kollidiert
-    //    schussBild.setX(schussBild.getX() + geschwindigkeitX);
-    //    schussBild.setY(schussBild.getY() + geschwindigkeitY);    
+  public int getBounces() {
+    return bounces;
+  }
+
+  public boolean trefferCheck(ImageView schussBild, ImageView player){ 
     if (schussBild.intersects(player.getBoundsInParent())) {
       return true;
     }
     return false;
   }
   
-//  public boolean schiessenGegner(ImageView gegner, ImageView gegnerTurret, ImageView spieler){
-//    //Rotation in Grad umwandeln in Radiant
-//    double radiant = Math.toRadians(gegnerTurret.getRotate());
-//    //Sinus und Cosinus benutzen um Radiant in X & Y Vektoren umzurechnen
-//    double vektorX = Math.cos(radiant);
-//    double vektorY = Math.sin(radiant);
-//    //Satz des Pythagoras (A^2 + B^2 = C^2) anwenden um Vektoren X^2 & Y^2 zu Z^2 zu machen
-//    //Math.sqrt berechnet automatisch die Quadratwurzel aus der Rechnung (C^2 bzw. Z^2 wird zu C bzw. Z)
-//    double pythagoras = Math.sqrt(vektorX * vektorX + vektorY * vektorY);
-//    //Geschwindigkeit berechnen mit anpassbaren Werten
-//    this.geschwindigkeitX = (vektorX / pythagoras) * SPEED;     
-//    this.geschwindigkeitY = (vektorY / pythagoras) * SPEED;     
-//    //false wird in Map1 für den boolean "Kollision" eingesetzt
-//    return false;
-//  }
-  
-  public void fliegen(ImageView schussBild){
-    schussBild.setX(schussBild.getX()+this.geschwindigkeitX);
-    schussBild.setY(schussBild.getY()+this.geschwindigkeitY);
+  public void fliegen(ImageView schussBild, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
+    double deltaX = this.geschwindigkeitX;
+    double deltaY = this.geschwindigkeitY;
+    
+    double testX = schussBild.getX() + deltaX;
+    double testY = schussBild.getY() + deltaY;
+    
+    if (!kollisionsCheckVirtuell(testX, testY, schussBild, wandListe, borderListe)) {
+      schussBild.setX(schussBild.getX() + deltaX);
+      schussBild.setY(schussBild.getY() + deltaY);
+    } else {
+      System.out.println("Kollision erkannt, Schuss wird invertiert!");
+      reflektiereSchuss(schussBild, wandListe, borderListe);
+      bounces++;
+      System.out.println(bounces);
+    }
   }
 
+  private void reflektiereSchuss(ImageView schussBild, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
+    double testX = schussBild.getX() + geschwindigkeitX;
+    double testY = schussBild.getY() + geschwindigkeitY;
+    
+    boolean kollisionX = kollisionsCheckVirtuell(testX, schussBild.getY(), schussBild, wandListe, borderListe);
+    boolean kollisionY = kollisionsCheckVirtuell(schussBild.getX(), testY, schussBild, wandListe, borderListe);
+    if (kollisionX) {
+      this.geschwindigkeitX = -this.geschwindigkeitX;
+      double neuerWinkel = berechneReflexionswinkel(schussBild.getRotate(), true);  // true für X-Achse
+      schussBild.setRotate(neuerWinkel);
+    }
+    
+    if (kollisionY) {
+      this.geschwindigkeitY = -this.geschwindigkeitY;
+      double neuerWinkel = berechneReflexionswinkel(schussBild.getRotate(), false);  // false für Y-Achse
+      schussBild.setRotate(neuerWinkel);
+    }
+  }
 
+  private double berechneReflexionswinkel(double aktuellerWinkel, boolean isXDirection) {
+    double winkel = Math.toRadians(aktuellerWinkel);
+    double vektorX = Math.cos(winkel);
+    double vektorY = Math.sin(winkel);
+    
+    double normalX = isXDirection ? 1 : 0;  // X-Achse (vertikale Wand)
+    double normalY = isXDirection ? 0 : 1;  // Y-Achse (horizontale Wand)
+    
+    double dotProduct = vektorX * normalX + vektorY * normalY;
+    
+    double reflektierterX = vektorX - 2 * dotProduct * normalX;
+    double reflektierterY = vektorY - 2 * dotProduct * normalY;
+    
+    double neuerWinkel = Math.toDegrees(Math.atan2(reflektierterY, reflektierterX));
+    if (neuerWinkel < 0) {
+      neuerWinkel += 360;
+    }
+    return neuerWinkel;
+  }
+
+  private boolean kollisionsCheckVirtuell(double testX, double testY, ImageView schussBild, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
+    Rectangle virtualRectangle = new Rectangle(testX, testY, schussBild.getBoundsInLocal().getWidth(), schussBild.getBoundsInLocal().getHeight());
+    for (ImageView wand : wandListe) {
+      if (virtualRectangle.intersects(wand.getBoundsInParent())) {
+        return true;  // Kollision mit Wand
+      }
+    }// Überprüfe, ob der Schuss in der virtuellen Position mit einem Border kollidiert
+    
+    for (Rectangle border : borderListe) {
+      if (virtualRectangle.intersects(border.getBoundsInParent())) {
+        return true;  // Kollision mit Border
+      }
+    }
+    return false; // Keine Kollision erkannt
+  }
 }

@@ -84,7 +84,7 @@ public class Map1 {
             @Override
             public void handle(long now2) {
               if (fpsLimiter.canRender(now2)) {
-                sGegner.fliegen(gegnerSchuss);
+                sGegner.fliegen(gegnerSchuss, wandListe, borderListe);
                 boolean treffer = sGegner.trefferCheck(gegnerSchuss, panzer);
                 if (treffer == true) {
                   this.stop();
@@ -103,8 +103,9 @@ public class Map1 {
                   this.stop();
                 } // end of if
                 boolean kollision = sGegner.kollisionsCheck(gegnerSchuss, wandListe, borderListe);
-                if (kollision == true) {                                                                          
+                if (sGegner.getBounces() == 3) {                                                                          
                   this.stop();
+                  System.out.println("Schuss wurde entfernt4");
                   root.getChildren().remove(gegnerSchuss);
                   gegnerSchuss.setX(10000);
                   gegnerSchuss.setY(10000);
@@ -134,7 +135,7 @@ public class Map1 {
           for (int i = 0; i < schuesse.size(); i++) {
             ImageView schuss = schuesse.get(i);
             Schuss sObj = schussDaten.get(schuss);
-            sObj.fliegen(schuss);
+            sObj.fliegen(schuss, wandListe, borderListe);
             
             if (sObj.getSpieler()) {
               boolean treffer = sObj.trefferCheck(schuss, gegner);
@@ -153,8 +154,9 @@ public class Map1 {
               }
                           
               boolean kollision = sObj.kollisionsCheck(schuss, wandListe, borderListe);
-              if (kollision) {
+              if (sObj.getBounces() == 3) {
                 root.getChildren().remove(schuss);
+                System.out.println("Schuss wurde entfernt3");
                 removeSchuss(schuss);
                 i--;
               }
@@ -173,8 +175,9 @@ public class Map1 {
               }
               
               boolean kollision = sObj.kollisionsCheck(schuss, wandListe, borderListe);
-              if (kollision) {
+              if (sObj.getBounces() == 3 ) {
                 root.getChildren().remove(schuss);
+                System.out.println("Schuss wurde entfernt2");
                 removeSchuss(schuss);
                 i--;
               }
@@ -213,7 +216,7 @@ public class Map1 {
           @Override
           public void handle(long now) {
             if (fpsLimiter.canRender(now)) {
-              sPlayer.fliegen(schussNeu);
+              sPlayer.fliegen(schussNeu, wandListe, borderListe);
               boolean treffer = sPlayer.trefferCheck(schussNeu, gegner);
               if (treffer == true) {
                 this.stop();
@@ -236,10 +239,11 @@ public class Map1 {
               } // end of if
               //ArrayList gemacht, muss angepasst werden!
               boolean kollision = sPlayer.kollisionsCheck(schussNeu, wandListe, borderListe);
-              if (kollision == true) {
+              if (sPlayer.getBounces() == 3 ) {
                 this.stop();
                 root.getChildren().remove(schussNeu);
                 removeSchuss(schussNeu);
+                System.out.println("Schuss wurde entfernt");
                 schussNeu.setX(10000);
                 schussNeu.setY(10000);
                 this.stop();
@@ -309,7 +313,7 @@ public class Map1 {
     wall1.setX(620);
     wall1.setY(150);
     wall1.setFitWidth(120);
-    wall1.setFitHeight(400);
+    wall1.setFitHeight(800);
     wall1.setSmooth(false);
     wall1.setImage(wandImage);
     root.getChildren().add(wall1);
@@ -318,7 +322,7 @@ public class Map1 {
     wall2.setX(520);
     wall2.setY(150);
     wall2.setFitWidth(110);
-    wall2.setFitHeight(400);
+    wall2.setFitHeight(800);
     wall2.setSmooth(false);
     wall2.setImage(wandImage);
     root.getChildren().add(wall2);
@@ -330,30 +334,30 @@ public class Map1 {
     //Panzer erstellen
     panzer.setX(70);
     panzer.setY(300);
-    panzer.setFitWidth(150);
-    panzer.setFitHeight(125);
+    panzer.setFitWidth(100);
+    panzer.setFitHeight(75);
     panzer.setImage(panzerImage);
     root.getChildren().add(panzer);
     
-    //Turret erstellen
+    //Turret erstellen 
     turret.setX(68);
-    turret.setY(310);
-    turret.setFitWidth(150);
-    turret.setFitHeight(100);
+    turret.setY(293);
+    turret.setFitWidth(110);
+    turret.setFitHeight(90);
     turret.setImage(turretImage);
     root.getChildren().add(turret);
     
     gegner.setX(870);
     gegner.setY(310);
-    gegner.setFitWidth(180);
-    gegner.setFitHeight(120);
+    gegner.setFitWidth(100);
+    gegner.setFitHeight(75);
     gegner.setImage(gegnerImage);
     root.getChildren().add(gegner);
     
-    gegnerTurret.setX(868);
-    gegnerTurret.setY(320);
-    gegnerTurret.setFitWidth(150);
-    gegnerTurret.setFitHeight(100);
+    gegnerTurret.setX(860);
+    gegnerTurret.setY(302);
+    gegnerTurret.setFitWidth(110);
+    gegnerTurret.setFitHeight(90);
     gegnerTurret.setRotate(180);
     gegnerTurret.setImage(gegnerTurretImage);
     root.getChildren().add(gegnerTurret);
@@ -370,7 +374,7 @@ public class Map1 {
     root.getChildren().add(bRestart);
     bRestart.setVisible(false);
     
-    bExit.setLayoutX(1120);
+    bExit.setLayoutX(bildschirmBreite - 80);
     bExit.setLayoutY(0);
     bExit.setPrefHeight(24);
     bExit.setPrefWidth(80);
