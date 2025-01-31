@@ -19,4 +19,4 @@ Ein PvE- oder PvP Spiel für ein Schulprojekt, in dem die Spieler Panzer steuern
 ## Repo klonen:
 
    ```bash
-   git clone https://github.com/xJannikXD/Wee-Tanks
+   git clone https://github.com/Kyubre/Wee-Tanks
