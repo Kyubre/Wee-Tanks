@@ -38,11 +38,11 @@ public class Map1 {
   private ImageView wall2 = new ImageView();
   private Image wandImage = new Image(getClass().getResourceAsStream("images/placeholder.png"));
   private ImageView panzer = new ImageView();
-  private Image panzerImage = new Image(getClass().getResourceAsStream("images/panzer.gif"));
+  private Image panzerImage = new Image(getClass().getResourceAsStream("images/panzer.png"));
   private ImageView turret = new ImageView();
   private Image turretImage = new Image(getClass().getResourceAsStream("images/Turret.png"));
   private ImageView gegner = new ImageView();
-  private Image gegnerImage = new Image(getClass().getResourceAsStream("images/Panzer.gif"));
+  private Image gegnerImage = new Image(getClass().getResourceAsStream("images/Panzer.png"));
   private ImageView gegnerTurret = new ImageView();
   private Image gegnerTurretImage = new Image(getClass().getResourceAsStream("images/turret.png"));
   private boolean istNachgeladen = true;
@@ -334,30 +334,30 @@ public class Map1 {
     //Panzer erstellen
     panzer.setX(70);
     panzer.setY(300);
-    panzer.setFitWidth(100);
-    panzer.setFitHeight(75);
+    panzer.setFitWidth(111);
+    panzer.setFitHeight(71);
     panzer.setImage(panzerImage);
     root.getChildren().add(panzer);
     
     //Turret erstellen 
-    turret.setX(68);
-    turret.setY(293);
-    turret.setFitWidth(110);
-    turret.setFitHeight(90);
+    turret.setX(80);
+    turret.setY(310);
+    turret.setFitWidth(104);
+    turret.setFitHeight(50);
     turret.setImage(turretImage);
     root.getChildren().add(turret);
     
     gegner.setX(870);
     gegner.setY(310);
-    gegner.setFitWidth(100);
-    gegner.setFitHeight(75);
+    gegner.setFitWidth(111);
+    gegner.setFitHeight(71);
     gegner.setImage(gegnerImage);
     root.getChildren().add(gegner);
     
     gegnerTurret.setX(860);
     gegnerTurret.setY(302);
-    gegnerTurret.setFitWidth(110);
-    gegnerTurret.setFitHeight(90);
+    gegnerTurret.setFitWidth(104);
+    gegnerTurret.setFitHeight(50);
     gegnerTurret.setRotate(180);
     gegnerTurret.setImage(gegnerTurretImage);
     root.getChildren().add(gegnerTurret);
