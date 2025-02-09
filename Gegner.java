@@ -78,20 +78,21 @@ public class Gegner {
               break;
             case  "grün": 
               if(isAlive){
-                if (!siehtSpieler(spieler, gegner, wandListe)) {
-                  //Fahren (Suchen) Methode
-                  //Turret Idle Methode (Maybe direkt in Suchen Methode einbauen)
+                if (siehtSpieler(spieler, gegner, wandListe)) {
+                  siehtSpieler(spieler, gegner, wandListe);
+                  schießen(gegner, gegnerTurret, spieler);
                 }
                 
                 else {
-                  //Fight Methode (Schiessen Methode MAYBE mit hinter Cover fahren oder generell moven)
+                  idleFahren(gegner, gegnerTurret);
+                  idlen(gegnerTurret);
                 }
               }
               
               break;
             case  "indigo":
               if (isAlive) { 
-                if (!siehtSpieler(spieler, gegner, wandListe)) {
+                if (siehtSpieler(spieler, gegner, wandListe)) {
                   //Irgendwas besonderes idk
                 }
                 
@@ -123,15 +124,25 @@ public class Gegner {
     //Mathe um den Winkel zu bekommen
     double deltaX = spieler.getX() - gegner.getX();
     double deltaY = spieler.getY() - gegner.getY();
-    double winkel = Math.toDegrees(Math.atan2(deltaY, deltaX));
-    if(gegnerTurret.getRotate()%360 <= winkel-2 || gegnerTurret.getRotate()%360 >= winkel+2) {
-      if(gegnerTurret.getRotate()%360 < winkel) {
-        gegnerTurret.setRotate(gegnerTurret.getRotate()+1);
-      }
-      else if(gegnerTurret.getRotate()%360 > winkel) {
-        gegnerTurret.setRotate(gegnerTurret.getRotate()-1);
-      }
+    double zielWinkel = Math.toDegrees(Math.atan2(deltaY, deltaX));
+    
+    // Aktuelle Rotation des Turrets
+    double aktuelleRotation = gegnerTurret.getRotate() % 360;
+    if (aktuelleRotation < 0) aktuelleRotation += 360; // Sicherstellen, dass der Wert positiv ist
+    
+    // Berechnung der kürzesten Drehung
+    double differenz = zielWinkel - aktuelleRotation;
+    if (differenz > 180) {
+      differenz -= 360;
+    } else if (differenz < -180) {
+      differenz += 360;
     }
+    
+    // Drehe in die kürzere Richtung
+    if (Math.abs(differenz) > 2) {
+      gegnerTurret.setRotate(gegnerTurret.getRotate() + Math.signum(differenz));
+    }
+    
     
     else {
       PauseTransition nachladen = new PauseTransition(Duration.seconds(2.5));
@@ -165,7 +176,30 @@ public class Gegner {
       gegnerTurret.setRotate(gegnerTurret.getRotate() -1);
     }  
   }
+  
 
 
-
-}
+  public void idleFahren(ImageView gegner, ImageView gegnerTurret) {
+    Random random = new Random(); 
+    int randomDirection = random.nextInt(4); 
+    if (randomDirection == 0){
+      gegner.setX(gegner.getX() + 1);
+      gegnerTurret.setX(gegnerTurret.getX() + 1);
+    }
+    
+    else if (randomDirection == 1){
+      gegner.setY(gegner.getY() + 1);
+      gegnerTurret.setY(gegnerTurret.getY() + 1);
+    }
+    
+    else if (randomDirection == 2){
+      gegner.setX(gegner.getX() - 1);
+      gegnerTurret.setX(gegnerTurret.getX() - 1);
+    }
+    
+    else{
+      gegner.setY(gegner.getY() - 1);
+      gegnerTurret.setY(gegnerTurret.getY() - 1);
+    }
+  }
+} 

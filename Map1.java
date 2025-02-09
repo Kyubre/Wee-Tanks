@@ -48,7 +48,7 @@ public class Map1 {
   private boolean istNachgeladen = true;
   private boolean gegnerNachgeladen = true;
   private Player p1 = new Player(panzer, turret);
-  private Gegner g1 = new Gegner("rot", gegnerTurret);
+  private Gegner g1 = new Gegner("grün", gegnerTurret);
   private ArrayList<ImageView> schuesse = new ArrayList<ImageView>();
   private HashMap<ImageView, Schuss> schussDaten = new HashMap<>();
   private ArrayList<ImageView> wandListe = new ArrayList<ImageView>();
@@ -100,12 +100,10 @@ public class Map1 {
                   g1.setAlive(false);
                   //Verloren Image einfügen, Restart Button einfügen
                   bRestart.setVisible(true);
-                  this.stop();
                 } // end of if
                 boolean kollision = sGegner.kollisionsCheck(gegnerSchuss, wandListe, borderListe);
                 if (sGegner.getBounces() == 3) {                                                                          
                   this.stop();
-                  System.out.println("Schuss wurde entfernt4");
                   root.getChildren().remove(gegnerSchuss);
                   gegnerSchuss.setX(10000);
                   gegnerSchuss.setY(10000);
@@ -156,7 +154,6 @@ public class Map1 {
               boolean kollision = sObj.kollisionsCheck(schuss, wandListe, borderListe);
               if (sObj.getBounces() == 3) {
                 root.getChildren().remove(schuss);
-                System.out.println("Schuss wurde entfernt3");
                 removeSchuss(schuss);
                 i--;
               }
@@ -177,7 +174,6 @@ public class Map1 {
               boolean kollision = sObj.kollisionsCheck(schuss, wandListe, borderListe);
               if (sObj.getBounces() == 3 ) {
                 root.getChildren().remove(schuss);
-                System.out.println("Schuss wurde entfernt2");
                 removeSchuss(schuss);
                 i--;
               }
@@ -243,7 +239,6 @@ public class Map1 {
                 this.stop();
                 root.getChildren().remove(schussNeu);
                 removeSchuss(schussNeu);
-                System.out.println("Schuss wurde entfernt");
                 schussNeu.setX(10000);
                 schussNeu.setY(10000);
                 this.stop();
@@ -340,7 +335,7 @@ public class Map1 {
     root.getChildren().add(panzer);
     
     //Turret erstellen 
-    turret.setX(80);
+    turret.setX(70);
     turret.setY(310);
     turret.setFitWidth(104);
     turret.setFitHeight(50);
@@ -354,8 +349,8 @@ public class Map1 {
     gegner.setImage(gegnerImage);
     root.getChildren().add(gegner);
     
-    gegnerTurret.setX(860);
-    gegnerTurret.setY(302);
+    gegnerTurret.setX(875);
+    gegnerTurret.setY(320);
     gegnerTurret.setFitWidth(104);
     gegnerTurret.setFitHeight(50);
     gegnerTurret.setRotate(180);
