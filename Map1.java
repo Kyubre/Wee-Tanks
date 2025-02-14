@@ -22,45 +22,45 @@ import javafx.application.Platform;
 import javafx.stage.Screen;
 import java.util.HashMap;
 
-
-
 public class Map1 {
-  // Anfang Attribute
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
   private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();  
-  private Rectangle borderwall1 = new Rectangle();
-  private Rectangle borderwall2 = new Rectangle();
-  private Rectangle borderwall3 = new Rectangle();
-  private Rectangle borderwall4 = new Rectangle();
-  private ImageView hintergrund = new ImageView();
-  private Image hintergrundBild = new Image(getClass().getResourceAsStream("images/bg.png"));
-  private ImageView wall1 = new ImageView();
-  private ImageView wall2 = new ImageView();
-  private Image wandImage = new Image(getClass().getResourceAsStream("images/placeholder.png"));
-  private ImageView panzer = new ImageView();
-  private Image panzerImage = new Image(getClass().getResourceAsStream("images/panzer.png"));
   private ImageView turret = new ImageView();
   private Image turretImage = new Image(getClass().getResourceAsStream("images/Turret.png"));
-  private ImageView gegner = new ImageView();
+  private ImageView gegner;
   private Image gegnerImage = new Image(getClass().getResourceAsStream("images/Panzer.png"));
   private ImageView gegnerTurret = new ImageView();
   private Image gegnerTurretImage = new Image(getClass().getResourceAsStream("images/turret.png"));
   private boolean istNachgeladen = true;
   private boolean gegnerNachgeladen = true;
-  private Player p1 = new Player(panzer, turret);
-  private Gegner g1 = new Gegner("grün", gegnerTurret);
   private ArrayList<ImageView> schuesse = new ArrayList<ImageView>();
   private HashMap<ImageView, Schuss> schussDaten = new HashMap<>();
-  private ArrayList<ImageView> wandListe = new ArrayList<ImageView>();
-  private ArrayList<Rectangle> borderListe = new ArrayList<Rectangle>();
+  private ArrayList<ImageView> wandListe;
+  private ArrayList<Rectangle> borderListe;
   private Button bExit = new Button();
   private Button bRestart = new Button();
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
-  // Ende Attribute
+  private MapGeneration generation;
+  private ImageView panzer;
+  private Player p1;
+  private Gegner g1;
+  private Pane root;
+  private Stage stage1;
+  private static int level;
   
-  public void initialize(Stage stage) { 
-    Pane root = new Pane();
+  public void initialize(Stage stage) {
+    level++;
+    stage1 = stage;
+    generation = new MapGeneration();
+    root = new Pane();
+    root = generation.generateMap(root);
     Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
+    wandListe = generation.getWandListe();
+    borderListe = generation.getBorderListe();
+    panzer = generation.getPanzer();
+    gegner = generation.getGegner();
+    p1 = new Player(panzer, turret);
+    g1 = new Gegner("rot", generation.getGegner(), gegnerTurret);
     // Anfang Komponenten
     stage.setX(0);
     stage.setY(0);
@@ -69,6 +69,8 @@ public class Map1 {
     stage.setMaximized(false);
     stage.resizableProperty();
     stage.setFullScreenExitHint("");
+    System.out.println("Das ist Level: " + level);
+    g1.start(gegner, gegnerTurret, panzer, wandListe, borderListe);
     
     AnimationTimer gameplayLoop = new AnimationTimer(){
       @Override
@@ -185,11 +187,9 @@ public class Map1 {
     };
     schussAnimation.start();
     
-    
     scene.setOnKeyPressed((KeyEvent event) -> {;
       p1.tasteGedrueckt(event);
       p1.movement(panzer, turret, wandListe, borderListe);
-      g1.start(gegner, gegnerTurret, panzer, wandListe, borderListe);
     });
     
     scene.setOnKeyReleased((KeyEvent event) -> {;
@@ -258,100 +258,19 @@ public class Map1 {
         });  
         ;
       }
-    });
-    
-    
-    
-    
-    //ImageView für Hintergrundbild
-    hintergrund.setX(0);
-    hintergrund.setY(0);
-    hintergrund.setFitHeight(bildschirmHoehe);
-    hintergrund.setFitWidth(bildschirmBreite);
-    hintergrund.setImage(hintergrundBild);
-    root.getChildren().add(hintergrund);    
-    
-    //Border erstellen
-    borderwall1.setWidth(bildschirmBreite);
-    borderwall1.setHeight(1);
-    borderwall1.setX(1);
-    borderwall1.setY(1);
-    borderwall1.setSmooth(false);
-    root.getChildren().add(borderwall1);
-    borderListe.add(borderwall1);
-    
-    borderwall2.setWidth(20);
-    borderwall2.setHeight(bildschirmHoehe);
-    borderwall2.setX(bildschirmBreite-1);
-    borderwall2.setY(1);
-    borderwall2.setSmooth(false);
-    root.getChildren().add(borderwall2);
-    borderListe.add(borderwall2);
-    
-    borderwall3.setWidth(bildschirmBreite);
-    borderwall3.setHeight(20);
-    borderwall3.setX(0);
-    borderwall3.setY(bildschirmHoehe-1);
-    borderwall3.setSmooth(false);
-    root.getChildren().add(borderwall3);
-    borderListe.add(borderwall3);
-    
-    borderwall4.setWidth(1);
-    borderwall4.setHeight(bildschirmHoehe);
-    borderwall4.setX(1);
-    borderwall4.setY(1);
-    borderwall4.setSmooth(false);
-    root.getChildren().add(borderwall4);
-    borderListe.add(borderwall4);
-    
-    //Anfang Wände
-    wall1.setX(620);
-    wall1.setY(150);
-    wall1.setFitWidth(120);
-    wall1.setFitHeight(800);
-    wall1.setSmooth(false);
-    wall1.setImage(wandImage);
-    root.getChildren().add(wall1);
-    wandListe.add(wall1);
-    
-    wall2.setX(520);
-    wall2.setY(150);
-    wall2.setFitWidth(110);
-    wall2.setFitHeight(800);
-    wall2.setSmooth(false);
-    wall2.setImage(wandImage);
-    root.getChildren().add(wall2);
-    wandListe.add(wall2);
-    //Ende Wände
-    
-    
-    
-    //Panzer erstellen
-    panzer.setX(70);
-    panzer.setY(300);
-    panzer.setFitWidth(111);
-    panzer.setFitHeight(71);
-    panzer.setImage(panzerImage);
-    root.getChildren().add(panzer);
+    });   
     
     //Turret erstellen 
-    turret.setX(70);
-    turret.setY(310);
-    turret.setFitWidth(104);
+    turret.setX(panzer.getX());
+    turret.setY(panzer.getY());
+    turret.setFitWidth(114);
     turret.setFitHeight(50);
     turret.setImage(turretImage);
     root.getChildren().add(turret);
     
-    gegner.setX(870);
-    gegner.setY(310);
-    gegner.setFitWidth(111);
-    gegner.setFitHeight(71);
-    gegner.setImage(gegnerImage);
-    root.getChildren().add(gegner);
-    
-    gegnerTurret.setX(875);
-    gegnerTurret.setY(320);
-    gegnerTurret.setFitWidth(104);
+    gegnerTurret.setX(gegner.getX());
+    gegnerTurret.setY(gegner.getY());
+    gegnerTurret.setFitWidth(114);
     gegnerTurret.setFitHeight(50);
     gegnerTurret.setRotate(180);
     gegnerTurret.setImage(gegnerTurretImage);
@@ -367,7 +286,7 @@ public class Map1 {
     );
     bRestart.setFont(Font.font("Dialog", 32));
     root.getChildren().add(bRestart);
-    bRestart.setVisible(false);
+    bRestart.setVisible(true);
     
     bExit.setLayoutX(bildschirmBreite - 80);
     bExit.setLayoutY(0);
@@ -384,15 +303,15 @@ public class Map1 {
     stage.setTitle("Wee Tanks");
     stage.setScene(scene);
     stage.show();
-  } // end of public Map1
+  } 
   
   public ImageView schussErstellen(ImageView panzer, ImageView turret){
     ImageView shot = new ImageView();
     Image shotImage = new Image(getClass().getResourceAsStream("images/bullet.png"));
-    shot.setX(panzer.getX() + (panzer.getFitWidth()/2) - 40);
-    shot.setY(panzer.getY() + (panzer.getFitHeight()/2) - 15);
-    shot.setFitHeight(30);
-    shot.setFitWidth(80);
+    shot.setX(panzer.getX() + (panzer.getFitWidth()/2) - 10);
+    shot.setY(panzer.getY() + (panzer.getFitHeight()/2) - 3);
+    shot.setFitHeight(7);
+    shot.setFitWidth(20);
     shot.setRotate(turret.getRotate());
     shot.setImage(shotImage);
     return shot;
@@ -401,10 +320,10 @@ public class Map1 {
   public ImageView gegnerSchussErstellen(ImageView gegner, ImageView gegnerTurret){
     ImageView shot = new ImageView();
     Image shotImage = new Image(getClass().getResourceAsStream("images/bullet.png"));
-    shot.setX(gegner.getX() + (gegner.getFitWidth()/2) - 40);
-    shot.setY(gegner.getY() + (gegner.getFitHeight()/2) - 15);
-    shot.setFitHeight(30);
-    shot.setFitWidth(80);
+    shot.setX(gegner.getX() + (gegner.getFitWidth()/2) - 10);
+    shot.setY(gegner.getY() + (gegner.getFitHeight()/2) - 3);
+    shot.setFitHeight(7);
+    shot.setFitWidth(20);
     shot.setRotate(gegnerTurret.getRotate());
     shot.setImage(shotImage);
     return shot;
@@ -421,14 +340,12 @@ public class Map1 {
   }
   
   public void bRestart_Action(Event evt) {
-    //initialize(stage1);
-    
+    initialize(stage1);
+    stage1.setFullScreen(true);
+    stage1.setFullScreenExitHint("");    
   }
   
   public void bExit_Action(Event evt) {
     Platform.exit();
   }
-
-  // Ende Methoden
-} // end of class Map1
-  
+}

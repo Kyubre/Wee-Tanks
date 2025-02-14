@@ -13,9 +13,7 @@ import javafx.util.Duration;
  * Indigo(spezial): #4B0082
 */
 
-public class Gegner {
-  Schuss s2;
-  
+public class Gegner {  
   private final String FARBE;
   private boolean isAlive;
   private boolean nachgeladen;
@@ -26,7 +24,7 @@ public class Gegner {
   private boolean update = false;
   private FpsLimiter fpsLimiter = new FpsLimiter(60);  
   
-  public Gegner(String i_Farbe, ImageView gegnerTurret){
+  public Gegner(String i_Farbe, ImageView gegner, ImageView gegnerTurret){
     this.FARBE = i_Farbe;
     this.nachgeladen = false;
     started = false;
@@ -113,11 +111,11 @@ public class Gegner {
   public boolean siehtSpieler(ImageView spieler, ImageView gegner, ArrayList<ImageView> wandListe){
     linie = new Line(gegner.getX(), gegner.getY(), spieler.getX(), spieler.getY());
     for (ImageView wand : wandListe) {
-      if (!linie.intersects(wand.getBoundsInParent())) {
-        return true;
+      if (linie.intersects(wand.getBoundsInParent())) {
+        return false;
       }
     }
-    return false;
+    return true;
   }
   
   public boolean schießen(ImageView gegner, ImageView gegnerTurret, ImageView spieler){
