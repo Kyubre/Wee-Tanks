@@ -134,6 +134,10 @@ public class Hauptmenu extends Application {
     primaryStage.show();
   }
   
+  public Hauptmenu(){
+    
+  }
+
   // Anfang Methoden
   
   public static void main(String[] args) {
@@ -141,9 +145,10 @@ public class Hauptmenu extends Application {
   } 
   
   public void startenButton_Action(Event evt) {
-    Map1 map1 = new Map1();
-    map1.initialize(stage);
+    Map map = new Map();
+    map.initialize(stage);
     stage.setFullScreen(true);
+    stage.setFullScreenExitHint("");
   }
   
   public void einstellungenButton_Action(Event evt2) {

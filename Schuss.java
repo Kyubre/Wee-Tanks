@@ -36,13 +36,11 @@ public class Schuss{
         if(wand.getBoundsInParent().getWidth() > wand.getBoundsInParent().getHeight()) {
           geschwindigkeitX = -geschwindigkeitX; // Invertiere X-Geschwindigkeit
           bounces++;
-          System.out.println(bounces);
           return true;
         } 
         if(wand.getBoundsInParent().getWidth() < wand.getBoundsInParent().getHeight()) {
           geschwindigkeitY = -geschwindigkeitY; // Invertiere Y-Geschwindigkeit
           bounces++;
-          System.out.println(bounces);
           return true;
         }
         return false;
@@ -52,17 +50,13 @@ public class Schuss{
     for (Rectangle border : borderListe) {
       if (schussBild.intersects(border.getBoundsInParent()) && bounces < 3) {
         if (border.getWidth() > border.getHeight()) {
-          geschwindigkeitX = -geschwindigkeitX; // Invertiere X-Geschwindigkeit
+          geschwindigkeitX = -geschwindigkeitX; 
           bounces++;
-          System.out.println(bounces);
           return true;
         } 
         if(border.getWidth() < border.getHeight()) {
-          System.out.println(geschwindigkeitY);
-          geschwindigkeitY = -geschwindigkeitY; // Invertiere Y-Geschwindigkeit
-          System.out.println(geschwindigkeitY);
+          geschwindigkeitY = -geschwindigkeitY; 
           bounces++;
-          System.out.println(bounces);
           return true;
         }
         
@@ -93,10 +87,8 @@ public class Schuss{
       schussBild.setX(schussBild.getX() + deltaX);
       schussBild.setY(schussBild.getY() + deltaY);
     } else {
-      System.out.println("Kollision erkannt, Schuss wird invertiert!");
       reflektiereSchuss(schussBild, wandListe, borderListe);
       bounces++;
-      System.out.println(bounces);
     }
   }
 

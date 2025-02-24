@@ -27,8 +27,8 @@ public class MapGeneration extends Application {
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
   private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight(); 
   private final int abstand = 250;
-  private final int maxAnzahlBloecke = 10;
-  private final int minAnzahlBloecke = 6; 
+  private final int maxAnzahlBloecke = 12;
+  private final int minAnzahlBloecke = 8; 
   private Image vWand = new Image(getClass().getResourceAsStream("images/wall_v.png"));
   private Image hWand = new Image(getClass().getResourceAsStream("images/wall_h.png"));
   private Image panzer = new Image(getClass().getResourceAsStream("images/panzer.png"));
@@ -256,6 +256,7 @@ public class MapGeneration extends Application {
       // Setzt zufällige X / Y Koordinaten
       tank.setX(random.nextInt(availableWidth));
       tank.setY(random.nextInt(availableHeight));
+      tank.setRotate(180);
       
       overlap = false;
       for (ImageView existingWall : alleWaende) {
@@ -293,6 +294,7 @@ public class MapGeneration extends Application {
     }
     placePlayer(mapPane);
     placeGegner(mapPane);
+    placeBorder(mapPane);
     return mapPane;
   }
     
