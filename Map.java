@@ -47,6 +47,7 @@ public class Map {
   private Pane root;
   private Stage stage1;
   private static int level;
+  private boolean restart = false;
   
   public void initialize(Stage stage) {
     level++;
@@ -60,7 +61,7 @@ public class Map {
     panzer = generation.getPanzer();
     gegner = generation.getGegner();
     p1 = new Player(panzer, turret);
-    g1 = new Gegner("rot", generation.getGegner(), gegnerTurret);
+    g1 = new Gegner("grün", generation.getGegner(), gegnerTurret);
     // Anfang Komponenten
     stage.setX(0);
     stage.setY(0);
@@ -77,12 +78,9 @@ public class Map {
       @Override
       public void handle(long now){
         //Spiel vorbei
-        if(!g1.getAlive()){
-          System.out.println("handle mehtod: ");
-          System.gc();
-          PostGame postGame = new PostGame(level, true);
-          postGame.initialize(stage1);
-          this.stop();
+        if(!g1.getAlive() && restart){
+          bRestart_Action();
+          restart = true;
         }
         
         //Gegner Schuss

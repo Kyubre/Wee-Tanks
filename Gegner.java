@@ -22,7 +22,9 @@ public class Gegner {
   private boolean started;
   private Line linie;
   private boolean update = false;
-  private FpsLimiter fpsLimiter = new FpsLimiter(60);  
+  private FpsLimiter fpsLimiter = new FpsLimiter(60);
+  private int zaehler = 0;
+  private int richtung;
   
   public Gegner(String i_Farbe, ImageView gegner, ImageView gegnerTurret){
     this.FARBE = i_Farbe;
@@ -82,7 +84,7 @@ public class Gegner {
                 }
                 
                 else {
-                  idleFahren(gegner, gegnerTurret);
+                  idleFahren(gegner, gegnerTurret, wandListe, borderListe);
                   idlen(gegnerTurret);
                 }
               }
@@ -138,7 +140,7 @@ public class Gegner {
     
     // Drehe in die kürzere Richtung
     if (Math.abs(differenz) > 2) {
-      gegnerTurret.setRotate(gegnerTurret.getRotate() + Math.signum(differenz));
+      gegnerTurret.setRotate(gegnerTurret.getRotate() + Math.signum(differenz)*2);
     }
     
     
@@ -161,43 +163,62 @@ public class Gegner {
      
   public void idlen(ImageView gegnerTurret){
     update = false;
-    int nullOderEins = 1;
-    if (gegnerTurret.getRotate()%50 == 0) {
-      Random random = new Random();
-      nullOderEins = random.nextInt(2);
-    } 
-    
-    if (nullOderEins != 0) {
-      gegnerTurret.setRotate(gegnerTurret.getRotate() +1);
-    }
-    else {
-      gegnerTurret.setRotate(gegnerTurret.getRotate() -1);
-    }  
+    gegnerTurret.setRotate(gegnerTurret.getRotate() +1); 
   }
   
+  public boolean kollision(ImageView panzer, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
+    for (ImageView wand : wandListe) {
+      if (panzer.intersects(wand.getBoundsInParent())) {
+        return true;
+      }
+    }
+    
+    for (Rectangle border : borderListe) {
+      if (panzer.intersects(border.getBoundsInParent())) {
+        return true;
+      }
+    }
+    
+    return false;
+    
+  }
 
-
-  public void idleFahren(ImageView gegner, ImageView gegnerTurret) {
-    Random random = new Random(); 
-    int randomDirection = random.nextInt(4); 
-    if (randomDirection == 0){
-      gegner.setX(gegner.getX() + 1);
-      gegnerTurret.setX(gegnerTurret.getX() + 1);
+  public void idleFahren(ImageView gegner, ImageView gegnerTurret, ArrayList<ImageView> walls, ArrayList<Rectangle> borders) {
+    
+    if (zaehler > 40 * 2 || kollision(gegner, walls, borders)) {
+      Random random = new Random();
+      richtung = random.nextInt(4);
+      zaehler = 0;
     }
     
-    else if (randomDirection == 1){
-      gegner.setY(gegner.getY() + 1);
-      gegnerTurret.setY(gegnerTurret.getY() + 1);
+    switch (richtung) {
+      case 0: 
+        gegner.setX(gegner.getX() + 1);
+        gegnerTurret.setX(gegnerTurret.getX() + 1);
+        //Rotation 0
+        gegner.setRotate(0);
+        break;
+      case 1: 
+        gegner.setY(gegner.getY() + 1);
+        gegnerTurret.setY(gegnerTurret.getY() + 1);
+        //Rotation 90
+        gegner.setRotate(90);
+        break;
+      case 2: 
+        gegner.setX(gegner.getX() - 1);
+        gegnerTurret.setX(gegnerTurret.getX() - 1);
+        //Rotation 180
+        gegner.setRotate(180);
+        break;
+      case 3: 
+        gegner.setY(gegner.getY() - 1);
+        gegnerTurret.setY(gegnerTurret.getY() - 1);
+        //Rotation 270
+        gegner.setRotate(270);
+        break;
+      default: 
+        System.out.println("Fehler 42: Ungültige Richtung");  
     }
-    
-    else if (randomDirection == 2){
-      gegner.setX(gegner.getX() - 1);
-      gegnerTurret.setX(gegnerTurret.getX() - 1);
-    }
-    
-    else{
-      gegner.setY(gegner.getY() - 1);
-      gegnerTurret.setY(gegnerTurret.getY() - 1);
-    }
+    zaehler++;
   }
 } 
