@@ -1,11 +1,6 @@
 import java.util.ArrayList;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.image.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.shape.Rectangle;
-import javafx.animation.AnimationTimer;
 
 public class Schuss{
   private final double SPEED = 5;

@@ -1,14 +1,9 @@
 import java.util.ArrayList;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.image.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.animation.AnimationTimer;
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
-import javafx.event.Event;
 
 public class Player{
   private double xPos;
@@ -20,22 +15,28 @@ public class Player{
   private boolean sGedrueckt = false;
   private boolean dGedrueckt = false;
   private boolean bewegungsTimerErstellt = false;
-  private double geschwindigkeitX = 0;
-  private double geschwindigkeitY = 0;
-  private double iGeschwindigkeitX = 5;
-  private double iGeschwindigkeitY = 5;
   private final double speed = 5;
   private double panzerAltX;
   private double panzerAltY;
   private double turretAltX;
   private double turretAltY;
   private double altRotation;
+  private boolean isAlive;
 
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
   
   public Player(ImageView panzer, ImageView panzerTurret){
-
-  }           
+    isAlive = true;
+  } 
+  
+  public void setAlive(boolean neu){
+    isAlive = neu;
+  }
+  
+  public boolean getAlive(){
+    return isAlive;
+  }
+       
   
   public double turretRotation(MouseEvent evnt, ImageView panzer){
     double eventX = evnt.getX();

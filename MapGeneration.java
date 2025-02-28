@@ -7,7 +7,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Random;
-import javafx.animation.AnimationTimer;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.*;
 import javafx.stage.Screen;
@@ -20,7 +19,6 @@ public class MapGeneration extends Application {
   private Random random = new Random();
   private ArrayList<ImageView> alleWaende;
   private ArrayList<Rectangle> borderListe;
-  private final int minDistance = 200;
   private final int maxAttempts = 100;
   private final int windowWidth = 1280;
   private final int windowHeight = 720;

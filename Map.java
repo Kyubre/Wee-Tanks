@@ -1,10 +1,7 @@
 import java.util.ArrayList;
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.scene.shape.*;
-import javafx.scene.paint.*;
 import javafx.scene.control.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.*;
@@ -16,7 +13,6 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.event.*;
-import javafx.scene.text.*;
 import javafx.scene.text.Font;
 import javafx.application.Platform;
 import javafx.stage.Screen;
@@ -28,7 +24,7 @@ public class Map {
   private ImageView turret = new ImageView();
   private Image turretImage = new Image(getClass().getResourceAsStream("images/Turret.png"));
   private ImageView gegner;
-  private Image gegnerImage = new Image(getClass().getResourceAsStream("images/Panzer.png"));
+  //private Image gegnerImage = new Image(getClass().getResourceAsStream("images/Panzer.png"));
   private ImageView gegnerTurret = new ImageView();
   private Image gegnerTurretImage = new Image(getClass().getResourceAsStream("images/turret.png"));
   private boolean istNachgeladen = true;
@@ -38,7 +34,6 @@ public class Map {
   private ArrayList<ImageView> wandListe;
   private ArrayList<Rectangle> borderListe;
   private Button bExit = new Button();
-  private Button bRestart = new Button();
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
   private MapGeneration generation;
   private ImageView panzer;
@@ -70,7 +65,7 @@ public class Map {
     stage.setMaximized(false);
     stage.resizableProperty();
     stage.setFullScreenExitHint("");
-    System.out.println("Das ist Level: " + level);
+    stage.setFullScreenExitKeyCombination(null);
     g1.start(gegner, gegnerTurret, panzer, wandListe, borderListe);
     
     
@@ -78,8 +73,8 @@ public class Map {
       @Override
       public void handle(long now){
         //Spiel vorbei
-        if(!g1.getAlive() && restart){
-          bRestart_Action();
+        if(!g1.getAlive() && !restart){
+          bRestart_Action(true);
           restart = true;
         }
         
@@ -89,7 +84,6 @@ public class Map {
           root.getChildren().add(gegnerSchuss);
           Schuss sGegner = new Schuss(gegnerTurret, false);
           addSchuss(gegnerSchuss, sGegner);          
-          boolean kollision = false;
           AnimationTimer schussTimer = new AnimationTimer() {
             @Override
             public void handle(long now2) {
@@ -97,21 +91,19 @@ public class Map {
                 sGegner.fliegen(gegnerSchuss, wandListe, borderListe);
                 boolean treffer = sGegner.trefferCheck(gegnerSchuss, panzer);
                 if (treffer == true) {
-                  this.stop();
-                  root.getChildren().remove(gegnerSchuss);
-                  gegnerSchuss.setX(10000);
-                  gegnerSchuss.setY(10000);
-                  root.getChildren().remove(panzer);
-                  panzer.setX(7000);
-                  panzer.setY(7000);
-                  root.getChildren().remove(turret);
-                  turret.setX(5000);
-                  turret.setY(5000);
-                  g1.setAlive(false);
-                  //Verloren Image einfügen, Restart Button einfügen
-                  bRestart.setVisible(true);
+//                  root.getChildren().remove(gegnerSchuss);
+//                  gegnerSchuss.setX(-400);
+//                  gegnerSchuss.setY(-400);
+//                  root.getChildren().remove(panzer);
+//                  panzer.setX(-400);
+//                  panzer.setY(0);
+//                  root.getChildren().remove(turret);
+//                  turret.setX(-400);
+//                  turret.setY(-400);
+                  p1.setAlive(false);
+                  bRestart_Action(false);
                 } // end of if
-                boolean kollision = sGegner.kollisionsCheck(gegnerSchuss, wandListe, borderListe);
+                sGegner.kollisionsCheck(gegnerSchuss, wandListe, borderListe);
                 if (sGegner.getBounces() == 3) {                                                                          
                   this.stop();
                   root.getChildren().remove(gegnerSchuss);
@@ -161,7 +153,7 @@ public class Map {
                 continue;
               }
               
-              boolean kollision = sObj.kollisionsCheck(schuss, wandListe, borderListe);
+              sObj.kollisionsCheck(schuss, wandListe, borderListe);
               if (sObj.getBounces() == 3) {
                 root.getChildren().remove(schuss);
                 removeSchuss(schuss);
@@ -181,7 +173,7 @@ public class Map {
                 continue;
               }
               
-              boolean kollision = sObj.kollisionsCheck(schuss, wandListe, borderListe);
+              sObj.kollisionsCheck(schuss, wandListe, borderListe);
               if (sObj.getBounces() == 3 ) {
                 root.getChildren().remove(schuss);
                 removeSchuss(schuss);
@@ -236,13 +228,9 @@ public class Map {
                 gegnerTurret.setY(5000);
                 g1.setAlive(false);
                 //Gewonnen Image einfügen, Restart Button einfügen
-                //bRestart.setVisible(true);
-                this.stop();
-                gameplayLoop.stop();
                 
               } // end of if
-              //ArrayList gemacht, muss angepasst werden!
-              boolean kollision = sPlayer.kollisionsCheck(schussNeu, wandListe, borderListe);
+              sPlayer.kollisionsCheck(schussNeu, wandListe, borderListe);
               if (sPlayer.getBounces() == 3 ) {
                 this.stop();
                 root.getChildren().remove(schussNeu);
@@ -284,34 +272,17 @@ public class Map {
     gegnerTurret.setImage(gegnerTurretImage);
     root.getChildren().add(gegnerTurret);
     
-    bRestart.setLayoutX(600);
-    bRestart.setLayoutY(600);
-    bRestart.setPrefHeight(48);
-    bRestart.setPrefWidth(160);
-    bRestart.setText("Restart");
-    bRestart.setOnAction(
-    (event) -> {bRestart_Action();} 
-    );
-    bRestart.setFont(Font.font("Dialog", 32));
-    root.getChildren().add(bRestart);
-    bRestart.setVisible(true);
-    
-    bExit.setLayoutX(bildschirmBreite - 80);
-    bExit.setLayoutY(0);
-    bExit.setPrefHeight(24);
-    bExit.setPrefWidth(80);
-    bExit.setText("Exit");
-    bExit.setOnAction(
-    (event) -> {bExit_Action(event);} 
-    );
-    bExit.setFont(Font.font("Dialog", 16));
-    root.getChildren().add(bExit);
     // Ende Komponenten
     stage.setOnCloseRequest(e -> System.exit(0));
     stage.setTitle("Wee Tanks");
     stage.setScene(scene);
     stage.show();
   } 
+  
+  public void resetLevel(){
+    level = 0;
+  }
+
   
   public ImageView schussErstellen(ImageView panzer, ImageView turret){
     ImageView shot = new ImageView();
@@ -347,13 +318,9 @@ public class Map {
     schussDaten.remove(schuss);
   }
   
-  public void bRestart_Action() {
-    System.gc();
-    PostGame postGame = new PostGame(level, true);
+  public void bRestart_Action(boolean win) {
+    PostGame postGame = new PostGame(level, win);
     postGame.initialize(stage1);
   }
   
-  public void bExit_Action(Event evt) {
-    Platform.exit();
-  }
 }

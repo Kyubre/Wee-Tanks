@@ -17,8 +17,6 @@ public class Gegner {
   private final String FARBE;
   private boolean isAlive;
   private boolean nachgeladen;
-  private double schussX;
-  private double schussY;
   private boolean started;
   private Line linie;
   private boolean update = false;
