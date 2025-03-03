@@ -274,6 +274,12 @@ public class MapGeneration extends Application {
         overlap = true;
       }
       
+      Gegner gTest = new Gegner("rot", tank, null);
+      if(gTest.siehtSpieler(spieler, tank, alleWaende)){
+        overlap = true;
+      }
+
+      
       if (!overlap) {
         mapPane.getChildren().add(tank);
         tank.setImage(panzer);
