@@ -4,8 +4,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.animation.AnimationTimer;
+import javafx.stage.Screen;
 
 public class Player{
+  private double multi = (Screen.getPrimary().getBounds().getWidth() / 1920);
   private double xPos;
   private double yPos;
   private double centerPosX;
@@ -15,7 +17,7 @@ public class Player{
   private boolean sGedrueckt = false;
   private boolean dGedrueckt = false;
   private boolean bewegungsTimerErstellt = false;
-  private final double speed = 5;
+  private final double speed = 5 * multi;
   private double panzerAltX;
   private double panzerAltY;
   private double turretAltX;
@@ -67,6 +69,11 @@ public class Player{
         break;
       case D: 
         dGedrueckt = true;
+        break;
+      case ESCAPE:
+        Map m = new Map();
+        //Ist noch broken
+        //m.quit();
         break;
       default: 
         break;  

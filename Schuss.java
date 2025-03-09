@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Screen;
 
 public class Schuss{
-  private final double SPEED = 5;
+  private double multi = (Screen.getPrimary().getBounds().getWidth() / 1920);
+  private final double SPEED = 5 * multi;
   private double geschwindigkeitX;
   private double geschwindigkeitY;
   private boolean istSpieler;

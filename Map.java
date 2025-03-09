@@ -18,10 +18,14 @@ import javafx.application.Platform;
 import javafx.stage.Screen;
 import java.util.HashMap;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import java.io.File;
 
 public class Map {
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
-  private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();  
+  private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();
+  private double multi = (bildschirmBreite / 1920.0);  
   private ImageView turret = new ImageView();
   private Image turretImage = new Image(getClass().getResourceAsStream("images/turret.png"));  
   private ImageView gegner;
@@ -42,7 +46,7 @@ public class Map {
   private Gegner g1;
   private Pane root;
   private Stage stage1;
-  private static int level;
+  private static int level = 0;
   private boolean restart = false;
   
   public void initialize(Stage stage) {
@@ -61,7 +65,7 @@ public class Map {
     p1 = new Player(panzer, turret);
     g1 = new Gegner(generation.getFarbe(), generation.getGegner(), gegnerTurret);
     // Anfang Komponenten
-
+    
     stage.setX(0);
     stage.setY(0);
     stage.setWidth(bildschirmBreite);
@@ -95,15 +99,6 @@ public class Map {
                 sGegner.fliegen(gegnerSchuss, wandListe, borderListe);
                 boolean treffer = sGegner.trefferCheck(gegnerSchuss, panzer);
                 if (treffer == true) {
-//                  root.getChildren().remove(gegnerSchuss);
-//                  gegnerSchuss.setX(-400);
-//                  gegnerSchuss.setY(-400);
-//                  root.getChildren().remove(panzer);
-//                  panzer.setX(-400);
-//                  panzer.setY(0);
-//                  root.getChildren().remove(turret);
-//                  turret.setX(-400);
-//                  turret.setY(-400);
                   p1.setAlive(false);
                   bRestart_Action(false);
                 } // end of if
@@ -206,6 +201,9 @@ public class Map {
     
     scene.setOnMouseClicked((event) -> {;
       if (event.getButton().equals(MouseButton.PRIMARY) && istNachgeladen == true) {
+        Media sound = new Media(new File("sounds/shoot.mp3").toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
         //Schuss wird grafisch erstellt
         ImageView schussNeu = schussErstellen(panzer, turret);
         root.getChildren().add(schussNeu);
@@ -263,15 +261,15 @@ public class Map {
     //Turret erstellen 
     turret.setX(panzer.getX()-8);
     turret.setY(panzer.getY()+12);
-    turret.setFitWidth(114);
-    turret.setFitHeight(50);
+    turret.setFitWidth(114 * multi);
+    turret.setFitHeight(50 * multi);
     turret.setImage(turretImage);
     root.getChildren().add(turret);
     
     gegnerTurret.setX(gegner.getX()-8);
     gegnerTurret.setY(gegner.getY()+12);
-    gegnerTurret.setFitWidth(114);
-    gegnerTurret.setFitHeight(50);
+    gegnerTurret.setFitWidth(114 * multi);
+    gegnerTurret.setFitHeight(50 * multi);
     gegnerTurret.setRotate(180);
     gegnerTurret.setImage(gegnerTurretImage);
     root.getChildren().add(gegnerTurret);
@@ -290,15 +288,23 @@ public class Map {
   public static int getLevel(){
     return level;
   }
-
+  
+  public void quit(){
+    level = 0;
+    Hauptmenu h = new Hauptmenu();
+    h.start(stage1);
+    stage1.setFullScreen(true);
+    stage1.setFullScreenExitHint("");  
+  }
+  
   
   public ImageView schussErstellen(ImageView panzer, ImageView turret){
     ImageView shot = new ImageView();
     Image shotImage = new Image(getClass().getResourceAsStream("images/bullet.png"));
     shot.setX(panzer.getX() + (panzer.getFitWidth()/2) - 10);
     shot.setY(panzer.getY() + (panzer.getFitHeight()/2) - 3);
-    shot.setFitHeight(7);
-    shot.setFitWidth(20);
+    shot.setFitHeight(7 * multi);
+    shot.setFitWidth(20 * multi);
     shot.setRotate(turret.getRotate());
     shot.setImage(shotImage);
     return shot;
@@ -307,10 +313,10 @@ public class Map {
   public ImageView gegnerSchussErstellen(ImageView gegner, ImageView gegnerTurret){
     ImageView shot = new ImageView();
     Image shotImage = new Image(getClass().getResourceAsStream("images/bullet.png"));
-    shot.setX(gegner.getX() + (gegner.getFitWidth()/2) - 10);
-    shot.setY(gegner.getY() + (gegner.getFitHeight()/2) - 3);
-    shot.setFitHeight(7);
-    shot.setFitWidth(20);
+    shot.setX(gegner.getX() + (gegner.getFitWidth()/2) - 11);
+    shot.setY(gegner.getY() + (gegner.getFitHeight()/2) + 4);
+    shot.setFitHeight(7 * multi);
+    shot.setFitWidth(20 * multi);
     shot.setRotate(gegnerTurret.getRotate());
     shot.setImage(shotImage);
     return shot;
@@ -330,5 +336,10 @@ public class Map {
     PostGame postGame = new PostGame(level, win);
     postGame.initialize(stage1);
   }
+  
+  public Map(){
+    
+  }
+  
   
 }
