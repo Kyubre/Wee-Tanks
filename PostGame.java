@@ -83,11 +83,15 @@ public class PostGame{
     new Map().resetLevel();
     Hauptmenu h = new Hauptmenu();
     h.start(stageTemp);
+    stageTemp.setFullScreen(true);
+    stageTemp.setFullScreenExitHint("");
   }
   
   public void nextRound_Action(Event event) {
     Map map = new Map();
     map.initialize(stageTemp);
+    stageTemp.setFullScreen(true);
+    stageTemp.setFullScreenExitHint("");
   }
   
 }

@@ -16,6 +16,15 @@ public class MapGeneration extends Application {
   private Rectangle borderwall2 = new Rectangle();
   private Rectangle borderwall3 = new Rectangle();
   private Rectangle borderwall4 = new Rectangle();
+  private ImageView hintergrund = new ImageView();  
+  private Image gegnerImage;
+  private Image gegnerTurret;
+  private Image gegner_grau = new Image(getClass().getResourceAsStream("images/panzer_grau.png"));
+  private Image gegner_lila = new Image(getClass().getResourceAsStream("images/panzer_lila.png"));
+  private Image gegner_rot = new Image(getClass().getResourceAsStream("images/panzer_rot.png"));
+  private Image turret_grau = new Image(getClass().getResourceAsStream("images/turret_grau.png"));
+  private Image turret_lila = new Image(getClass().getResourceAsStream("images/turret_lila.png"));
+  private Image turret_rot = new Image(getClass().getResourceAsStream("images/turret_rot.png"));
   private Random random = new Random();
   private ArrayList<ImageView> alleWaende;
   private ArrayList<Rectangle> borderListe;
@@ -33,6 +42,7 @@ public class MapGeneration extends Application {
   private ImageView spieler;
   private ImageView gegner;
   private Pane pane1;
+  private String farbe;
     
   public MapGeneration(){
     alleWaende = new ArrayList<>();
@@ -58,6 +68,18 @@ public class MapGeneration extends Application {
   
   public ImageView getGegner(){
     return gegner;
+  }
+  
+  public Image getColor(){
+    return gegnerImage;
+  }
+  
+  public Image getColorTurret(){
+    return gegnerTurret;
+  }
+  
+  public String getFarbe(){
+    return farbe;
   }
 
   
@@ -98,6 +120,16 @@ public class MapGeneration extends Application {
     stage.show();
     pane1 = mapPane;
   }
+  
+  public void placeHintergrund(Pane mapPane){
+    hintergrund.setX(0);
+    hintergrund.setY(0);
+    hintergrund.setFitHeight(bildschirmHoehe);
+    hintergrund.setFitWidth(bildschirmBreite);    
+    hintergrund.setImage(new Image(getClass().getResourceAsStream("images/hintergrund.png")));
+    mapPane.getChildren().add(hintergrund);
+  }
+
     
   private void placeBorder(Pane mapPane){
     borderwall1.setWidth(bildschirmBreite);
@@ -131,6 +163,7 @@ public class MapGeneration extends Application {
     borderwall4.setSmooth(false);
     mapPane.getChildren().add(borderwall4);
     borderListe.add(borderwall4);
+    
   }
   
     
@@ -237,6 +270,37 @@ public class MapGeneration extends Application {
     }
   }
   
+  private void gegnerFarbe(){
+    int level = Map.getLevel() + 1;
+    System.out.println(level);
+    if(level <=5) {
+      if(level != 5) {
+        gegnerImage = gegner_grau;
+        gegnerTurret = turret_grau;
+        farbe = "grau";
+      } else {
+        gegnerImage = gegner_rot;
+        gegnerTurret = turret_rot;
+        farbe = "rot";
+      }
+    } else if(level <= 20) {
+      if((level % 5) == 0) {
+        gegnerImage = gegner_lila;
+        gegnerTurret = turret_lila;
+        farbe = "lila";
+      } else {
+        gegnerImage = gegner_rot;
+        gegnerTurret = turret_rot;
+        farbe = "rot";
+      }
+    } else {
+      gegnerImage = gegner_lila;
+      gegnerTurret = turret_lila; 
+      farbe = "lila"; 
+    } 
+  }
+
+  
   private void placeGegner(Pane mapPane) {
     int attempts = 0;
     boolean placed = false;
@@ -292,6 +356,7 @@ public class MapGeneration extends Application {
   }
 
   public Pane generateMap(Pane mapPane) {
+    placeHintergrund(mapPane);
     int numberOfWalls = random.nextInt(maxAnzahlBloecke) + minAnzahlBloecke;
     for (int i = 0; i < numberOfWalls; i++) {
       placeWalls(mapPane);
@@ -299,6 +364,7 @@ public class MapGeneration extends Application {
     placePlayer(mapPane);
     placeGegner(mapPane);
     placeBorder(mapPane);
+    gegnerFarbe();
     return mapPane;
   }
     

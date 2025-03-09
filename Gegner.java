@@ -60,7 +60,7 @@ public class Gegner {
       public void handle(long now){
         if (fpsLimiter.canRender(now)) {
           switch (FARBE) {
-            case  "rot":
+            case  "grau":
               if(isAlive){
                 if (siehtSpieler(spieler, gegner, wandListe)) {
                   siehtSpieler(spieler, gegner, wandListe);
@@ -74,7 +74,7 @@ public class Gegner {
               
               
               break;
-            case  "grün": 
+            case  "rot": 
               if(isAlive){
                 if (siehtSpieler(spieler, gegner, wandListe)) {
                   siehtSpieler(spieler, gegner, wandListe);
@@ -88,14 +88,15 @@ public class Gegner {
               }
               
               break;
-            case  "indigo":
+            case  "lila":
               if (isAlive) { 
                 if (siehtSpieler(spieler, gegner, wandListe)) {
-                  //Irgendwas besonderes idk
+                  siehtSpieler(spieler, gegner, wandListe);
+                  schießen(gegner, gegnerTurret, spieler);
                 }
                 
                 else {
-                  //Fight Methode
+                  idlen(gegnerTurret);
                 }
               }
               break;
@@ -183,7 +184,7 @@ public class Gegner {
 
   public void idleFahren(ImageView gegner, ImageView gegnerTurret, ArrayList<ImageView> walls, ArrayList<Rectangle> borders) {
     
-    if (zaehler > 40 * 2 || kollision(gegner, walls, borders)) {
+    if (zaehler > 40 * 2) {
       Random random = new Random();
       richtung = random.nextInt(4);
       zaehler = 0;
@@ -218,5 +219,28 @@ public class Gegner {
         System.out.println("Fehler 42: Ungültige Richtung");  
     }
     zaehler++;
+    if (kollision(gegner, walls, borders)) {
+      switch (richtung) {
+        case 0: 
+          richtung = 2;
+          zaehler = 0;
+          break;
+        case 1: 
+          richtung = 3;
+          zaehler = 0;
+          break;
+        case 2: 
+          richtung = 0;
+          zaehler = 0;
+          break;
+        case 3: 
+          richtung = 1;
+          zaehler = 0;
+          break;
+        default: 
+            
+      } 
+      
+    }
   }
 } 

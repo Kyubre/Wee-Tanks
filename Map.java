@@ -17,16 +17,17 @@ import javafx.scene.text.Font;
 import javafx.application.Platform;
 import javafx.stage.Screen;
 import java.util.HashMap;
+import javafx.scene.paint.ImagePattern;
 
 public class Map {
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
   private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();  
   private ImageView turret = new ImageView();
-  private Image turretImage = new Image(getClass().getResourceAsStream("images/Turret.png"));
+  private Image turretImage = new Image(getClass().getResourceAsStream("images/turret.png"));  
   private ImageView gegner;
-  //private Image gegnerImage = new Image(getClass().getResourceAsStream("images/Panzer.png"));
   private ImageView gegnerTurret = new ImageView();
-  private Image gegnerTurretImage = new Image(getClass().getResourceAsStream("images/turret.png"));
+  private Image gegnerTurretImage;
+  private Image gegnerImage;
   private boolean istNachgeladen = true;
   private boolean gegnerNachgeladen = true;
   private ArrayList<ImageView> schuesse = new ArrayList<ImageView>();
@@ -55,9 +56,12 @@ public class Map {
     borderListe = generation.getBorderListe();
     panzer = generation.getPanzer();
     gegner = generation.getGegner();
+    gegnerTurretImage = generation.getColorTurret();
+    gegner.setImage(generation.getColor());
     p1 = new Player(panzer, turret);
-    g1 = new Gegner("grün", generation.getGegner(), gegnerTurret);
+    g1 = new Gegner(generation.getFarbe(), generation.getGegner(), gegnerTurret);
     // Anfang Komponenten
+
     stage.setX(0);
     stage.setY(0);
     stage.setWidth(bildschirmBreite);
@@ -281,6 +285,10 @@ public class Map {
   
   public void resetLevel(){
     level = 0;
+  }
+  
+  public static int getLevel(){
+    return level;
   }
 
   
