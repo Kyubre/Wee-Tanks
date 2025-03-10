@@ -14,14 +14,15 @@ import javafx.stage.Screen;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyEvent;
 
 public class Hauptmenu extends Application {
   // Anfang Attribute
-  private ImageView imageView1 = new ImageView();
-  private Image imageView1Image = new Image(getClass().getResourceAsStream("images/background.png"));
+  private ImageView hintergrund = new ImageView();
+  private Image hintergrundImage = new Image(getClass().getResourceAsStream("images/background.png"));
   private Button startenButton = new Button();
   private Button einstellungenButton = new Button();
-  private Button klasseWechselnButton = new Button();
+  private Button tutorialButton = new Button();
   private Button spielBeendenButton = new Button();
   private Stage stage;
   private StackPane stackPaneEinstellungen;
@@ -29,33 +30,32 @@ public class Hauptmenu extends Application {
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
   private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();
   private VBox einstellungen;
-  private VBox klassewechseln;
-  private Button zurueckButtonEinstellungen = new Button("Zurück");
-  private Button zurueckButtonKlassenwechsel = new Button("Zurück");
+  private ImageView tutorial;
+  private Button zurueckButton = new Button("Zurück");
+  //private Button zurueckButtonKlassenwechsel = new Button("Zurück");
   private String name = System.getProperty("user.name");
   private Label willkommen = new Label();
-
+  Pane root = new Pane();
+  Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
   // Ende Attribute
   
   public void start(Stage primaryStage) {
     stage = primaryStage;
-    Pane root = new Pane();
-    Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
     
     // Hauptmenü
-    imageView1.setX(0);
-    imageView1.setY(0);
-    imageView1.setFitWidth(bildschirmBreite);
-    imageView1.setFitHeight(bildschirmHoehe);
-    imageView1.setImage(imageView1Image);
-    root.getChildren().add(imageView1);
+    hintergrund.setX(0);
+    hintergrund.setY(0);
+    hintergrund.setFitWidth(bildschirmBreite);
+    hintergrund.setFitHeight(bildschirmHoehe);
+    hintergrund.setImage(hintergrundImage);
+    root.getChildren().add(hintergrund);
     
     willkommen.setPrefHeight(33);
     willkommen.setText("Willkommen bei Wee Tanks, " + name + ".");
     willkommen.setLayoutX(bildschirmBreite / 2 - (113 / 2) - 40);
     willkommen.setLayoutY(bildschirmHoehe / 2 - (33 / 2) - 50);
     root.getChildren().add(willkommen);
-
+    
     startenButton.setLayoutX(bildschirmBreite / 2 - (113 / 2));
     startenButton.setLayoutY(bildschirmHoehe / 2 - (33 / 2));
     startenButton.setPrefHeight(33);
@@ -64,7 +64,7 @@ public class Hauptmenu extends Application {
     startenButton.setOnAction((event) -> {startenButton_Action(event);});
     startenButton.setFont(Font.font("Dialog", 15));
     root.getChildren().add(startenButton);
-
+    
     einstellungenButton.setLayoutX(bildschirmBreite / 2 - (113 / 2));
     einstellungenButton.setLayoutY(bildschirmHoehe / 2 - (33 / 2) + 50);
     einstellungenButton.setPrefHeight(33);
@@ -72,14 +72,15 @@ public class Hauptmenu extends Application {
     einstellungenButton.setText("Einstellungen");
     einstellungenButton.setOnAction((event) -> {einstellungenButton_Action(event);});
     root.getChildren().add(einstellungenButton);
-
-    klasseWechselnButton.setLayoutX(bildschirmBreite / 2 - (113 / 2));
-    klasseWechselnButton.setLayoutY(bildschirmHoehe / 2 - (33 / 2) + 100);
-    klasseWechselnButton.setPrefHeight(33);
-    klasseWechselnButton.setPrefWidth(113);
-    klasseWechselnButton.setText("Klasse Wechseln");
-    klasseWechselnButton.setOnAction((event) -> {klasseWechselnButton_Action(event);});
-    root.getChildren().add(klasseWechselnButton);
+    
+    tutorialButton.setLayoutX(bildschirmBreite / 2 - (113 / 2));
+    tutorialButton.setLayoutY(bildschirmHoehe / 2 - (33 / 2) + 100);
+    tutorialButton.setPrefHeight(33);
+    tutorialButton.setPrefWidth(113);
+    tutorialButton.setText("Tutorial ansehen");
+    tutorialButton.setStyle("-fx-font-weight: bold; -fx-underline: true;");
+    tutorialButton.setOnAction((event) -> {tutorialButton_Action(event);});
+    root.getChildren().add(tutorialButton);
     
     spielBeendenButton.setLayoutX(bildschirmBreite / 2 - (113 / 2));
     spielBeendenButton.setLayoutY(bildschirmHoehe / 2 - (33 / 2) + 150);
@@ -88,47 +89,40 @@ public class Hauptmenu extends Application {
     spielBeendenButton.setText("Spiel Beenden");
     spielBeendenButton.setOnAction((event) -> {spielBeendenButton_Action(event);});
     root.getChildren().add(spielBeendenButton);
-
+    
+    zurueckButton.setAlignment(Pos.CENTER);
+    zurueckButton.setOnAction((event) -> zurueckButton_Action(event));
+    zurueckButton.setStyle("-fx-background-color: lightgray; -fx-text-fill: black;");
+    
     // Einstellungsmenü
     einstellungen = new VBox(100);
     einstellungen.setVisible(false);
     einstellungen.setAlignment(Pos.CENTER);
     einstellungen.setLayoutX(0);
     einstellungen.setLayoutY(0);
-
-    zurueckButtonEinstellungen.setOnAction((event) -> zurueckButton_Action(event));
-    zurueckButtonEinstellungen.setStyle("-fx-background-color: lightgray; -fx-text-fill: black;");
+    
     Slider lautstaerke = new Slider();
     lautstaerke.setMaxWidth(300);
     lautstaerke.setStyle("-fx-background-color: lightgray;");
-    einstellungen.getChildren().addAll(zurueckButtonEinstellungen, lautstaerke);
-
+    einstellungen.getChildren().addAll(zurueckButton, lautstaerke);
+    
     stackPaneEinstellungen = new StackPane();
     stackPaneEinstellungen.setAlignment(Pos.CENTER);
     stackPaneEinstellungen.setPrefSize(bildschirmBreite, bildschirmHoehe);
     stackPaneEinstellungen.setVisible(false);
     root.getChildren().add(stackPaneEinstellungen);
     stackPaneEinstellungen.getChildren().add(einstellungen);
-
-    // Klassenwechselmenü
-    klassewechseln = new VBox(100);
-    klassewechseln.setVisible(false);
-    klassewechseln.setAlignment(Pos.CENTER);
-    klassewechseln.setLayoutX(0);
-    klassewechseln.setLayoutY(0);
-
-    zurueckButtonKlassenwechsel.setOnAction((event) -> zurueckButton_Action(event));
-    Button klasseDoppelSchuss = new Button("Doppelschuss");
-    klasseDoppelSchuss.setStyle("-fx-background-color: lightgray;");
-    klassewechseln.getChildren().addAll(zurueckButtonKlassenwechsel, klasseDoppelSchuss);
-
-    stackPaneKlassen = new StackPane();
-    stackPaneKlassen.setAlignment(Pos.CENTER);
-    stackPaneKlassen.setPrefSize(bildschirmBreite, bildschirmHoehe);
-    stackPaneKlassen.setVisible(false);
-    root.getChildren().add(stackPaneKlassen);
-    stackPaneKlassen.getChildren().add(klassewechseln);
-
+    
+    // Tutorial
+    tutorial = new ImageView();
+    tutorial.setImage(new Image(getClass().getResourceAsStream("images/tutorial.png")));
+    tutorial.setX(0);
+    tutorial.setY(0);
+    tutorial.setFitHeight(bildschirmHoehe);
+    tutorial.setFitWidth(bildschirmBreite);
+    tutorial.setVisible(false);
+    root.getChildren().add(tutorial);
+    
     // Ende Komponenten
     primaryStage.setResizable(false);
     primaryStage.setWidth(bildschirmBreite);
@@ -144,8 +138,6 @@ public class Hauptmenu extends Application {
   public Hauptmenu(){
     
   }
-
-  // Anfang Methoden
   
   public static void main(String[] args) {
     launch(args);
@@ -161,36 +153,45 @@ public class Hauptmenu extends Application {
   public void einstellungenButton_Action(Event evt2) {
     stackPaneEinstellungen.setVisible(true);
     einstellungen.setVisible(true);
-    imageView1.setVisible(false);
+    hintergrund.setVisible(false);
     startenButton.setVisible(false);
     einstellungenButton.setVisible(false);
-    klasseWechselnButton.setVisible(false);
+    tutorialButton.setVisible(false);
     spielBeendenButton.setVisible(false);
+    willkommen.setVisible(false);
   }
-
-  public void klasseWechselnButton_Action(Event evt3) {
-    stackPaneKlassen.setVisible(true);
-    klassewechseln.setVisible(true);
-    imageView1.setVisible(false);
+  
+  public void tutorialButton_Action(Event evt3) {
+    tutorial.setVisible(true);
+    hintergrund.setVisible(false);
     startenButton.setVisible(false);
     einstellungenButton.setVisible(false);
-    klasseWechselnButton.setVisible(false);
+    tutorialButton.setVisible(false);
     spielBeendenButton.setVisible(false);
+    willkommen.setVisible(false);
+    //Der FullScreenExitHint wird genutzt, um kurz eine Nachricht auf dem Bildschirm gut sichtbar anzuzeigen
+    stage.setFullScreenExitHint("Drücke eine beliebige Taste um zum Hauptmenu zurück zu kehren.");
+    stage.setFullScreen(false);
+    Platform.runLater(() -> stage.setFullScreen(true));
+    //Key Listener, damit man zum Hauptmenu zurück kommt
+    scene.setOnKeyPressed(event -> zurueckButton_Action(event));
   }
   
   public void spielBeendenButton_Action(Event evt4) {
     Platform.exit();
   }
-
+  
   public void zurueckButton_Action(Event evt5) {
     stackPaneEinstellungen.setVisible(false);
-    stackPaneKlassen.setVisible(false);
     einstellungen.setVisible(false);
-    klassewechseln.setVisible(false);
-    imageView1.setVisible(true);
+    tutorial.setVisible(false);
+    hintergrund.setVisible(true);
     startenButton.setVisible(true);
     einstellungenButton.setVisible(true);
-    klasseWechselnButton.setVisible(true);
+    tutorialButton.setVisible(true);
     spielBeendenButton.setVisible(true);
+    willkommen.setVisible(true);
+    stage.setFullScreenExitHint("");    
+    stage.setFullScreen(true);
   }
 }

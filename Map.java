@@ -203,7 +203,7 @@ public class Map {
       if (event.getButton().equals(MouseButton.PRIMARY) && istNachgeladen == true) {
         Media sound = new Media(new File("sounds/shoot.mp3").toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(sound);
-        mediaPlayer.play();
+        //mediaPlayer.play();
         //Schuss wird grafisch erstellt
         ImageView schussNeu = schussErstellen(panzer, turret);
         root.getChildren().add(schussNeu);
@@ -255,6 +255,10 @@ public class Map {
           istNachgeladen = true;
         });  
         ;
+      }
+      
+      else if (event.getButton().equals(MouseButton.SECONDARY)) {
+        g1.setAlive(false);
       }
     });   
     
@@ -312,7 +316,7 @@ public class Map {
   
   public ImageView gegnerSchussErstellen(ImageView gegner, ImageView gegnerTurret){
     ImageView shot = new ImageView();
-    Image shotImage = new Image(getClass().getResourceAsStream("images/bullet.png"));
+    Image shotImage = new Image(getClass().getResourceAsStream("images/bullet_" + g1.getColor() + ".png"));
     shot.setX(gegner.getX() + (gegner.getFitWidth()/2) - 11);
     shot.setY(gegner.getY() + (gegner.getFitHeight()/2) + 4);
     shot.setFitHeight(7 * multi);

@@ -272,8 +272,7 @@ public class MapGeneration extends Application {
   }
   
   private void gegnerFarbe(){
-    int level = Map.getLevel() + 1;
-    System.out.println(level);
+    int level = Map.getLevel();
     if(level <=5) {
       if(level != 5) {
         gegnerImage = gegner_grau;
@@ -316,8 +315,8 @@ public class MapGeneration extends Application {
       int availableWidth = (int) (windowWidth - tank.getFitWidth());
       int availableHeight = (int) (windowHeight - tank.getFitHeight());
       
-      // Setzt zufällige X / Y Koordinaten
-      tank.setX(random.nextInt(availableWidth));
+      //setX generiert im rechten Viertel ein random Wert von 0 bis 1 * Größe von einem Viertel für einen random Wert im rechten Viertel
+      tank.setX((bildschirmBreite / 4) * 3 + Math.random() * (bildschirmBreite / 4) - tank.getFitWidth());
       tank.setY(random.nextInt(availableHeight));
       tank.setRotate(180);
       
@@ -327,16 +326,6 @@ public class MapGeneration extends Application {
           overlap = true;
           break;
         }
-      }
-      
-      Rectangle rechts = new Rectangle();
-      rechts.setX((bildschirmBreite/4)*3);
-      rechts.setY(0);
-      rechts.setHeight(bildschirmHoehe);
-      rechts.setWidth(bildschirmBreite/4);
-      
-      if (!tank.intersects(rechts.getBoundsInParent())) {
-        overlap = true;
       }
       
       Gegner gTest = new Gegner("rot", tank, null);
@@ -355,6 +344,7 @@ public class MapGeneration extends Application {
       attempts++;
     }
     
+    //Backup Spawn falls das Spawning nicht geht
     if (!placed) {
       tank.setX(bildschirmBreite - 150);
       tank.setY(bildschirmHoehe / 2);
@@ -374,6 +364,7 @@ public class MapGeneration extends Application {
     placeGegner(mapPane);
     placeBorder(mapPane);
     gegnerFarbe();
+    System.out.println("Level " + Map.getLevel() + " initialisiert");
     return mapPane;
   }
     

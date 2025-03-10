@@ -34,7 +34,10 @@ public class Gegner {
     return update;
   }
   
-  
+  public String getColor(){
+    return FARBE;
+  }
+
   
   public void setAlive(boolean neu){
     isAlive = neu;
