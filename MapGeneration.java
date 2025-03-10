@@ -29,11 +29,14 @@ public class MapGeneration extends Application {
   private ArrayList<ImageView> alleWaende;
   private ArrayList<Rectangle> borderListe;
   private final int maxAttempts = 100;
-  private final int windowWidth = 1280;
-  private final int windowHeight = 720;
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
-  private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight(); 
-  private final int abstand = 250;
+  private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();
+  private final double referenceWidth = 1920.0;
+  private final double referenceHeight = 1080.0;
+  private final int windowWidth = (int) (bildschirmBreite * (1280.0 / referenceWidth));
+  private final int windowHeight = (int) (bildschirmHoehe * (720.0 / referenceHeight));
+  private final int abstand = (int) (250 * (bildschirmBreite / referenceWidth));
+  private double multi = bildschirmBreite / referenceWidth;
   private final int maxAnzahlBloecke = 12;
   private final int minAnzahlBloecke = 8; 
   private Image vWand = new Image(getClass().getResourceAsStream("images/wall_v.png"));
@@ -43,7 +46,7 @@ public class MapGeneration extends Application {
   private ImageView gegner;
   private Pane pane1;
   private String farbe;
-    
+  
   public MapGeneration(){
     alleWaende = new ArrayList<>();
     borderListe = new ArrayList<>();
@@ -56,7 +59,7 @@ public class MapGeneration extends Application {
   public ArrayList<Rectangle> getBorderListe(){
     return borderListe;
   }
-
+  
   
   public Pane getMap(){
     return pane1;
@@ -81,13 +84,13 @@ public class MapGeneration extends Application {
   public String getFarbe(){
     return farbe;
   }
-
+  
   
   @Override
   public void start(Stage stage) {
     initialize(stage);
   }
-    
+  
   public void initialize(Stage stage) {        
     Pane mapPane = new Pane();
     VBox root = new VBox();
@@ -108,9 +111,9 @@ public class MapGeneration extends Application {
     });
     
     // Vbox und scene werden erstellt für beide buttons
-    VBox buttonBox = new VBox(5);
-    buttonBox.getChildren().addAll(exitButton, regenerateButton);
-    root.getChildren().addAll(buttonBox, mapPane);
+//    VBox buttonBox = new VBox(5);
+//    buttonBox.getChildren().addAll(exitButton, regenerateButton);
+//    root.getChildren().addAll(buttonBox, mapPane);
     Scene scene = new Scene(root, windowWidth, windowHeight);
     generateMap(mapPane);
     
@@ -129,8 +132,8 @@ public class MapGeneration extends Application {
     hintergrund.setImage(new Image(getClass().getResourceAsStream("images/hintergrund.png")));
     mapPane.getChildren().add(hintergrund);
   }
-
-    
+  
+  
   private void placeBorder(Pane mapPane){
     borderwall1.setWidth(bildschirmBreite);
     borderwall1.setHeight(1);
@@ -166,7 +169,7 @@ public class MapGeneration extends Application {
     
   }
   
-    
+  
   private void placeWalls(Pane mapPane) {
     int attempts = 0;
     while (attempts < maxAttempts) {
@@ -176,19 +179,17 @@ public class MapGeneration extends Application {
       // generiert zufällig horizontale oder vertikale rectangles
       int randomInt = random.nextInt(2);
       if (randomInt == 1) {  // Bei 1 wird ein Horizontales rectangle erstellt
-        wall.setFitWidth(200);
-        wall.setFitHeight(80);
+        wall.setFitWidth(200 * multi);
+        wall.setFitHeight(80 * multi);
         wall.setImage(hWand);
       } else {                // sonst wird ein vertikales erstellt
-        wall.setFitWidth(80);
-        wall.setFitHeight(200);
+        wall.setFitWidth(80 * multi);
+        wall.setFitHeight(200 * multi);
         wall.setImage(vWand);
       }
       
-      // windowWidth = 1280 - die width des rectangles
-      int availableWidth = (int)(windowWidth - wall.getFitWidth());
-      // windowHeight = 720 - die höhe des rectangles
-      int availableHeight = (int) (windowHeight - wall.getFitHeight());
+      int availableWidth = (int) bildschirmBreite - (int) wall.getFitWidth();
+      int availableHeight = (int) bildschirmHoehe - (int) wall.getFitHeight();
       
       // setzt die X / Y Koordinaten der rectangles inerhalb der spielfläche
       wall.setX(random.nextInt(availableWidth));
@@ -231,8 +232,8 @@ public class MapGeneration extends Application {
       boolean overlap = true;
       ImageView tank = new ImageView();
       
-      tank.setFitWidth(100);
-      tank.setFitHeight(75);
+      tank.setFitWidth(100 * multi);
+      tank.setFitHeight(75 * multi);
       
       int availableWidth = (int) (windowWidth - tank.getFitWidth());
       int availableHeight = (int) (windowHeight - tank.getFitHeight());
@@ -304,13 +305,13 @@ public class MapGeneration extends Application {
   private void placeGegner(Pane mapPane) {
     int attempts = 0;
     boolean placed = false;
+    ImageView tank = new ImageView();
     
     while (attempts < maxAttempts && !placed) {
       boolean overlap = true;
-      ImageView tank = new ImageView();
       
-      tank.setFitWidth(100);
-      tank.setFitHeight(75);
+      tank.setFitWidth(100 * multi);
+      tank.setFitHeight(75 * multi);
       
       int availableWidth = (int) (windowWidth - tank.getFitWidth());
       int availableHeight = (int) (windowHeight - tank.getFitHeight());
@@ -342,7 +343,7 @@ public class MapGeneration extends Application {
       if(gTest.siehtSpieler(spieler, tank, alleWaende)){
         overlap = true;
       }
-
+      
       
       if (!overlap) {
         mapPane.getChildren().add(tank);
@@ -352,6 +353,14 @@ public class MapGeneration extends Application {
       }
       
       attempts++;
+    }
+    
+    if (!placed) {
+      tank.setX(bildschirmBreite - 150);
+      tank.setY(bildschirmHoehe / 2);
+      mapPane.getChildren().add(tank);
+      gegner = tank;
+      gegner.setImage(panzer);
     }
   }
 

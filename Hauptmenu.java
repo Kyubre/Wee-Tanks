@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Screen;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 
 public class Hauptmenu extends Application {
   // Anfang Attribute
@@ -31,6 +32,8 @@ public class Hauptmenu extends Application {
   private VBox klassewechseln;
   private Button zurueckButtonEinstellungen = new Button("Zurück");
   private Button zurueckButtonKlassenwechsel = new Button("Zurück");
+  private String name = System.getProperty("user.name");
+  private Label willkommen = new Label();
 
   // Ende Attribute
   
@@ -46,6 +49,12 @@ public class Hauptmenu extends Application {
     imageView1.setFitHeight(bildschirmHoehe);
     imageView1.setImage(imageView1Image);
     root.getChildren().add(imageView1);
+    
+    willkommen.setPrefHeight(33);
+    willkommen.setText("Willkommen bei Wee Tanks, " + name + ".");
+    willkommen.setLayoutX(bildschirmBreite / 2 - (113 / 2) - 40);
+    willkommen.setLayoutY(bildschirmHoehe / 2 - (33 / 2) - 50);
+    root.getChildren().add(willkommen);
 
     startenButton.setLayoutX(bildschirmBreite / 2 - (113 / 2));
     startenButton.setLayoutY(bildschirmHoehe / 2 - (33 / 2));
