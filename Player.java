@@ -73,7 +73,7 @@ public class Player{
       case ESCAPE:
         Map m = new Map();
         //Ist noch broken
-        //m.quit();
+        m.quit();
         break;
       default: 
         break;  

@@ -19,7 +19,7 @@ import javafx.scene.input.KeyEvent;
 public class Hauptmenu extends Application {
   // Anfang Attribute
   private ImageView hintergrund = new ImageView();
-  private Image hintergrundImage = new Image(getClass().getResourceAsStream("images/background.png"));
+  private Image hintergrundImage = new Image(getClass().getResourceAsStream("src/assets/images/background.png"));
   private Button startenButton = new Button();
   private Button einstellungenButton = new Button();
   private Button tutorialButton = new Button();
@@ -32,11 +32,11 @@ public class Hauptmenu extends Application {
   private VBox einstellungen;
   private ImageView tutorial;
   private Button zurueckButton = new Button("Zurück");
-  //private Button zurueckButtonKlassenwechsel = new Button("Zurück");
   private String name = System.getProperty("user.name");
   private Label willkommen = new Label();
   Pane root = new Pane();
   Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
+  private static boolean tutorialGeschaut = false;
   // Ende Attribute
   
   public void start(Stage primaryStage) {
@@ -50,8 +50,10 @@ public class Hauptmenu extends Application {
     hintergrund.setImage(hintergrundImage);
     root.getChildren().add(hintergrund);
     
+    //Labels und Buttons immer mit 50px Abstand erstellen: setLayoutY(bildschirmHoehe/2-(33/2)+-50)
+    
     willkommen.setPrefHeight(33);
-    willkommen.setText("Willkommen bei Wee Tanks, " + name + ".");
+    willkommen.setText("Willkommen bei Wee Tanks, " + name);
     willkommen.setLayoutX(bildschirmBreite / 2 - (113 / 2) - 40);
     willkommen.setLayoutY(bildschirmHoehe / 2 - (33 / 2) - 50);
     root.getChildren().add(willkommen);
@@ -77,8 +79,10 @@ public class Hauptmenu extends Application {
     tutorialButton.setLayoutY(bildschirmHoehe / 2 - (33 / 2) + 100);
     tutorialButton.setPrefHeight(33);
     tutorialButton.setPrefWidth(113);
-    tutorialButton.setText("Tutorial ansehen");
-    tutorialButton.setStyle("-fx-font-weight: bold; -fx-underline: true;");
+    tutorialButton.setText("Tutorial");
+    if (!tutorialGeschaut) {
+      tutorialButton.setStyle("-fx-font-weight: bold; -fx-background-color: orange;");
+    }  
     tutorialButton.setOnAction((event) -> {tutorialButton_Action(event);});
     root.getChildren().add(tutorialButton);
     
@@ -115,7 +119,7 @@ public class Hauptmenu extends Application {
     
     // Tutorial
     tutorial = new ImageView();
-    tutorial.setImage(new Image(getClass().getResourceAsStream("images/tutorial.png")));
+    tutorial.setImage(new Image(getClass().getResourceAsStream("src/assets/images/tutorial.png")));
     tutorial.setX(0);
     tutorial.setY(0);
     tutorial.setFitHeight(bildschirmHoehe);
@@ -175,6 +179,7 @@ public class Hauptmenu extends Application {
     Platform.runLater(() -> stage.setFullScreen(true));
     //Key Listener, damit man zum Hauptmenu zurück kommt
     scene.setOnKeyPressed(event -> zurueckButton_Action(event));
+    tutorialGeschaut = true;
   }
   
   public void spielBeendenButton_Action(Event evt4) {
@@ -193,5 +198,8 @@ public class Hauptmenu extends Application {
     willkommen.setVisible(true);
     stage.setFullScreenExitHint("");    
     stage.setFullScreen(true);
+    if (tutorialGeschaut) {
+      tutorialButton.setStyle("");
+    } 
   }
 }

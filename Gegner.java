@@ -23,11 +23,13 @@ public class Gegner {
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
   private int zaehler = 0;
   private int richtung;
+  private double speed;
   
   public Gegner(String i_Farbe, ImageView gegner, ImageView gegnerTurret){
     this.FARBE = i_Farbe;
     this.nachgeladen = false;
     started = false;
+    speed = 2;
   }
   
   public boolean getUpdate(){
@@ -36,6 +38,10 @@ public class Gegner {
   
   public String getColor(){
     return FARBE;
+  }
+  
+  public void setSpeed(int neu){
+    speed = neu;
   }
 
   
@@ -187,7 +193,7 @@ public class Gegner {
 
   public void idleFahren(ImageView gegner, ImageView gegnerTurret, ArrayList<ImageView> walls, ArrayList<Rectangle> borders) {
     
-    if (zaehler > 40 * 2) {
+    if (zaehler > 180) {
       Random random = new Random();
       richtung = random.nextInt(4);
       zaehler = 0;
@@ -195,26 +201,26 @@ public class Gegner {
     
     switch (richtung) {
       case 0: 
-        gegner.setX(gegner.getX() + 1);
-        gegnerTurret.setX(gegnerTurret.getX() + 1);
+        gegner.setX(gegner.getX() + speed);
+        gegnerTurret.setX(gegnerTurret.getX() + speed);
         //Rotation 0
         gegner.setRotate(0);
         break;
       case 1: 
-        gegner.setY(gegner.getY() + 1);
-        gegnerTurret.setY(gegnerTurret.getY() + 1);
+        gegner.setY(gegner.getY() + speed);
+        gegnerTurret.setY(gegnerTurret.getY() + speed);
         //Rotation 90
         gegner.setRotate(90);
         break;
       case 2: 
-        gegner.setX(gegner.getX() - 1);
-        gegnerTurret.setX(gegnerTurret.getX() - 1);
+        gegner.setX(gegner.getX() - speed);
+        gegnerTurret.setX(gegnerTurret.getX() - speed);
         //Rotation 180
         gegner.setRotate(180);
         break;
       case 3: 
-        gegner.setY(gegner.getY() - 1);
-        gegnerTurret.setY(gegnerTurret.getY() - 1);
+        gegner.setY(gegner.getY() - speed);
+        gegnerTurret.setY(gegnerTurret.getY() - speed);
         //Rotation 270
         gegner.setRotate(270);
         break;
@@ -226,19 +232,19 @@ public class Gegner {
       switch (richtung) {
         case 0: 
           richtung = 2;
-          zaehler = 0;
+          zaehler = 150;
           break;
         case 1: 
           richtung = 3;
-          zaehler = 0;
+          zaehler = 150;
           break;
         case 2: 
           richtung = 0;
-          zaehler = 0;
+          zaehler = 150;
           break;
         case 3: 
           richtung = 1;
-          zaehler = 0;
+          zaehler = 150;
           break;
         default: 
             

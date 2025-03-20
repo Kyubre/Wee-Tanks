@@ -27,7 +27,7 @@ public class Map {
   private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();
   private double multi = (bildschirmBreite / 1920.0);  
   private ImageView turret = new ImageView();
-  private Image turretImage = new Image(getClass().getResourceAsStream("images/turret.png"));  
+  private Image turretImage = new Image(getClass().getResourceAsStream("src/assets/images/turret.png"));  
   private ImageView gegner;
   private ImageView gegnerTurret = new ImageView();
   private Image gegnerTurretImage;
@@ -64,6 +64,8 @@ public class Map {
     gegner.setImage(generation.getColor());
     p1 = new Player(panzer, turret);
     g1 = new Gegner(generation.getFarbe(), generation.getGegner(), gegnerTurret);
+    Media schussSound = new Media(new File("src/assets/sounds/schuss.mp3").toURI().toString());
+    MediaPlayer schussPlayer = new MediaPlayer(schussSound);
     // Anfang Komponenten
     
     stage.setX(0);
@@ -92,29 +94,8 @@ public class Map {
           root.getChildren().add(gegnerSchuss);
           Schuss sGegner = new Schuss(gegnerTurret, false);
           addSchuss(gegnerSchuss, sGegner);          
-          AnimationTimer schussTimer = new AnimationTimer() {
-            @Override
-            public void handle(long now2) {
-              if (fpsLimiter.canRender(now2)) {
-                sGegner.fliegen(gegnerSchuss, wandListe, borderListe);
-                boolean treffer = sGegner.trefferCheck(gegnerSchuss, panzer);
-                if (treffer == true) {
-                  p1.setAlive(false);
-                  bRestart_Action(false);
-                } // end of if
-                sGegner.kollisionsCheck(gegnerSchuss, wandListe, borderListe);
-                if (sGegner.getBounces() == 3) {                                                                          
-                  this.stop();
-                  root.getChildren().remove(gegnerSchuss);
-                  gegnerSchuss.setX(10000);
-                  gegnerSchuss.setY(10000);
-                }
-              }
-            }
-          };
-          schussTimer.start();
           gegnerNachgeladen = false; 
-          PauseTransition nachladenGegner = new PauseTransition(Duration.seconds(2.0));
+          PauseTransition nachladenGegner = new PauseTransition(Duration.seconds(1.5));
           if(gegnerNachgeladen == false) {
             nachladenGegner.play();
           }
@@ -168,6 +149,9 @@ public class Map {
                 removeSchuss(schuss);
                 root.getChildren().remove(panzer);
                 root.getChildren().remove(turret);
+                p1.setAlive(false);
+                bRestart_Action(false);
+                this.stop();
                 i--; 
                 continue;
               }
@@ -201,51 +185,14 @@ public class Map {
     
     scene.setOnMouseClicked((event) -> {;
       if (event.getButton().equals(MouseButton.PRIMARY) && istNachgeladen == true) {
-        Media sound = new Media(new File("sounds/shoot.mp3").toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(sound);
-        //mediaPlayer.play();
-        //Schuss wird grafisch erstellt
+        schussPlayer.play();
+        
+        //Schuss wird erstellt
         ImageView schussNeu = schussErstellen(panzer, turret);
         root.getChildren().add(schussNeu);
         Schuss sPlayer = new Schuss(turret, true);
         addSchuss(schussNeu, sPlayer);
-        //Methode für Schuss aufrufen
-        AnimationTimer schussTimer = new AnimationTimer() {
-          @Override
-          public void handle(long now) {
-            if (fpsLimiter.canRender(now)) {
-              sPlayer.fliegen(schussNeu, wandListe, borderListe);
-              boolean treffer = sPlayer.trefferCheck(schussNeu, gegner);
-              if (treffer == true) {
-                this.stop();
-                root.getChildren().remove(schussNeu);
-                removeSchuss(schussNeu);
-                schussNeu.setX(10000);
-                schussNeu.setY(10000);
-                root.getChildren().remove(gegner);
-                gegner.setX(10000);
-                gegner.setY(10000);
-                root.getChildren().remove(gegnerTurret);
-                gegnerTurret.setX(5000);
-                gegnerTurret.setY(5000);
-                g1.setAlive(false);
-                //Gewonnen Image einfügen, Restart Button einfügen
-                
-              } // end of if
-              sPlayer.kollisionsCheck(schussNeu, wandListe, borderListe);
-              if (sPlayer.getBounces() == 3 ) {
-                this.stop();
-                root.getChildren().remove(schussNeu);
-                removeSchuss(schussNeu);
-                schussNeu.setX(10000);
-                schussNeu.setY(10000);
-                this.stop();
-              }
-            }
-          }
-          
-        };
-        schussTimer.start();
+        //Nachladen
         istNachgeladen = false; 
         PauseTransition nachladen = new PauseTransition(Duration.seconds(1.5));
         if(istNachgeladen == false) {
@@ -254,7 +201,7 @@ public class Map {
         nachladen.setOnFinished(event2 -> {
           istNachgeladen = true;
         });  
-        ;
+        
       }
       
       else if (event.getButton().equals(MouseButton.SECONDARY)) {
@@ -294,17 +241,20 @@ public class Map {
   }
   
   public void quit(){
-    level = 0;
-    Hauptmenu h = new Hauptmenu();
-    h.start(stage1);
-    stage1.setFullScreen(true);
-    stage1.setFullScreenExitHint("");  
+    if(stage1 != null){
+      level = 0;
+      Hauptmenu h = new Hauptmenu();
+      h.start(stage1);
+      stage1.setFullScreen(true);
+      stage1.setFullScreenExitHint("");
+    } else {
+      System.out.println("stage1 ist null");  
+    } 
   }
-  
   
   public ImageView schussErstellen(ImageView panzer, ImageView turret){
     ImageView shot = new ImageView();
-    Image shotImage = new Image(getClass().getResourceAsStream("images/bullet.png"));
+    Image shotImage = new Image(getClass().getResourceAsStream("src/assets/images/bullet.png"));
     shot.setX(panzer.getX() + (panzer.getFitWidth()/2) - 10);
     shot.setY(panzer.getY() + (panzer.getFitHeight()/2) - 3);
     shot.setFitHeight(7 * multi);
@@ -316,7 +266,7 @@ public class Map {
   
   public ImageView gegnerSchussErstellen(ImageView gegner, ImageView gegnerTurret){
     ImageView shot = new ImageView();
-    Image shotImage = new Image(getClass().getResourceAsStream("images/bullet_" + g1.getColor() + ".png"));
+    Image shotImage = new Image(getClass().getResourceAsStream("src/assets/images/bullet_" + g1.getColor() + ".png"));
     shot.setX(gegner.getX() + (gegner.getFitWidth()/2) - 11);
     shot.setY(gegner.getY() + (gegner.getFitHeight()/2) + 4);
     shot.setFitHeight(7 * multi);

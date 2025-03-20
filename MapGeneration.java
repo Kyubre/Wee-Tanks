@@ -11,7 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.*;
 import javafx.stage.Screen;
     
-public class MapGeneration extends Application {
+public class MapGeneration{
   private Rectangle borderwall1 = new Rectangle();
   private Rectangle borderwall2 = new Rectangle();
   private Rectangle borderwall3 = new Rectangle();
@@ -19,12 +19,12 @@ public class MapGeneration extends Application {
   private ImageView hintergrund = new ImageView();  
   private Image gegnerImage;
   private Image gegnerTurret;
-  private Image gegner_grau = new Image(getClass().getResourceAsStream("images/panzer_grau.png"));
-  private Image gegner_lila = new Image(getClass().getResourceAsStream("images/panzer_lila.png"));
-  private Image gegner_rot = new Image(getClass().getResourceAsStream("images/panzer_rot.png"));
-  private Image turret_grau = new Image(getClass().getResourceAsStream("images/turret_grau.png"));
-  private Image turret_lila = new Image(getClass().getResourceAsStream("images/turret_lila.png"));
-  private Image turret_rot = new Image(getClass().getResourceAsStream("images/turret_rot.png"));
+  private Image gegner_grau = new Image(getClass().getResourceAsStream("src/assets/images/panzer_grau.png"));
+  private Image gegner_lila = new Image(getClass().getResourceAsStream("src/assets/images/panzer_lila.png"));
+  private Image gegner_rot = new Image(getClass().getResourceAsStream("src/assets/images/panzer_rot.png"));
+  private Image turret_grau = new Image(getClass().getResourceAsStream("src/assets/images/turret_grau.png"));
+  private Image turret_lila = new Image(getClass().getResourceAsStream("src/assets/images/turret_lila.png"));
+  private Image turret_rot = new Image(getClass().getResourceAsStream("src/assets/images/turret_rot.png"));
   private Random random = new Random();
   private ArrayList<ImageView> alleWaende;
   private ArrayList<Rectangle> borderListe;
@@ -39,9 +39,9 @@ public class MapGeneration extends Application {
   private double multi = bildschirmBreite / referenceWidth;
   private final int maxAnzahlBloecke = 12;
   private final int minAnzahlBloecke = 8; 
-  private Image vWand = new Image(getClass().getResourceAsStream("images/wall_v.png"));
-  private Image hWand = new Image(getClass().getResourceAsStream("images/wall_h.png"));
-  private Image panzer = new Image(getClass().getResourceAsStream("images/panzer.png"));
+  private Image vWand = new Image(getClass().getResourceAsStream("src/assets/images/wall_v.png"));
+  private Image hWand = new Image(getClass().getResourceAsStream("src/assets/images/wall_h.png"));
+  private Image panzer = new Image(getClass().getResourceAsStream("src/assets/images/panzer.png"));
   private ImageView spieler;
   private ImageView gegner;
   private Pane pane1;
@@ -85,12 +85,6 @@ public class MapGeneration extends Application {
     return farbe;
   }
   
-  
-  @Override
-  public void start(Stage stage) {
-    initialize(stage);
-  }
-  
   public void initialize(Stage stage) {        
     Pane mapPane = new Pane();
     VBox root = new VBox();
@@ -129,7 +123,7 @@ public class MapGeneration extends Application {
     hintergrund.setY(0);
     hintergrund.setFitHeight(bildschirmHoehe);
     hintergrund.setFitWidth(bildschirmBreite);    
-    hintergrund.setImage(new Image(getClass().getResourceAsStream("images/hintergrund.png")));
+    hintergrund.setImage(new Image(getClass().getResourceAsStream("src/assets/images/hintergrund.png")));
     mapPane.getChildren().add(hintergrund);
   }
   
@@ -368,7 +362,4 @@ public class MapGeneration extends Application {
     return mapPane;
   }
     
-  public static void main(String[] args) {                      
-    launch(args);
-  }
 }
