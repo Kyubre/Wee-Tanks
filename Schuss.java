@@ -5,20 +5,29 @@ import javafx.stage.Screen;
 
 public class Schuss{
   private double multi = (Screen.getPrimary().getBounds().getWidth() / 1920);
-  private final double SPEED = 5 * multi;
+  private double difficulty = Map.getLevel() /10 +1;
+  private double speed = 5 * multi * difficulty;
   private double geschwindigkeitX;
   private double geschwindigkeitY;
   private boolean istSpieler;
   private int bounces;
+  private final int BASESPEED = 5;
+  private boolean lila;
    
-  public Schuss(ImageView schuetzeTurret, boolean spieler){
+  public Schuss(ImageView schuetzeTurret, boolean spieler, boolean lila){
     double radiant = Math.toRadians(schuetzeTurret.getRotate());
     double vektorX = Math.cos(radiant);
     double vektorY = Math.sin(radiant);
     double pythagoras = Math.sqrt(vektorX * vektorX + vektorY * vektorY);
     this.istSpieler = spieler;
-    this.geschwindigkeitX = (vektorX / pythagoras) * SPEED;     
-    this.geschwindigkeitY = (vektorY / pythagoras) * SPEED;
+    this.lila = lila;
+    if(spieler){
+      speed = BASESPEED * multi;
+    } else {
+      speed = BASESPEED * multi * difficulty;  
+    } // end of if-else
+    this.geschwindigkeitX = (vektorX / pythagoras) * speed;     
+    this.geschwindigkeitY = (vektorY / pythagoras) * speed;
     this.bounces = 0;
   }
   
@@ -73,20 +82,44 @@ public class Schuss{
     return false;
   }
   
-  public void fliegen(ImageView schussBild, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
-    double deltaX = this.geschwindigkeitX;
-    double deltaY = this.geschwindigkeitY;
-    
-    double testX = schussBild.getX() + deltaX;
-    double testY = schussBild.getY() + deltaY;
-    
-    if (!kollisionsCheckVirtuell(testX, testY, schussBild, wandListe, borderListe)) {
-      schussBild.setX(schussBild.getX() + deltaX);
-      schussBild.setY(schussBild.getY() + deltaY);
+  public void fliegen(ImageView schussBild, ImageView player, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
+    if (lila) {
+      double deltaX = player.getX() - schussBild.getX();
+      double deltaY = player.getY() - schussBild.getY();
+      double dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      
+      if (dist != 0) {
+        geschwindigkeitX = (deltaX / dist) * (speed / difficulty);
+        geschwindigkeitY = (deltaY / dist) * (speed / difficulty);
+        double winkel = Math.toDegrees(Math.atan2(geschwindigkeitY, geschwindigkeitX));
+        schussBild.setRotate(winkel);
+      }
+      
+      double testX = schussBild.getX() + geschwindigkeitX;
+      double testY = schussBild.getY() + geschwindigkeitY;
+      
+      if (!kollisionsCheckVirtuell(testX, testY, schussBild, wandListe, borderListe)) {
+        schussBild.setX(testX);
+        schussBild.setY(testY);
+      } else {
+        reflektiereSchuss(schussBild, wandListe, borderListe);
+        bounces++;
+      }
     } else {
-      reflektiereSchuss(schussBild, wandListe, borderListe);
-      bounces++;
-    }
+      double deltaX = this.geschwindigkeitX;
+      double deltaY = this.geschwindigkeitY;
+      
+      double testX = schussBild.getX() + deltaX;
+      double testY = schussBild.getY() + deltaY;
+      
+      if (!kollisionsCheckVirtuell(testX, testY, schussBild, wandListe, borderListe)) {
+        schussBild.setX(schussBild.getX() + deltaX);
+        schussBild.setY(schussBild.getY() + deltaY);
+      } else {
+        reflektiereSchuss(schussBild, wandListe, borderListe);
+        bounces++;
+      }  
+    } 
   }
 
   private void reflektiereSchuss(ImageView schussBild, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {

@@ -24,12 +24,13 @@ public class Gegner {
   private int zaehler = 0;
   private int richtung;
   private double speed;
+  private double difficulty = Map.getLevel() /10 +1;
   
   public Gegner(String i_Farbe, ImageView gegner, ImageView gegnerTurret){
     this.FARBE = i_Farbe;
-    this.nachgeladen = false;
+    this.nachgeladen = true;
     started = false;
-    speed = 2;
+    speed = 2 * difficulty;
   }
   
   public boolean getUpdate(){

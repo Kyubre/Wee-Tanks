@@ -48,6 +48,7 @@ public class Map {
   private Stage stage1;
   private static int level = 0;
   private boolean restart = false;
+  private static boolean godmode = false;
   
   public void initialize(Stage stage) {
     level++;
@@ -92,17 +93,22 @@ public class Map {
         if (g1.getUpdate() && gegnerNachgeladen) {
           ImageView gegnerSchuss = gegnerSchussErstellen(gegner, gegnerTurret);
           root.getChildren().add(gegnerSchuss);
-          Schuss sGegner = new Schuss(gegnerTurret, false);
+          Schuss sGegner;
+          if (g1.getColor().equals("lila")) {
+            sGegner = new Schuss(gegnerTurret, false, true);
+          } else {
+            sGegner = new Schuss(gegnerTurret, false, false);  
+          } 
+          
           addSchuss(gegnerSchuss, sGegner);          
           gegnerNachgeladen = false; 
           PauseTransition nachladenGegner = new PauseTransition(Duration.seconds(1.5));
           if(gegnerNachgeladen == false) {
             nachladenGegner.play();
           }
-          nachladenGegner.setOnFinished(event2 -> {;
+          nachladenGegner.setOnFinished(event2 -> {
             gegnerNachgeladen = true;
-          });  
-          ;  
+          });    
         }     
       }
     };
@@ -115,7 +121,7 @@ public class Map {
           for (int i = 0; i < schuesse.size(); i++) {
             ImageView schuss = schuesse.get(i);
             Schuss sObj = schussDaten.get(schuss);
-            sObj.fliegen(schuss, wandListe, borderListe);
+            sObj.fliegen(schuss, panzer, wandListe, borderListe);  
             
             if (sObj.getSpieler()) {
               boolean treffer = sObj.trefferCheck(schuss, gegner);
@@ -147,11 +153,13 @@ public class Map {
               if (treffer) {
                 root.getChildren().remove(schuss);
                 removeSchuss(schuss);
-                root.getChildren().remove(panzer);
-                root.getChildren().remove(turret);
-                p1.setAlive(false);
-                bRestart_Action(false);
-                this.stop();
+                if (!godmode) {
+                  root.getChildren().remove(panzer);
+                  root.getChildren().remove(turret);
+                  p1.setAlive(false);
+                  bRestart_Action(false);
+                  this.stop();
+                }
                 i--; 
                 continue;
               }
@@ -170,27 +178,27 @@ public class Map {
     };
     schussAnimation.start();
     
-    scene.setOnKeyPressed((KeyEvent event) -> {;
+    scene.setOnKeyPressed((KeyEvent event) -> {
       p1.tasteGedrueckt(event);
       p1.movement(panzer, turret, wandListe, borderListe);
     });
     
-    scene.setOnKeyReleased((KeyEvent event) -> {;
+    scene.setOnKeyReleased((KeyEvent event) -> {
       p1.tasteLosgelassen(event);
     });
     
-    scene.addEventFilter(MouseEvent.MOUSE_MOVED, event -> {;
+    scene.addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
       turret.setRotate(p1.turretRotation(event, panzer));
     });
     
-    scene.setOnMouseClicked((event) -> {;
+    scene.setOnMouseClicked((event) -> {
       if (event.getButton().equals(MouseButton.PRIMARY) && istNachgeladen == true) {
         schussPlayer.play();
         
         //Schuss wird erstellt
         ImageView schussNeu = schussErstellen(panzer, turret);
         root.getChildren().add(schussNeu);
-        Schuss sPlayer = new Schuss(turret, true);
+        Schuss sPlayer = new Schuss(turret, true, false);
         addSchuss(schussNeu, sPlayer);
         //Nachladen
         istNachgeladen = false; 
@@ -240,13 +248,13 @@ public class Map {
     return level;
   }
   
-  public void quit(){
-    if(stage1 != null){
+  public static void quit(Stage stage2){
+    if(stage2 != null){
       level = 0;
       Hauptmenu h = new Hauptmenu();
-      h.start(stage1);
-      stage1.setFullScreen(true);
-      stage1.setFullScreenExitHint("");
+      h.start(stage2);
+      stage2.setFullScreen(true);
+      stage2.setFullScreenExitHint("");
     } else {
       System.out.println("stage1 ist null");  
     } 
@@ -290,6 +298,15 @@ public class Map {
     PostGame postGame = new PostGame(level, win);
     postGame.initialize(stage1);
   }
+  
+  public static void setGodmode(boolean neu){
+    godmode = neu;
+  }
+  
+  public static boolean getGodmode(){
+    return godmode;
+  }
+
   
   public Map(){
     

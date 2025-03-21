@@ -70,10 +70,8 @@ public class Player{
       case D: 
         dGedrueckt = true;
         break;
-      case ESCAPE:
-        Map m = new Map();
-        //Ist noch broken
-        m.quit();
+      case G:
+        Map.setGodmode(!Map.getGodmode());
         break;
       default: 
         break;  

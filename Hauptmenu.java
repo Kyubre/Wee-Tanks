@@ -144,7 +144,7 @@ public class Hauptmenu extends Application {
   }
   
   public static void main(String[] args) {
-    launch(args);
+    launch(args);                                                         
   } 
   
   public void startenButton_Action(Event evt) {
