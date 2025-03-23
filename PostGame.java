@@ -47,8 +47,8 @@ public class PostGame{
 
       
       hauptmenu.setOnAction((event) -> hauptmenu_Action(event));
-      hauptmenu.setPrefHeight(33);
-      hauptmenu.setPrefWidth(113);
+      hauptmenu.setPrefHeight(32);
+      hauptmenu.setPrefWidth(152);
       hauptmenu.setLayoutY((bildschirmHoehe / 2) - (hauptmenu.getPrefHeight() / 2));
       hauptmenu.setLayoutX((bildschirmBreite / 2) - (hauptmenu.getPrefWidth() / 2));
       hauptmenu.setText("Zurück zum Hauptmenu");
@@ -57,9 +57,9 @@ public class PostGame{
       
       if(win){
         nextRound.setOnAction((event) -> nextRound_Action(event));
-        nextRound.setPrefWidth(113);
-        nextRound.setPrefHeight(33);
-        nextRound.setLayoutX(hauptmenu.getLayoutX());
+        nextRound.setPrefWidth(112);
+        nextRound.setPrefHeight(32);
+        nextRound.setLayoutX(hauptmenu.getLayoutX() - (nextRound.getPrefWidth() / 2));
         nextRound.setLayoutY(hauptmenu.getLayoutY() - 66);
         nextRound.setText("Nächste Runde");
         root.getChildren().add(nextRound);

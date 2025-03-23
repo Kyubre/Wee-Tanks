@@ -14,7 +14,7 @@ import javafx.stage.Screen;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyEvent;
+
 
 public class Hauptmenu extends Application {
   // Anfang Attribute
@@ -26,7 +26,6 @@ public class Hauptmenu extends Application {
   private Button spielBeendenButton = new Button();
   private Stage stage;
   private StackPane stackPaneEinstellungen;
-  private StackPane stackPaneKlassen;
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
   private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();
   private VBox einstellungen;
@@ -108,6 +107,12 @@ public class Hauptmenu extends Application {
     Slider lautstaerke = new Slider();
     lautstaerke.setMaxWidth(300);
     lautstaerke.setStyle("-fx-background-color: lightgray;");
+    lautstaerke.setMin(0); // Minimale Lautstärke
+    lautstaerke.setMax(1); // Maximale Lautstärke
+    lautstaerke.setValue(Settings.lautstaerke); // Initialwert setzen
+    lautstaerke.valueProperty().addListener((observable, oldValue, newValue) -> {
+        Settings.lautstaerke = newValue.doubleValue(); // Lautstärke in Settings aktualisieren
+    });
     einstellungen.getChildren().addAll(zurueckButton, lautstaerke);
     
     stackPaneEinstellungen = new StackPane();

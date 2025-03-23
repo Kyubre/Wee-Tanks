@@ -13,6 +13,7 @@ public class Schuss{
   private int bounces;
   private final int BASESPEED = 5;
   private boolean lila;
+  private int lebenszeit = 0; // in Millisekunden
    
   public Schuss(ImageView schuetzeTurret, boolean spieler, boolean lila){
     double radiant = Math.toRadians(schuetzeTurret.getRotate());
@@ -35,6 +36,13 @@ public class Schuss{
     return istSpieler;
   }
 
+  public int getLebenszeit() {
+    return lebenszeit;
+  }
+
+  public void erhoeheLebenszeit(int zeit) {
+    lebenszeit += zeit;
+  }
   
   public boolean kollisionsCheck(ImageView schussBild, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
     for (ImageView wand : wandListe) {

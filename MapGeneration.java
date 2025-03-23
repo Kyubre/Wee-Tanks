@@ -1,4 +1,3 @@
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -306,7 +305,6 @@ public class MapGeneration{
       tank.setFitWidth(100 * multi);
       tank.setFitHeight(75 * multi);
       
-      int availableWidth = (int) (windowWidth - tank.getFitWidth());
       int availableHeight = (int) (windowHeight - tank.getFitHeight());
       
       //setX generiert im rechten Viertel ein random Wert von 0 bis 1 * Größe von einem Viertel für einen random Wert im rechten Viertel

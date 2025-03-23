@@ -13,14 +13,8 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.event.*;
-import javafx.scene.text.Font;
-import javafx.application.Platform;
 import javafx.stage.Screen;
 import java.util.HashMap;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import java.io.File;
 
 public class Map {
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
@@ -31,14 +25,12 @@ public class Map {
   private ImageView gegner;
   private ImageView gegnerTurret = new ImageView();
   private Image gegnerTurretImage;
-  private Image gegnerImage;
   private boolean istNachgeladen = true;
   private boolean gegnerNachgeladen = true;
   private ArrayList<ImageView> schuesse = new ArrayList<ImageView>();
   private HashMap<ImageView, Schuss> schussDaten = new HashMap<>();
   private ArrayList<ImageView> wandListe;
   private ArrayList<Rectangle> borderListe;
-  private Button bExit = new Button();
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
   private MapGeneration generation;
   private ImageView panzer;
@@ -65,9 +57,13 @@ public class Map {
     gegner.setImage(generation.getColor());
     p1 = new Player(panzer, turret);
     g1 = new Gegner(generation.getFarbe(), generation.getGegner(), gegnerTurret);
-    Media schussSound = new Media(new File("src/assets/sounds/schuss.mp3").toURI().toString());
-    MediaPlayer schussPlayer = new MediaPlayer(schussSound);
-    // Anfang Komponenten
+    //fängt an die hintergrundmusik abzuspielen
+    if(Sounds.getMusicStarted() == false){
+      Sounds.bgmAbspielen();
+    } else{
+      Sounds.resumeBgmMusic();
+    }
+    
     
     stage.setX(0);
     stage.setY(0);
@@ -122,6 +118,15 @@ public class Map {
             ImageView schuss = schuesse.get(i);
             Schuss sObj = schussDaten.get(schuss);
             sObj.fliegen(schuss, panzer, wandListe, borderListe);  
+            
+            
+            if (sObj.getLebenszeit() >= 3000) { 
+              root.getChildren().remove(schuss);
+              removeSchuss(schuss);
+              i--;
+              continue;
+            }
+            sObj.erhoeheLebenszeit(1000/fpsLimiter.getFps());
             
             if (sObj.getSpieler()) {
               boolean treffer = sObj.trefferCheck(schuss, gegner);
@@ -193,7 +198,7 @@ public class Map {
     
     scene.setOnMouseClicked((event) -> {
       if (event.getButton().equals(MouseButton.PRIMARY) && istNachgeladen == true) {
-        schussPlayer.play();
+        //schussPlayer.play();
         
         //Schuss wird erstellt
         ImageView schussNeu = schussErstellen(panzer, turret);
@@ -269,6 +274,7 @@ public class Map {
     shot.setFitWidth(20 * multi);
     shot.setRotate(turret.getRotate());
     shot.setImage(shotImage);
+    Sounds.schussSound();
     return shot;
   }
   
@@ -295,6 +301,7 @@ public class Map {
   }
   
   public void bRestart_Action(boolean win) {
+    Sounds.pauseBgmMusic();
     PostGame postGame = new PostGame(level, win);
     postGame.initialize(stage1);
   }

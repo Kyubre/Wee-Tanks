@@ -1,4 +1,3 @@
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode; 
 
 public class Settings{
@@ -6,4 +5,7 @@ public class Settings{
   private KeyCode left;
   private KeyCode down;
   private KeyCode right;
+  public static double lautstaerke = 0.4;
 }
+
+

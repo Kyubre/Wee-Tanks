@@ -89,6 +89,7 @@ public class Gegner {
                 if (siehtSpieler(spieler, gegner, wandListe)) {
                   siehtSpieler(spieler, gegner, wandListe);
                   schießen(gegner, gegnerTurret, spieler);
+                  idleFahren(gegner, gegnerTurret, wandListe, borderListe);
                 }
                 
                 else {
@@ -103,15 +104,17 @@ public class Gegner {
                 if (siehtSpieler(spieler, gegner, wandListe)) {
                   siehtSpieler(spieler, gegner, wandListe);
                   schießen(gegner, gegnerTurret, spieler);
+                  idleFahren(gegner, gegnerTurret, wandListe, borderListe);
                 }
                 
                 else {
+                  idleFahren(gegner, gegnerTurret, wandListe, borderListe);
                   idlen(gegnerTurret);
                 }
               }
               break;
             default: 
-              System.out.println("Fehler 187: Ungültige Gegnerfarbe");
+              System.out.println("Fehler 18: Ungültige Gegnerfarbe");
           }
         }
       } //
@@ -248,9 +251,10 @@ public class Gegner {
           zaehler = 150;
           break;
         default: 
-            
+        
       } 
       
     }
   }
+  
 } 
