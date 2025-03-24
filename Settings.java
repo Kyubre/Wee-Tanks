@@ -5,7 +5,7 @@ public class Settings{
   private KeyCode left;
   private KeyCode down;
   private KeyCode right;
-  public static double lautstaerke = 0.4;
+  public static double lautstaerke = 0.25;
 }
 
 

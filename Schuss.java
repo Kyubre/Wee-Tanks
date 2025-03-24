@@ -147,6 +147,7 @@ public class Schuss{
       double neuerWinkel = berechneReflexionswinkel(schussBild.getRotate(), false);  // false für Y-Achse
       schussBild.setRotate(neuerWinkel);
     }
+    Sounds.bounceSound();
   }
 
   private double berechneReflexionswinkel(double aktuellerWinkel, boolean isXDirection) {
@@ -173,15 +174,15 @@ public class Schuss{
     Rectangle virtualRectangle = new Rectangle(testX, testY, schussBild.getBoundsInLocal().getWidth(), schussBild.getBoundsInLocal().getHeight());
     for (ImageView wand : wandListe) {
       if (virtualRectangle.intersects(wand.getBoundsInParent())) {
-        return true;  // Kollision mit Wand
+        return true;
       }
-    }// Überprüfe, ob der Schuss in der virtuellen Position mit einem Border kollidiert
+    }
     
     for (Rectangle border : borderListe) {
       if (virtualRectangle.intersects(border.getBoundsInParent())) {
-        return true;  // Kollision mit Border
+        return true;
       }
     }
-    return false; // Keine Kollision erkannt
+    return false;
   }
 }

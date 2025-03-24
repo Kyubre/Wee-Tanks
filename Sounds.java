@@ -10,7 +10,13 @@ public class Sounds {
     private static boolean musicStarted = false;
     private static ArrayList<MediaPlayer> soundListe = new ArrayList<>();
     private static MediaPlayer bgmPlayer = new MediaPlayer(new Media(new File("src/assets/sounds/bgm.mp3").toURI().toString()));
-    private static MediaPlayer schussPlayer = new MediaPlayer(new Media(new File("src/assets/sounds/schuss.mp3").toURI().toString()));
+
+    public static void bounceSound() {
+        MediaPlayer bouncePlayer = new MediaPlayer(new Media(new File("src/assets/sounds/bounce.mp3").toURI().toString()));
+        soundListe.add(bouncePlayer);
+        bouncePlayer.setVolume(Settings.lautstaerke);
+        bouncePlayer.play();
+    }
 
     public static void bgmAbspielen() {
         if (!musicStarted) {
@@ -23,6 +29,7 @@ public class Sounds {
     }
 
     public static void schussSound() {
+        MediaPlayer schussPlayer = new MediaPlayer(new Media(new File("src/assets/sounds/schuss.mp3").toURI().toString()));
         soundListe.add(schussPlayer);
         schussPlayer.setVolume(Settings.lautstaerke);
         schussPlayer.play();
