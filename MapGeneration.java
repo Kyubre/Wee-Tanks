@@ -9,9 +9,7 @@ import java.util.Random;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.*;
 import javafx.stage.Screen;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
+
 
 public class MapGeneration {
   private Rectangle borderwall1 = new Rectangle();
@@ -52,13 +50,17 @@ public class MapGeneration {
   private ImageView gegner;
   private Pane pane1;
   private String farbe;
-  private double speedPowerUpValue = 0.0;
-  private double reloadPowerUpValue = 2.5;
-  Pane mapPane = new Pane();
+  ArrayList<ImageView> powerUps;
+  Pane root = new Pane();
 
   public MapGeneration() {
     alleWaende = new ArrayList<>();
     borderListe = new ArrayList<>();
+    powerUps = new ArrayList<>();
+  }
+
+  public ArrayList<ImageView> getPowerUps() {
+    return powerUps;
   }
 
   public ArrayList<ImageView> getWandListe() {
@@ -93,10 +95,6 @@ public class MapGeneration {
     return farbe;
   }
 
-  public double getPowerUpspeed() {
-    return speedPowerUpValue;
-  }
-
   public void initialize(Stage stage) {
     VBox root = new VBox();
 
@@ -110,41 +108,37 @@ public class MapGeneration {
     // regenerate Button
     Button regenerateButton = new Button("Regenerate Map");
     regenerateButton.setOnAction(e -> {
-      mapPane.getChildren().clear();
+      root.getChildren().clear();
       alleWaende.clear();
-      generateMap(mapPane);
+      generateMap(root);
     });
 
-    // Vbox und scene werden erstellt für beide buttons
-    // VBox buttonBox = new VBox(5);
-    // buttonBox.getChildren().addAll(exitButton, regenerateButton);
-    // root.getChildren().addAll(buttonBox, mapPane);
     Scene scene = new Scene(root, windowWidth, windowHeight);
-    generateMap(mapPane);
+    generateMap(root);
 
     stage.setFullScreen(true);
     stage.setTitle("Map Generation Test");
     stage.setScene(scene);
     stage.show();
-    pane1 = mapPane;
+    pane1 = root;
   }
 
-  public void placeHintergrund(Pane mapPane) {
+  public void placeHintergrund(Pane root) {
     hintergrund.setX(0);
     hintergrund.setY(0);
     hintergrund.setFitHeight(bildschirmHoehe);
     hintergrund.setFitWidth(bildschirmBreite);
     hintergrund.setImage(new Image(getClass().getResourceAsStream("src/assets/images/hintergrund.png")));
-    mapPane.getChildren().add(hintergrund);
+    root.getChildren().add(hintergrund);
   }
 
-  private void placeBorder(Pane mapPane) {
+  private void placeBorder(Pane root) {
     borderwall1.setWidth(bildschirmBreite);
     borderwall1.setHeight(1);
     borderwall1.setX(1);
     borderwall1.setY(1);
     borderwall1.setSmooth(false);
-    mapPane.getChildren().add(borderwall1);
+    root.getChildren().add(borderwall1);
     borderListe.add(borderwall1);
 
     borderwall2.setWidth(20);
@@ -152,7 +146,7 @@ public class MapGeneration {
     borderwall2.setX(bildschirmBreite - 1);
     borderwall2.setY(1);
     borderwall2.setSmooth(false);
-    mapPane.getChildren().add(borderwall2);
+    root.getChildren().add(borderwall2);
     borderListe.add(borderwall2);
 
     borderwall3.setWidth(bildschirmBreite);
@@ -160,7 +154,7 @@ public class MapGeneration {
     borderwall3.setX(0);
     borderwall3.setY(bildschirmHoehe - 1);
     borderwall3.setSmooth(false);
-    mapPane.getChildren().add(borderwall3);
+    root.getChildren().add(borderwall3);
     borderListe.add(borderwall3);
 
     borderwall4.setWidth(1);
@@ -168,12 +162,12 @@ public class MapGeneration {
     borderwall4.setX(1);
     borderwall4.setY(1);
     borderwall4.setSmooth(false);
-    mapPane.getChildren().add(borderwall4);
+    root.getChildren().add(borderwall4);
     borderListe.add(borderwall4);
 
   }
 
-  private void placeWalls(Pane mapPane) {
+  private void placeWalls(Pane root) {
     int attempts = 0;
     while (attempts < maxAttempts) {
       boolean overlap = true;
@@ -220,7 +214,7 @@ public class MapGeneration {
       // falls kein overlap besteht, wird das rectangle erstellt
       if (!overlap) {
         alleWaende.add(wall);
-        mapPane.getChildren().add(wall);
+        root.getChildren().add(wall);
         return;
       }
 
@@ -230,7 +224,7 @@ public class MapGeneration {
     }
   }
 
-  private void placePlayer(Pane mapPane) {
+  private void placePlayer(Pane root) {
     int attempts = 0;
     boolean placed = false;
 
@@ -267,7 +261,7 @@ public class MapGeneration {
       }
 
       if (!overlap) {
-        mapPane.getChildren().add(tank);
+        root.getChildren().add(tank);
         tank.setImage(panzer);
         spieler = tank;
         placed = true;
@@ -306,7 +300,7 @@ public class MapGeneration {
     }
   }
 
-  private void placeGegner(Pane mapPane) {
+  private void placeGegner(Pane root) {
     int attempts = 0;
     boolean placed = false;
     ImageView tank = new ImageView();
@@ -339,7 +333,7 @@ public class MapGeneration {
       }
 
       if (!overlap) {
-        mapPane.getChildren().add(tank);
+        root.getChildren().add(tank);
         tank.setImage(panzer);
         gegner = tank;
         placed = true;
@@ -352,85 +346,54 @@ public class MapGeneration {
     if (!placed) {
       tank.setX(bildschirmBreite - 150);
       tank.setY(bildschirmHoehe / 2);
-      mapPane.getChildren().add(tank);
+      root.getChildren().add(tank);
       gegner = tank;
       gegner.setImage(panzer);
     }
   }
 
-  public Pane generateMap(Pane mapPane) {
-    placeHintergrund(mapPane);
+  public Pane generateMap(Pane root) {
+    placeHintergrund(root);
     int numberOfWalls = random.nextInt(maxAnzahlBloecke) + minAnzahlBloecke;
     for (int i = 0; i < numberOfWalls; i++) {
-      placeWalls(mapPane);
+      placeWalls(root);
     }
-    placePlayer(mapPane);
-    placeGegner(mapPane);
-    placeBorder(mapPane);
-    placePowerUps(mapPane);
+    placePlayer(root);
+    placeGegner(root);
+    placeBorder(root);
+    placePowerUps(root);
     gegnerFarbe();
-    System.out.println("Level " + Map.getLevel() + " initialisiert");
-    return mapPane;
+    return root;
   }
 
-  ArrayList<ImageView> powerUps = new ArrayList<>();
-
-  private void placePowerUps(Pane mapPane) {
-    // Create and configure the speed power-up
-    ImageView speedPowerUp = new ImageView(powerUp_speed);
-    speedPowerUp.setX(random.nextInt((int) (bildschirmBreite - 50)));
-    speedPowerUp.setY(random.nextInt((int) (bildschirmHoehe - 50)));
+  private void placePowerUps(Pane root) {
+    speedPowerUp = new ImageView(powerUp_speed);
+    speedPowerUp.setFitWidth(50);
+    speedPowerUp.setFitHeight(50);
+    speedPowerUp.setX(random.nextInt((int) (bildschirmBreite - speedPowerUp.getFitWidth())));
+    speedPowerUp.setY(random.nextInt((int) (bildschirmHoehe - speedPowerUp.getFitHeight())));
     speedPowerUp.setId("speed");
-    System.out.println("Speed power-up added at: " + speedPowerUp.getX() + ", " + speedPowerUp.getY());
-    mapPane.getChildren().add(speedPowerUp);
-    powerUps.add(speedPowerUp); // Add to the list
+    for (ImageView existingWall : alleWaende) {
+      if (speedPowerUp.intersects(existingWall.getBoundsInParent())) {
+        speedPowerUp.setX(random.nextInt((int) (bildschirmBreite - speedPowerUp.getFitWidth())));
+        speedPowerUp.setY(random.nextInt((int) (bildschirmHoehe - speedPowerUp.getFitHeight())));
+      }
+    }
+    root.getChildren().add(speedPowerUp);
+    powerUps.add(speedPowerUp);
 
-    // Create and configure the reload power-up
-    ImageView reloadPowerUp = new ImageView(powerUp_reload);
+    reloadPowerUp = new ImageView(powerUp_reload);
     reloadPowerUp.setX(random.nextInt((int) (bildschirmBreite - 50)));
     reloadPowerUp.setY(random.nextInt((int) (bildschirmHoehe - 50)));
     reloadPowerUp.setId("reload");
-    System.out.println("Reload power-up added at: " + reloadPowerUp.getX() + ", " + reloadPowerUp.getY());
-    mapPane.getChildren().add(reloadPowerUp);
-    powerUps.add(reloadPowerUp); // Add to the list
-  }
-
-  public void checkPlayerCollision() {
-
-    for (int i = 0; i < powerUps.size(); i++) {
-      ImageView powerUp = powerUps.get(i);
-      if (spieler.getBoundsInParent().intersects(powerUp.getBoundsInParent())) {
-        String powerUpType = powerUp.getId();
-        System.out.println(powerUpType + " power-up collected!");
-
-        if ("speed".equals(powerUpType)) {
-          // Set speedPowerUpValue to 3 for the boost
-          speedPowerUpValue = 3.0;
-          System.out.println("Speed boost activated!");
-
-          // Start a 10-second timer to reset the speed
-          new Timeline(new KeyFrame(Duration.seconds(10), e -> {
-            speedPowerUpValue = 0.0; // Reset speedPowerUpValue
-            System.out.println("Speed boost ended!");
-          })).play();
-        } else if ("reload".equals(powerUpType)) {
-          // Handle reload power-up logic
-          reloadPowerUpValue = 0.5; // Example: Set reload boost value
-          System.out.println("Reload boost activated!");
-
-          // Start a 10-second timer to reset the reload time
-          new Timeline(new KeyFrame(Duration.seconds(10), e -> {
-            reloadPowerUpValue = 1.0; // Reset reloadPowerUpValue
-            System.out.println("Reload boost ended!");
-          })).play();
-        }
-
-        // Remove the power-up from the map and list
-        mapPane.getChildren().remove(powerUp);
-        powerUps.remove(i);
-        i--; // Adjust index after removal
+    for (ImageView existingWall : alleWaende) {
+      if (reloadPowerUp.intersects(existingWall.getBoundsInParent())) {
+        reloadPowerUp.setX(random.nextInt((int) (bildschirmBreite - 50)));
+        reloadPowerUp.setY(random.nextInt((int) (bildschirmHoehe - 50)));
       }
     }
+    root.getChildren().add(reloadPowerUp);
+    powerUps.add(reloadPowerUp);
   }
 
 }

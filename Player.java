@@ -7,7 +7,7 @@ import javafx.animation.AnimationTimer;
 import javafx.stage.Screen;
 
 public class Player {
-  private MapGeneration mapgen = new MapGeneration();
+  private Map map = new Map();
   private double multi = (Screen.getPrimary().getBounds().getWidth() / 1920);
   private double xPos;
   private double yPos;
@@ -18,7 +18,7 @@ public class Player {
   private boolean sGedrueckt = false;
   private boolean dGedrueckt = false;
   private boolean bewegungsTimerErstellt = false;
-  private final double speed = 5 * multi + mapgen.getPowerUpspeed();
+  private double speed;
   private double panzerAltX;
   private double panzerAltY;
   private double turretAltX;
@@ -133,6 +133,7 @@ public class Player {
   public void movement(ImageView panzer, ImageView turret, ArrayList<ImageView> wandListe,
       ArrayList<Rectangle> borderListe) {
     bewegungsTimerErstellen(panzer, turret, wandListe, borderListe);
+    speed = 5 * multi * Map.getSpeedPowerUpValue();
 
     panzerAltX = panzer.getX();
     panzerAltY = panzer.getY();
@@ -190,4 +191,6 @@ public class Player {
       panzer.setRotate(altRotation);
     }
   }
+
+  
 }

@@ -2,24 +2,26 @@ import java.util.ArrayList;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.scene.control.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.image.ImageView;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.util.Duration;
-import javafx.event.Event;
 import javafx.stage.Screen;
 import java.util.HashMap;
+import javafx.scene.input.KeyCombination;
 
 public class Map {
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
   private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();
   private double multi = (bildschirmBreite / 1920.0);
+  private static double speedPowerUpValue = 1.0;
+  private double reloadPowerUpValue = 1.5;
   private ImageView turret = new ImageView();
   private Image turretImage = new Image(getClass().getResourceAsStream("src/assets/images/turret.png"));
   private ImageView gegner;
@@ -71,7 +73,8 @@ public class Map {
     stage.setMaximized(false);
     stage.resizableProperty();
     stage.setFullScreenExitHint("");
-    stage.setFullScreenExitKeyCombination(null);
+    stage.setFullScreen(true);
+    stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); // Disable Escape key for exiting fullscreen
     g1.start(gegner, gegnerTurret, panzer, wandListe, borderListe);
 
     AnimationTimer gameplayLoop = new AnimationTimer() {
@@ -183,6 +186,7 @@ public class Map {
     scene.setOnKeyPressed((KeyEvent event) -> {
       p1.tasteGedrueckt(event);
       p1.movement(panzer, turret, wandListe, borderListe);
+      powerUpCollision();
     });
 
     scene.setOnKeyReleased((KeyEvent event) -> {
@@ -195,8 +199,6 @@ public class Map {
 
     scene.setOnMouseClicked((event) -> {
       if (event.getButton().equals(MouseButton.PRIMARY) && istNachgeladen == true) {
-        // schussPlayer.play();
-
         // Schuss wird erstellt
         ImageView schussNeu = schussErstellen(panzer, turret);
         root.getChildren().add(schussNeu);
@@ -204,7 +206,7 @@ public class Map {
         addSchuss(schussNeu, sPlayer);
         // Nachladen
         istNachgeladen = false;
-        PauseTransition nachladen = new PauseTransition(Duration.seconds(1.5));
+        PauseTransition nachladen = new PauseTransition(Duration.seconds(reloadPowerUpValue));
         if (istNachgeladen == false) {
           nachladen.play();
         }
@@ -216,6 +218,12 @@ public class Map {
 
       else if (event.getButton().equals(MouseButton.SECONDARY)) {
         g1.setAlive(false);
+      }
+    });
+
+    scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode().toString().equals("ESCAPE")) {
+        event.consume(); // Prevent exiting fullscreen
       }
     });
 
@@ -284,6 +292,7 @@ public class Map {
     shot.setFitWidth(20 * multi);
     shot.setRotate(gegnerTurret.getRotate());
     shot.setImage(shotImage);
+    Sounds.schussSound();
     return shot;
   }
 
@@ -312,8 +321,58 @@ public class Map {
     return godmode;
   }
 
+  public static double getSpeedPowerUpValue() {
+    return speedPowerUpValue;
+  }
+
+  public double getReloadPowerUpValue() {
+    return reloadPowerUpValue;
+  }
+
   public Map() {
 
+  }
+
+  public void powerUpCollision() {
+
+    ArrayList<ImageView> powerUps = generation.getPowerUps();
+    for (int i = 0; i < powerUps.size(); i++) {
+      ImageView powerUp = powerUps.get(i);
+      if (panzer.getBoundsInParent().intersects(powerUp.getBoundsInParent())) {
+        String powerUpType = powerUp.getId();
+        System.out.println(powerUpType + " power-up collected!");
+
+        switch (powerUpType) {
+          case "speed":
+          speedPowerUpValue = 1.5;
+          System.out.println("Speed boost activated!");
+
+          // Start a 10-second timer to reset the speed
+          new Timeline(new KeyFrame(Duration.seconds(10), e -> {
+            speedPowerUpValue = 1.0; // Reset
+            System.out.println("Speed boost ended!");
+          })).play();
+            break;
+        
+          case "reload":
+          reloadPowerUpValue = 0.5;
+          System.out.println("Reload boost activated!");
+
+          // Start a 10-second timer to reset the reload time
+          new Timeline(new KeyFrame(Duration.seconds(10), e -> {
+            reloadPowerUpValue = 1.5; // Reset
+            System.out.println("Reload boost ended!");
+          })).play();
+            break;  
+          default:
+            break;
+        }
+        // Remove the power-up from the map and list
+        root.getChildren().remove(powerUp);
+        powerUps.remove(i);
+        i--;
+      }
+    }
   }
 
 }

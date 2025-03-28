@@ -3,11 +3,13 @@ import javafx.scene.layout.Pane;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.event.*;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 //import javafx.scene.image.Image;
 //import javafx.scene.image.ImageView;
 import javafx.stage.Screen;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 
 public class PostGame {
   private boolean win;
@@ -29,14 +31,10 @@ public class PostGame {
   public void initialize(Stage stage) {
     nextRound.getStyleClass().add("button");
     Platform.runLater(() -> {
-      if (stage == null) {
-        System.out.println("Fehler: Stage ist null!");
-        return;
-      }
       stageTemp = stage;
       Pane root = new Pane();
       Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
-      scene.getStylesheets().add("src/Styles/hauptmenu.css");
+      scene.getStylesheets().add("src/Styles/postgame.css");
       stage.setScene(scene);
       stage.setResizable(false);
       stage.setHeight(bildschirmHoehe);
@@ -46,36 +44,31 @@ public class PostGame {
       stage.setFullScreenExitKeyCombination(null);
       stage.show();
 
+      VBox vbox = new VBox(10);
+      vbox.setAlignment(Pos.CENTER);
+      vbox.setPrefWidth(bildschirmBreite);
+      vbox.setPrefHeight(bildschirmHoehe);
+
       hauptmenu.setOnAction((event) -> hauptmenu_Action(event));
-      hauptmenu.setPrefHeight(32);
-      hauptmenu.setPrefWidth(150);
-      hauptmenu.setLayoutY((bildschirmHoehe / 2) - (hauptmenu.getPrefHeight() / 2));
-      hauptmenu.setLayoutX(zentrieren(hauptmenu.getPrefWidth()));
       hauptmenu.setText("Zurück zum Hauptmenu");
-      root.getChildren().add(hauptmenu);
       hauptmenu.setVisible(true);
       hauptmenu.getStyleClass().add("button");
 
       if (win) {
         nextRound.setOnAction((event) -> nextRound_Action(event));
-        nextRound.setPrefWidth(112);
-        nextRound.setPrefHeight(32);
-        nextRound.setLayoutX(zentrieren(nextRound.getPrefWidth()));
-        nextRound.setLayoutY(hauptmenu.getLayoutY() - 66);
         nextRound.setText("Nächste Runde");
-        root.getChildren().add(nextRound);
+        nextRound.getStyleClass().add("button");
         nextRound.setVisible(true);
 
         text1 = new Label("Level " + level + " geschafft!");
       } else {
         text1 = new Label("An Level " + level + " gescheitert!");
       }
-
-      text1.setPrefWidth(150);
-      text1.setLayoutX(zentrieren(text1.getPrefWidth()));
-      text1.setLayoutY(hauptmenu.getLayoutY() - 150);
-      root.getChildren().add(text1);
+      text1.getStyleClass().add("label");
       text1.setVisible(true);
+
+      vbox.getChildren().addAll(text1, nextRound, hauptmenu);
+      root.getChildren().add(vbox);
     });
   }
 
@@ -92,10 +85,6 @@ public class PostGame {
     map.initialize(stageTemp);
     stageTemp.setFullScreen(true);
     stageTemp.setFullScreenExitHint("");
-  }
-
-  private double zentrieren(double objektBreite) {
-    return (bildschirmBreite - objektBreite) / 2;
   }
 
 }

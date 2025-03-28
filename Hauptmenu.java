@@ -5,15 +5,12 @@ import javafx.scene.layout.Pane;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
-import javafx.scene.text.Font;
 import javafx.event.*;
-import javafx.scene.control.Button;
 import javafx.scene.image.*;
-import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Screen;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 
 public class Hauptmenu extends Application {
   // Anfang Attribute
@@ -73,7 +70,6 @@ public class Hauptmenu extends Application {
     startenButton.setOnAction((event) -> {
       startenButton_Action(event);
     });
-    startenButton.setFont(Font.font("Dialog", 15));
     root.getChildren().add(startenButton);
 
     einstellungenButton.getStyleClass().add("button");
@@ -135,17 +131,17 @@ public class Hauptmenu extends Application {
       Settings.lautstaerke = newValue.doubleValue(); // Lautstärke in Settings aktualisieren
       lautstaerkeLabel.setText("Lautstärke: " + (int) (Settings.lautstaerke * 100) + "%"); // Label aktualisieren
     });
+    VBox lautstaerkeBox = new VBox(10);
+    lautstaerkeBox.setAlignment(Pos.CENTER);
+    lautstaerkeBox.getChildren().addAll(lautstaerkeLabel, lautstaerke);    
 
     Button resetHighscore = new Button("Highscore zurücksetzen");
+    resetHighscore.getStyleClass().add("longbutton");
     resetHighscore.setOnAction(e -> {
       highscore = 0;
       highscoreLabel.setText("Highscore: " + highscore);
-      resetHighscore.setPrefWidth(300);
     });
 
-    VBox lautstaerkeBox = new VBox(10);
-    lautstaerkeBox.setAlignment(Pos.CENTER);
-    lautstaerkeBox.getChildren().addAll(lautstaerkeLabel, lautstaerke);
 
     einstellungen.getChildren().addAll(zurueckButton, lautstaerkeBox, resetHighscore);
 
@@ -172,8 +168,9 @@ public class Hauptmenu extends Application {
     primaryStage.setHeight(bildschirmHoehe);
     primaryStage.setFullScreen(true);
     primaryStage.setFullScreenExitHint("");
+    primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
     primaryStage.setOnCloseRequest(e -> System.exit(0));
-    primaryStage.setTitle("Hauptmenu");
+    primaryStage.setTitle("Wee Tanks");
     primaryStage.setScene(scene);
     primaryStage.show();
   }
