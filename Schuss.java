@@ -11,7 +11,7 @@ public class Schuss{
   private double geschwindigkeitY;
   private boolean istSpieler;
   private int bounces;
-  private final int BASESPEED = 5;
+  private final int BASESPEED = 8;
   private boolean lila;
   private int lebenszeit = 0; // in Millisekunden
    
@@ -37,7 +37,7 @@ public class Schuss{
   }
 
   public int getLebenszeit() {
-    return lebenszeit;
+    return lebenszeit; 
   }
 
   public void erhoeheLebenszeit(int zeit) {

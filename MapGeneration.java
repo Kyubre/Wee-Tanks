@@ -9,13 +9,16 @@ import java.util.Random;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.*;
 import javafx.stage.Screen;
-    
-public class MapGeneration{
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+
+public class MapGeneration {
   private Rectangle borderwall1 = new Rectangle();
   private Rectangle borderwall2 = new Rectangle();
   private Rectangle borderwall3 = new Rectangle();
   private Rectangle borderwall4 = new Rectangle();
-  private ImageView hintergrund = new ImageView();  
+  private ImageView hintergrund = new ImageView();
   private Image gegnerImage;
   private Image gegnerTurret;
   private Image gegner_grau = new Image(getClass().getResourceAsStream("src/assets/images/panzer_grau.png"));
@@ -37,97 +40,105 @@ public class MapGeneration{
   private final int abstand = (int) (250 * (bildschirmBreite / referenceWidth));
   private double multi = bildschirmBreite / referenceWidth;
   private final int maxAnzahlBloecke = 12;
-  private final int minAnzahlBloecke = 8; 
+  private final int minAnzahlBloecke = 8;
   private Image vWand = new Image(getClass().getResourceAsStream("src/assets/images/wall_v.png"));
   private Image hWand = new Image(getClass().getResourceAsStream("src/assets/images/wall_h.png"));
   private Image panzer = new Image(getClass().getResourceAsStream("src/assets/images/panzer.png"));
+  private Image powerUp_speed = new Image(getClass().getResourceAsStream("src/assets/images/speed_powerup.png"));
+  private Image powerUp_reload = new Image(getClass().getResourceAsStream("src/assets/images/reload_powerup.png"));
+  private ImageView speedPowerUp;
+  private ImageView reloadPowerUp;
   private ImageView spieler;
   private ImageView gegner;
   private Pane pane1;
   private String farbe;
-  
-  public MapGeneration(){
+  private double speedPowerUpValue = 0.0;
+  private double reloadPowerUpValue = 2.5;
+  Pane mapPane = new Pane();
+
+  public MapGeneration() {
     alleWaende = new ArrayList<>();
     borderListe = new ArrayList<>();
   }
-  
-  public ArrayList<ImageView> getWandListe(){
+
+  public ArrayList<ImageView> getWandListe() {
     return alleWaende;
   }
-  
-  public ArrayList<Rectangle> getBorderListe(){
+
+  public ArrayList<Rectangle> getBorderListe() {
     return borderListe;
   }
-  
-  
-  public Pane getMap(){
+
+  public Pane getMap() {
     return pane1;
   }
-  
-  public ImageView getPanzer(){
+
+  public ImageView getPanzer() {
     return spieler;
   }
-  
-  public ImageView getGegner(){
+
+  public ImageView getGegner() {
     return gegner;
   }
-  
-  public Image getColor(){
+
+  public Image getColor() {
     return gegnerImage;
   }
-  
-  public Image getColorTurret(){
+
+  public Image getColorTurret() {
     return gegnerTurret;
   }
-  
-  public String getFarbe(){
+
+  public String getFarbe() {
     return farbe;
   }
-  
-  public void initialize(Stage stage) {        
-    Pane mapPane = new Pane();
+
+  public double getPowerUpspeed() {
+    return speedPowerUpValue;
+  }
+
+  public void initialize(Stage stage) {
     VBox root = new VBox();
-    
+
     // button um das spiel zu schließen
     Button exitButton = new Button("Exit");
     exitButton.setOnAction(e -> {
       stage.close();
       System.exit(0);
     });
-    
+
     // regenerate Button
     Button regenerateButton = new Button("Regenerate Map");
     regenerateButton.setOnAction(e -> {
       mapPane.getChildren().clear();
-      alleWaende.clear(); 
+      alleWaende.clear();
       generateMap(mapPane);
     });
-    
+
     // Vbox und scene werden erstellt für beide buttons
-//    VBox buttonBox = new VBox(5);
-//    buttonBox.getChildren().addAll(exitButton, regenerateButton);
-//    root.getChildren().addAll(buttonBox, mapPane);
+    // VBox buttonBox = new VBox(5);
+    // buttonBox.getChildren().addAll(exitButton, regenerateButton);
+    // root.getChildren().addAll(buttonBox, mapPane);
     Scene scene = new Scene(root, windowWidth, windowHeight);
     generateMap(mapPane);
-    
-    stage.setFullScreen(true); 
+
+    stage.setFullScreen(true);
     stage.setTitle("Map Generation Test");
     stage.setScene(scene);
     stage.show();
     pane1 = mapPane;
   }
-  
-  public void placeHintergrund(Pane mapPane){
+
+  public void placeHintergrund(Pane mapPane) {
     hintergrund.setX(0);
     hintergrund.setY(0);
     hintergrund.setFitHeight(bildschirmHoehe);
-    hintergrund.setFitWidth(bildschirmBreite);    
+    hintergrund.setFitWidth(bildschirmBreite);
     hintergrund.setImage(new Image(getClass().getResourceAsStream("src/assets/images/hintergrund.png")));
     mapPane.getChildren().add(hintergrund);
   }
-  
-  
-  private void placeBorder(Pane mapPane){
+
+  private void placeBorder(Pane mapPane) {
     borderwall1.setWidth(bildschirmBreite);
     borderwall1.setHeight(1);
     borderwall1.setX(1);
@@ -135,23 +146,23 @@ public class MapGeneration{
     borderwall1.setSmooth(false);
     mapPane.getChildren().add(borderwall1);
     borderListe.add(borderwall1);
-    
+
     borderwall2.setWidth(20);
     borderwall2.setHeight(bildschirmHoehe);
-    borderwall2.setX(bildschirmBreite-1);
+    borderwall2.setX(bildschirmBreite - 1);
     borderwall2.setY(1);
     borderwall2.setSmooth(false);
     mapPane.getChildren().add(borderwall2);
     borderListe.add(borderwall2);
-    
+
     borderwall3.setWidth(bildschirmBreite);
     borderwall3.setHeight(20);
     borderwall3.setX(0);
-    borderwall3.setY(bildschirmHoehe-1);
+    borderwall3.setY(bildschirmHoehe - 1);
     borderwall3.setSmooth(false);
     mapPane.getChildren().add(borderwall3);
     borderListe.add(borderwall3);
-    
+
     borderwall4.setWidth(1);
     borderwall4.setHeight(bildschirmHoehe);
     borderwall4.setX(1);
@@ -159,43 +170,44 @@ public class MapGeneration{
     borderwall4.setSmooth(false);
     mapPane.getChildren().add(borderwall4);
     borderListe.add(borderwall4);
-    
+
   }
-  
-  
+
   private void placeWalls(Pane mapPane) {
     int attempts = 0;
     while (attempts < maxAttempts) {
       boolean overlap = true;
       ImageView wall = new ImageView();
-      
+
       // generiert zufällig horizontale oder vertikale rectangles
       int randomInt = random.nextInt(2);
-      if (randomInt == 1) {  // Bei 1 wird ein Horizontales rectangle erstellt
+      if (randomInt == 1) { // Bei 1 wird ein Horizontales rectangle erstellt
         wall.setFitWidth(200 * multi);
         wall.setFitHeight(80 * multi);
         wall.setImage(hWand);
-      } else {                // sonst wird ein vertikales erstellt
+      } else { // sonst wird ein vertikales erstellt
         wall.setFitWidth(80 * multi);
         wall.setFitHeight(200 * multi);
         wall.setImage(vWand);
       }
-      
+
       int availableWidth = (int) bildschirmBreite - (int) wall.getFitWidth();
       int availableHeight = (int) bildschirmHoehe - (int) wall.getFitHeight();
-      
+
       // setzt die X / Y Koordinaten der rectangles inerhalb der spielfläche
       wall.setX(random.nextInt(availableWidth));
       wall.setY(random.nextInt(availableHeight));
-      
-      // erstellt ein 2. unsichbares rectangle mit der größe des 1. rectangles + einen festen abstand (250px)
-      // damit wird sicher gegangen, dass rectangles nicht ineinander generiert werden könnten
+
+      // erstellt ein 2. unsichbares rectangle mit der größe des 1. rectangles + einen
+      // festen abstand (250px)
+      // damit wird sicher gegangen, dass rectangles nicht ineinander generiert werden
+      // könnten
       Rectangle rect2 = new Rectangle();
-      rect2.setWidth(wall.getFitWidth()+abstand*2);
-      rect2.setHeight(wall.getFitHeight()+abstand*2);      
-      rect2.setX(wall.getX()-abstand);
-      rect2.setY(wall.getY()-abstand);
-      
+      rect2.setWidth(wall.getFitWidth() + abstand * 2);
+      rect2.setHeight(wall.getFitHeight() + abstand * 2);
+      rect2.setX(wall.getX() - abstand);
+      rect2.setY(wall.getY() - abstand);
+
       // wenn rect2 mit rect1 overlapped, wird die wand nicht generiert
       overlap = false;
       for (ImageView existingWall : alleWaende) {
@@ -204,37 +216,38 @@ public class MapGeneration{
           break;
         }
       }
-      
+
       // falls kein overlap besteht, wird das rectangle erstellt
       if (!overlap) {
         alleWaende.add(wall);
         mapPane.getChildren().add(wall);
         return;
       }
-      
-      // maximale versuche rectangles zu generieren, wenn die nummer erreicht wird, werden keine mehr generiert
+
+      // maximale versuche rectangles zu generieren, wenn die nummer erreicht wird,
+      // werden keine mehr generiert
       attempts++;
     }
   }
-  
+
   private void placePlayer(Pane mapPane) {
     int attempts = 0;
     boolean placed = false;
-    
+
     while (attempts < maxAttempts && !placed) {
       boolean overlap = true;
       ImageView tank = new ImageView();
-      
+
       tank.setFitWidth(100 * multi);
       tank.setFitHeight(75 * multi);
-      
+
       int availableWidth = (int) (windowWidth - tank.getFitWidth());
       int availableHeight = (int) (windowHeight - tank.getFitHeight());
-      
+
       // Setzt zufällige X / Y Koordinaten
       tank.setX(random.nextInt(availableWidth));
       tank.setY(random.nextInt(availableHeight));
-      
+
       overlap = false;
       for (ImageView existingWall : alleWaende) {
         if (tank.intersects(existingWall.getBoundsInParent())) {
@@ -242,32 +255,32 @@ public class MapGeneration{
           break;
         }
       }
-      
+
       Rectangle links = new Rectangle();
       links.setX(0);
       links.setY(0);
       links.setHeight(bildschirmHoehe);
-      links.setWidth(bildschirmBreite/4);
-      
+      links.setWidth(bildschirmBreite / 4);
+
       if (!tank.intersects(links.getBoundsInParent())) {
         overlap = true;
       }
-      
+
       if (!overlap) {
         mapPane.getChildren().add(tank);
         tank.setImage(panzer);
-        spieler = tank; 
+        spieler = tank;
         placed = true;
       }
-      
+
       attempts++;
     }
   }
-  
-  private void gegnerFarbe(){
+
+  private void gegnerFarbe() {
     int level = Map.getLevel();
-    if(level <=5) {
-      if(level != 5) {
+    if (level <= 5) {
+      if (level != 5) {
         gegnerImage = gegner_grau;
         gegnerTurret = turret_grau;
         farbe = "grau";
@@ -276,8 +289,8 @@ public class MapGeneration{
         gegnerTurret = turret_rot;
         farbe = "rot";
       }
-    } else if(level <= 20) {
-      if((level % 5) == 0) {
+    } else if (level <= 20) {
+      if ((level % 5) == 0) {
         gegnerImage = gegner_lila;
         gegnerTurret = turret_lila;
         farbe = "lila";
@@ -288,30 +301,30 @@ public class MapGeneration{
       }
     } else {
       gegnerImage = gegner_lila;
-      gegnerTurret = turret_lila; 
-      farbe = "lila"; 
-    } 
+      gegnerTurret = turret_lila;
+      farbe = "lila";
+    }
   }
 
-  
   private void placeGegner(Pane mapPane) {
     int attempts = 0;
     boolean placed = false;
     ImageView tank = new ImageView();
-    
+
     while (attempts < maxAttempts && !placed) {
       boolean overlap = true;
-      
+
       tank.setFitWidth(100 * multi);
       tank.setFitHeight(75 * multi);
-      
+
       int availableHeight = (int) (windowHeight - tank.getFitHeight());
-      
-      //setX generiert im rechten Viertel ein random Wert von 0 bis 1 * Größe von einem Viertel für einen random Wert im rechten Viertel
+
+      // setX generiert im rechten Viertel ein random Wert von 0 bis 1 * Größe von
+      // einem Viertel für einen random Wert im rechten Viertel
       tank.setX((bildschirmBreite / 4) * 3 + Math.random() * (bildschirmBreite / 4) - tank.getFitWidth());
       tank.setY(random.nextInt(availableHeight));
       tank.setRotate(180);
-      
+
       overlap = false;
       for (ImageView existingWall : alleWaende) {
         if (tank.intersects(existingWall.getBoundsInParent())) {
@@ -319,24 +332,23 @@ public class MapGeneration{
           break;
         }
       }
-      
+
       Gegner gTest = new Gegner("rot", tank, null);
-      if(gTest.siehtSpieler(spieler, tank, alleWaende)){
+      if (gTest.siehtSpieler(spieler, tank, alleWaende)) {
         overlap = true;
       }
-      
-      
+
       if (!overlap) {
         mapPane.getChildren().add(tank);
         tank.setImage(panzer);
-        gegner = tank; 
+        gegner = tank;
         placed = true;
       }
-      
+
       attempts++;
     }
-    
-    //Backup Spawn falls das Spawning nicht geht
+
+    // Backup Spawn falls das Spawning nicht geht
     if (!placed) {
       tank.setX(bildschirmBreite - 150);
       tank.setY(bildschirmHoehe / 2);
@@ -355,9 +367,70 @@ public class MapGeneration{
     placePlayer(mapPane);
     placeGegner(mapPane);
     placeBorder(mapPane);
+    placePowerUps(mapPane);
     gegnerFarbe();
     System.out.println("Level " + Map.getLevel() + " initialisiert");
     return mapPane;
   }
-    
+
+  ArrayList<ImageView> powerUps = new ArrayList<>();
+
+  private void placePowerUps(Pane mapPane) {
+    // Create and configure the speed power-up
+    ImageView speedPowerUp = new ImageView(powerUp_speed);
+    speedPowerUp.setX(random.nextInt((int) (bildschirmBreite - 50)));
+    speedPowerUp.setY(random.nextInt((int) (bildschirmHoehe - 50)));
+    speedPowerUp.setId("speed");
+    System.out.println("Speed power-up added at: " + speedPowerUp.getX() + ", " + speedPowerUp.getY());
+    mapPane.getChildren().add(speedPowerUp);
+    powerUps.add(speedPowerUp); // Add to the list
+
+    // Create and configure the reload power-up
+    ImageView reloadPowerUp = new ImageView(powerUp_reload);
+    reloadPowerUp.setX(random.nextInt((int) (bildschirmBreite - 50)));
+    reloadPowerUp.setY(random.nextInt((int) (bildschirmHoehe - 50)));
+    reloadPowerUp.setId("reload");
+    System.out.println("Reload power-up added at: " + reloadPowerUp.getX() + ", " + reloadPowerUp.getY());
+    mapPane.getChildren().add(reloadPowerUp);
+    powerUps.add(reloadPowerUp); // Add to the list
+  }
+
+  public void checkPlayerCollision() {
+
+    for (int i = 0; i < powerUps.size(); i++) {
+      ImageView powerUp = powerUps.get(i);
+      if (spieler.getBoundsInParent().intersects(powerUp.getBoundsInParent())) {
+        String powerUpType = powerUp.getId();
+        System.out.println(powerUpType + " power-up collected!");
+
+        if ("speed".equals(powerUpType)) {
+          // Set speedPowerUpValue to 3 for the boost
+          speedPowerUpValue = 3.0;
+          System.out.println("Speed boost activated!");
+
+          // Start a 10-second timer to reset the speed
+          new Timeline(new KeyFrame(Duration.seconds(10), e -> {
+            speedPowerUpValue = 0.0; // Reset speedPowerUpValue
+            System.out.println("Speed boost ended!");
+          })).play();
+        } else if ("reload".equals(powerUpType)) {
+          // Handle reload power-up logic
+          reloadPowerUpValue = 0.5; // Example: Set reload boost value
+          System.out.println("Reload boost activated!");
+
+          // Start a 10-second timer to reset the reload time
+          new Timeline(new KeyFrame(Duration.seconds(10), e -> {
+            reloadPowerUpValue = 1.0; // Reset reloadPowerUpValue
+            System.out.println("Reload boost ended!");
+          })).play();
+        }
+
+        // Remove the power-up from the map and list
+        mapPane.getChildren().remove(powerUp);
+        powerUps.remove(i);
+        i--; // Adjust index after removal
+      }
+    }
+  }
+
 }

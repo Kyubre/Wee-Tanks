@@ -27,7 +27,7 @@ public class PostGame {
   }
 
   public void initialize(Stage stage) {
-
+    nextRound.getStyleClass().add("button");
     Platform.runLater(() -> {
       if (stage == null) {
         System.out.println("Fehler: Stage ist null!");
@@ -36,6 +36,7 @@ public class PostGame {
       stageTemp = stage;
       Pane root = new Pane();
       Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
+      scene.getStylesheets().add("src/Styles/hauptmenu.css");
       stage.setScene(scene);
       stage.setResizable(false);
       stage.setHeight(bildschirmHoehe);
@@ -53,6 +54,7 @@ public class PostGame {
       hauptmenu.setText("Zurück zum Hauptmenu");
       root.getChildren().add(hauptmenu);
       hauptmenu.setVisible(true);
+      hauptmenu.getStyleClass().add("button");
 
       if (win) {
         nextRound.setOnAction((event) -> nextRound_Action(event));

@@ -6,7 +6,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.animation.AnimationTimer;
 import javafx.stage.Screen;
 
-public class Player{
+public class Player {
+  private MapGeneration mapgen = new MapGeneration();
   private double multi = (Screen.getPrimary().getBounds().getWidth() / 1920);
   private double xPos;
   private double yPos;
@@ -17,7 +18,7 @@ public class Player{
   private boolean sGedrueckt = false;
   private boolean dGedrueckt = false;
   private boolean bewegungsTimerErstellt = false;
-  private final double speed = 5 * multi;
+  private final double speed = 5 * multi + mapgen.getPowerUpspeed();
   private double panzerAltX;
   private double panzerAltY;
   private double turretAltX;
@@ -26,83 +27,82 @@ public class Player{
   private boolean isAlive;
 
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
-  
-  public Player(ImageView panzer, ImageView panzerTurret){
+
+  public Player(ImageView panzer, ImageView panzerTurret) {
     isAlive = true;
-  } 
-  
-  public void setAlive(boolean neu){
+  }
+
+  public void setAlive(boolean neu) {
     isAlive = neu;
   }
-  
-  public boolean getAlive(){
+
+  public boolean getAlive() {
     return isAlive;
   }
-       
-  
-  public double turretRotation(MouseEvent evnt, ImageView panzer){
+
+  public double turretRotation(MouseEvent evnt, ImageView panzer) {
     double eventX = evnt.getX();
     double eventY = evnt.getY();
     xPos = panzer.getX();
     yPos = panzer.getY();
     double playerWidth = panzer.getFitWidth();
     double playerHeight = panzer.getFitHeight();
-    
+
     centerPosX = xPos + (playerWidth / 2);
     centerPosY = yPos + (playerHeight / 2);
-    
+
     double angle = Math.toDegrees(Math.atan2(eventY - centerPosY, eventX - centerPosX));
     return angle;
   }
-  
-  
-  public void tasteGedrueckt(KeyEvent evt){
+
+  public void tasteGedrueckt(KeyEvent evt) {
     switch (evt.getCode()) {
-      case W: 
+      case W:
         wGedrueckt = true;
         break;
-      case A: 
+      case A:
         aGedrueckt = true;
         break;
-      case S: 
+      case S:
         sGedrueckt = true;
         break;
-      case D: 
+      case D:
         dGedrueckt = true;
         break;
       case G:
         Map.setGodmode(!Map.getGodmode());
         break;
-      default: 
-        break;  
+      default:
+        break;
     }
   }
-  
-  public void tasteLosgelassen(KeyEvent evt){
+
+  public void tasteLosgelassen(KeyEvent evt) {
     switch (evt.getCode()) {
-      case W: 
+      case W:
         wGedrueckt = false;
         break;
-      case A: 
+      case A:
         aGedrueckt = false;
         break;
-      case S: 
+      case S:
         sGedrueckt = false;
         break;
-      case D: 
+      case D:
         dGedrueckt = false;
         break;
-      default: 
-        break;  
+      default:
+        break;
     }
   }
-  
-  //AnimationTimer erstellen für movement jeden Frame
-  public void bewegungsTimerErstellen(ImageView panzer, ImageView turret, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){
+
+  // AnimationTimer erstellen für movement jeden Frame
+  public void bewegungsTimerErstellen(ImageView panzer, ImageView turret, ArrayList<ImageView> wandListe,
+      ArrayList<Rectangle> borderListe) {
     if (!bewegungsTimerErstellt) {
-      AnimationTimer bewegungsTimer = new AnimationTimer(){
+      AnimationTimer bewegungsTimer = new AnimationTimer() {
         @Override
-        public void handle(long now){
+        public void handle(long now) {
           if (fpsLimiter.canRender(now)) {
             movement(panzer, turret, wandListe, borderListe);
           }
@@ -113,82 +113,75 @@ public class Player{
     }
   }
 
-  
   public boolean panzerKollision(ImageView panzer, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
     for (ImageView wand : wandListe) {
       if (panzer.intersects(wand.getBoundsInParent())) {
         return true;
       }
     }
-    
+
     for (Rectangle border : borderListe) {
       if (panzer.intersects(border.getBoundsInParent())) {
         return true;
       }
     }
-    
+
     return false;
-    
+
   }
-      
-  public void movement(ImageView panzer, ImageView turret, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){    
+
+  public void movement(ImageView panzer, ImageView turret, ArrayList<ImageView> wandListe,
+      ArrayList<Rectangle> borderListe) {
     bewegungsTimerErstellen(panzer, turret, wandListe, borderListe);
-    
+
     panzerAltX = panzer.getX();
     panzerAltY = panzer.getY();
     turretAltX = turret.getX();
     turretAltY = turret.getY();
     altRotation = panzer.getRotate();
-    
+
     if (wGedrueckt && aGedrueckt) {
-      panzer.setY(panzer.getY()-speed/2);
-      panzer.setX(panzer.getX()-speed/2);
-      panzer.setRotate(225);         
-      turret.setY(turret.getY()-speed/2);
-      turret.setX(turret.getX()-speed/2);
-    } 
-    else if (wGedrueckt && dGedrueckt) {
-      panzer.setY(panzer.getY()-speed/2);
-      panzer.setX(panzer.getX()+speed/2);
+      panzer.setY(panzer.getY() - speed / 2);
+      panzer.setX(panzer.getX() - speed / 2);
+      panzer.setRotate(225);
+      turret.setY(turret.getY() - speed / 2);
+      turret.setX(turret.getX() - speed / 2);
+    } else if (wGedrueckt && dGedrueckt) {
+      panzer.setY(panzer.getY() - speed / 2);
+      panzer.setX(panzer.getX() + speed / 2);
       panzer.setRotate(315);
-      turret.setY(turret.getY()-speed/2);
-      turret.setX(turret.getX()+speed/2);
-    } 
-    else if (sGedrueckt && aGedrueckt) {
-      panzer.setY(panzer.getY()+speed/2);
-      panzer.setX(panzer.getX()-speed/2);
+      turret.setY(turret.getY() - speed / 2);
+      turret.setX(turret.getX() + speed / 2);
+    } else if (sGedrueckt && aGedrueckt) {
+      panzer.setY(panzer.getY() + speed / 2);
+      panzer.setX(panzer.getX() - speed / 2);
       panzer.setRotate(135);
-      turret.setY(turret.getY()+speed/2);
-      turret.setX(turret.getX()-speed/2);
-    } 
-    else if (sGedrueckt && dGedrueckt) {
-      panzer.setY(panzer.getY()+speed/2);
-      panzer.setX(panzer.getX()+speed/2);
+      turret.setY(turret.getY() + speed / 2);
+      turret.setX(turret.getX() - speed / 2);
+    } else if (sGedrueckt && dGedrueckt) {
+      panzer.setY(panzer.getY() + speed / 2);
+      panzer.setX(panzer.getX() + speed / 2);
       panzer.setRotate(45);
-      turret.setY(turret.getY()+speed/2);
-      turret.setX(turret.getX()+speed/2);
-    } 
-    else if (wGedrueckt) {
-      panzer.setY(panzer.getY()-speed);
+      turret.setY(turret.getY() + speed / 2);
+      turret.setX(turret.getX() + speed / 2);
+    } else if (wGedrueckt) {
+      panzer.setY(panzer.getY() - speed);
       panzer.setRotate(270);
-      turret.setY(turret.getY()-speed);
-    } 
-    else if (aGedrueckt) {
-      panzer.setX(panzer.getX()-speed);
+      turret.setY(turret.getY() - speed);
+    } else if (aGedrueckt) {
+      panzer.setX(panzer.getX() - speed);
       panzer.setRotate(180);
-      turret.setX(turret.getX()-speed);
-    } 
-    else if (sGedrueckt) {
-      panzer.setY(panzer.getY()+speed);
+      turret.setX(turret.getX() - speed);
+    } else if (sGedrueckt) {
+      panzer.setY(panzer.getY() + speed);
       panzer.setRotate(90);
-      turret.setY(turret.getY()+speed);
-    } 
-    else if (dGedrueckt) {
-      panzer.setX(panzer.getX()+speed);
+      turret.setY(turret.getY() + speed);
+    } else if (dGedrueckt) {
+      panzer.setX(panzer.getX() + speed);
       panzer.setRotate(0);
-      turret.setX(turret.getX()+speed);
+      turret.setX(turret.getX() + speed);
     }
-    
+
     if (panzerKollision(panzer, wandListe, borderListe)) {
       panzer.setX(panzerAltX);
       panzer.setY(panzerAltY);
