@@ -7,7 +7,6 @@ import javafx.animation.AnimationTimer;
 import javafx.stage.Screen;
 
 public class Player {
-  private Map map = new Map();
   private double multi = (Screen.getPrimary().getBounds().getWidth() / 1920);
   private double xPos;
   private double yPos;
