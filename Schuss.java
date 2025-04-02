@@ -83,11 +83,20 @@ public class Schuss{
     return bounces;
   }
 
-  public boolean trefferCheck(ImageView schussBild, ImageView player){ 
-    if (schussBild.intersects(player.getBoundsInParent())) {
+  public boolean trefferCheck(ImageView schussBild, ImageView ziel){ 
+    if (schussBild.intersects(ziel.getBoundsInParent())) {
       return true;
     }
     return false;
+  }
+
+  public Gegner playerTrefferCheck(ImageView schussBild, ArrayList<Gegner> gegnerListe) {
+    for (Gegner gegner : gegnerListe) {
+      if (schussBild.intersects(gegner.getImage().getBoundsInParent())) {
+        return gegner;
+      }
+    } 
+    return null;
   }
   
   public void fliegen(ImageView schussBild, ImageView player, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe){

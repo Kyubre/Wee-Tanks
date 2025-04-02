@@ -21,12 +21,16 @@ public class Gegner {
     private int richtung;
     private double speed;
     private double difficulty = Map.getLevel() / 10 + 1;
+    private ImageView gegner;
+    private ImageView gegnerTurret;
 
     public Gegner(String i_Farbe, ImageView gegner, ImageView gegnerTurret) {
         this.FARBE = i_Farbe;
         this.nachgeladen = true;
         started = false;
         speed = 2 * difficulty;
+        this.gegner = gegner;
+        this.gegnerTurret = gegnerTurret;
     }
 
     public boolean getUpdate() {
@@ -50,15 +54,23 @@ public class Gegner {
         return isAlive;
     }
 
-    public void start(ImageView gegner, ImageView gegnerTurret, ImageView spieler, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
+    public ImageView getImage(){
+        return gegner;
+    }
+    
+    public ImageView getGegnerTurret(){
+        return gegnerTurret;
+    }
+
+    public void start(ImageView spieler, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
         if (!started) {
             isAlive = true;
-            ai(gegner, gegnerTurret, spieler, wandListe, borderListe);
+            ai(spieler, wandListe, borderListe);
             started = true;
         }
     }
 
-    public void ai(ImageView gegner, ImageView gegnerTurret, ImageView spieler, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
+    public void ai(ImageView spieler, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
         AnimationTimer gegnerAlgo = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -270,4 +282,6 @@ public class Gegner {
             }
         }
     }
+    
+
 }

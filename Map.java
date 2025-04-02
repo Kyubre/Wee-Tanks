@@ -23,10 +23,9 @@ public class Map {
   private static double speedPowerUpValue = 1.0;
   private double reloadPowerUpValue = 1.5;
   private ImageView turret = new ImageView();
-  private Image turretImage = new Image(getClass().getResourceAsStream("src/assets/images/turret.png"));
-  private ImageView gegner;
-  private ImageView gegnerTurret = new ImageView();
   private Image gegnerTurretImage;
+  private ImageView gegner;
+  private ImageView gegnerTurret;
   private boolean istNachgeladen = true;
   private boolean gegnerNachgeladen = true;
   private ArrayList<ImageView> schuesse = new ArrayList<ImageView>();
@@ -34,10 +33,10 @@ public class Map {
   private ArrayList<ImageView> wandListe;
   private ArrayList<Rectangle> borderListe;
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
+  private ArrayList<Gegner> gegnerListe = new ArrayList<Gegner>();
   private MapGeneration generation;
   private ImageView panzer;
   private Player p1;
-  private Gegner g1;
   private Pane root;
   private Stage stage1;
   private static int level = 0;
@@ -53,18 +52,21 @@ public class Map {
     Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
     wandListe = generation.getWandListe();
     borderListe = generation.getBorderListe();
+    gegnerListe = generation.getGegnerListe();
     panzer = generation.getPanzer();
+    turret = generation.getTurret();
     gegner = generation.getGegner();
+    gegnerTurret = generation.getGegnerTurret();
     gegnerTurretImage = generation.getColorTurret();
+    gegnerTurret.setImage(gegnerTurretImage);
     gegner.setImage(generation.getColor());
     p1 = new Player(panzer, turret);
-    g1 = new Gegner(generation.getFarbe(), generation.getGegner(), gegnerTurret);
     // fängt an die hintergrundmusik abzuspielen
-    if (Sounds.getMusicStarted() == false) {
-      Sounds.bgmAbspielen();
-    } else {
-      Sounds.resumeBgmMusic();
-    }
+    //if (Sounds.getMusicStarted() == false) {
+    //  Sounds.bgmAbspielen();
+    //} else {
+    //  Sounds.resumeBgmMusic();
+    //}
 
     stage.setX(0);
     stage.setY(0);
@@ -75,38 +77,50 @@ public class Map {
     stage.setFullScreenExitHint("");
     stage.setFullScreen(true);
     stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); // Disable Escape key for exiting fullscreen
-    g1.start(gegner, gegnerTurret, panzer, wandListe, borderListe);
+    for(Gegner g : gegnerListe){
+      g.start(panzer, wandListe, borderListe);
+    }
+    
 
     AnimationTimer gameplayLoop = new AnimationTimer() {
       @Override
       public void handle(long now) {
         // Spiel vorbei
-        if (!g1.getAlive() && !restart) {
-          bRestart_Action(true);
-          restart = true;
+        for(Gegner g : gegnerListe){
+          if (g.getAlive()) {
+            break;
+          }
+          else if (!g.getAlive() && !restart) {
+            bRestart_Action(true);
+            restart = true;
+          }
         }
+        
 
         // Gegner Schuss
-        if (g1.getUpdate() && gegnerNachgeladen) {
-          ImageView gegnerSchuss = gegnerSchussErstellen(gegner, gegnerTurret);
-          root.getChildren().add(gegnerSchuss);
-          Schuss sGegner;
-          if (g1.getColor().equals("lila")) {
-            sGegner = new Schuss(gegnerTurret, false, true);
-          } else {
-            sGegner = new Schuss(gegnerTurret, false, false);
+        for(Gegner g : gegnerListe){
+          if (g.getUpdate() && gegnerNachgeladen) {
+            ImageView gegnerSchuss = gegnerSchussErstellen(g);
+            root.getChildren().add(gegnerSchuss);
+            Schuss sGegner;
+            if (g.getColor().equals("lila")) {
+              sGegner = new Schuss(gegnerTurret, false, true);
+            } else {
+              sGegner = new Schuss(gegnerTurret, false, false);
+            }
+  
+            addSchuss(gegnerSchuss, sGegner);
+            gegnerNachgeladen = false;
+            PauseTransition nachladenGegner = new PauseTransition(Duration.seconds(1.5));
+            if (gegnerNachgeladen == false) {
+              nachladenGegner.play();
+            }
+            nachladenGegner.setOnFinished(event2 -> {
+              gegnerNachgeladen = true;
+            });
           }
-
-          addSchuss(gegnerSchuss, sGegner);
-          gegnerNachgeladen = false;
-          PauseTransition nachladenGegner = new PauseTransition(Duration.seconds(1.5));
-          if (gegnerNachgeladen == false) {
-            nachladenGegner.play();
-          }
-          nachladenGegner.setOnFinished(event2 -> {
-            gegnerNachgeladen = true;
-          });
         }
+        
       }
     };
     gameplayLoop.start();
@@ -129,17 +143,17 @@ public class Map {
             sObj.erhoeheLebenszeit(1000 / fpsLimiter.getFps());
 
             if (sObj.getSpieler()) {
-              boolean treffer = sObj.trefferCheck(schuss, gegner);
-              if (treffer) {
+              Gegner getroffen = sObj.playerTrefferCheck(schuss, gegnerListe);
+              if (getroffen != null) {
                 root.getChildren().remove(schuss);
                 removeSchuss(schuss);
-                root.getChildren().remove(gegner);
-                gegner.setX(-100);
-                gegner.setY(0);
-                root.getChildren().remove(gegnerTurret);
-                gegnerTurret.setX(-100);
-                gegnerTurret.setY(0);
-                g1.setAlive(false);
+                root.getChildren().remove(getroffen.getImage());
+                getroffen.getImage().setX(-100);
+                getroffen.getImage().setY(0);
+                root.getChildren().remove(getroffen.getGegnerTurret());
+                getroffen.getGegnerTurret().setX(-100);
+                getroffen.getGegnerTurret().setY(0);
+                getroffen.setAlive(false);
                 i--;
                 continue;
               }
@@ -217,7 +231,10 @@ public class Map {
       }
 
       else if (event.getButton().equals(MouseButton.SECONDARY)) {
-        g1.setAlive(false);
+        for(Gegner g : gegnerListe){
+          g.setAlive(false);
+        }
+        
       }
     });
 
@@ -227,21 +244,6 @@ public class Map {
       }
     });
 
-    // Turret erstellen
-    turret.setX(panzer.getX() - 8);
-    turret.setY(panzer.getY() + 12);
-    turret.setFitWidth(114 * multi);
-    turret.setFitHeight(50 * multi);
-    turret.setImage(turretImage);
-    root.getChildren().add(turret);
-
-    gegnerTurret.setX(gegner.getX() - 8);
-    gegnerTurret.setY(gegner.getY() + 12);
-    gegnerTurret.setFitWidth(114 * multi);
-    gegnerTurret.setFitHeight(50 * multi);
-    gegnerTurret.setRotate(180);
-    gegnerTurret.setImage(gegnerTurretImage);
-    root.getChildren().add(gegnerTurret);
 
     // Ende Komponenten
     stage.setOnCloseRequest(e -> System.exit(0));
@@ -283,14 +285,14 @@ public class Map {
     return shot;
   }
 
-  public ImageView gegnerSchussErstellen(ImageView gegner, ImageView gegnerTurret) {
+  public ImageView gegnerSchussErstellen(Gegner gegner) {
     ImageView shot = new ImageView();
-    Image shotImage = new Image(getClass().getResourceAsStream("src/assets/images/bullet_" + g1.getColor() + ".png"));
-    shot.setX(gegner.getX() + (gegner.getFitWidth() / 2) - 11);
-    shot.setY(gegner.getY() + (gegner.getFitHeight() / 2) + 4);
+    Image shotImage = new Image(getClass().getResourceAsStream("src/assets/images/bullet_" + gegner.getColor() + ".png"));
+    shot.setX(gegner.getImage().getX() + (gegner.getImage().getFitWidth() / 2) - 11);
+    shot.setY(gegner.getImage().getY() + (gegner.getImage().getFitHeight() / 2) + 4);
     shot.setFitHeight(7 * multi);
     shot.setFitWidth(20 * multi);
-    shot.setRotate(gegnerTurret.getRotate());
+    shot.setRotate(gegner.getGegnerTurret().getRotate());
     shot.setImage(shotImage);
     Sounds.schussSound();
     return shot;
@@ -374,5 +376,4 @@ public class Map {
       }
     }
   }
-
 }

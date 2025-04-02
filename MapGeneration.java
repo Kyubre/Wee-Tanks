@@ -6,10 +6,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Random;
-import javafx.scene.image.ImageView;
+
 import javafx.scene.image.*;
 import javafx.stage.Screen;
-
 
 public class MapGeneration {
   private Rectangle borderwall1 = new Rectangle();
@@ -18,7 +17,7 @@ public class MapGeneration {
   private Rectangle borderwall4 = new Rectangle();
   private ImageView hintergrund = new ImageView();
   private Image gegnerImage;
-  private Image gegnerTurret;
+  private Image gegnerTurretImage;
   private Image gegner_grau = new Image(getClass().getResourceAsStream("src/assets/images/panzer_grau.png"));
   private Image gegner_lila = new Image(getClass().getResourceAsStream("src/assets/images/panzer_lila.png"));
   private Image gegner_rot = new Image(getClass().getResourceAsStream("src/assets/images/panzer_rot.png"));
@@ -47,10 +46,15 @@ public class MapGeneration {
   private ImageView speedPowerUp;
   private ImageView reloadPowerUp;
   private ImageView spieler;
+  private ImageView turret = new ImageView();
+  private ImageView gegnerTurret = new ImageView();
+  private Image turretImage = new Image(getClass().getResourceAsStream("src/assets/images/turret.png"));
   private ImageView gegner;
   private Pane pane1;
   private String farbe;
   ArrayList<ImageView> powerUps;
+  private ArrayList<Gegner> gegnerListe = new ArrayList<>();
+
   Pane root = new Pane();
 
   public MapGeneration() {
@@ -88,11 +92,23 @@ public class MapGeneration {
   }
 
   public Image getColorTurret() {
-    return gegnerTurret;
+    return gegnerTurretImage;
   }
 
   public String getFarbe() {
     return farbe;
+  }
+
+  public ImageView getTurret() {
+    return turret;
+  }
+
+  public ImageView getGegnerTurret() {
+    return gegnerTurret;
+  }
+
+  public ArrayList<Gegner> getGegnerListe() {
+    return gegnerListe;
   }
 
   public void initialize(Stage stage) {
@@ -265,6 +281,13 @@ public class MapGeneration {
         tank.setImage(panzer);
         spieler = tank;
         placed = true;
+        // Turret erstellen
+        turret.setX(tank.getX() - 8);
+        turret.setY(tank.getY() + 12);
+        turret.setFitWidth(114 * multi);
+        turret.setFitHeight(50 * multi);
+        turret.setImage(turretImage);
+        root.getChildren().add(turret);
       }
 
       attempts++;
@@ -276,26 +299,26 @@ public class MapGeneration {
     if (level <= 5) {
       if (level != 5) {
         gegnerImage = gegner_grau;
-        gegnerTurret = turret_grau;
+        gegnerTurretImage = turret_grau;
         farbe = "grau";
       } else {
         gegnerImage = gegner_rot;
-        gegnerTurret = turret_rot;
+        gegnerTurretImage = turret_rot;
         farbe = "rot";
       }
     } else if (level <= 20) {
       if ((level % 5) == 0) {
         gegnerImage = gegner_lila;
-        gegnerTurret = turret_lila;
+        gegnerTurretImage = turret_lila;
         farbe = "lila";
       } else {
         gegnerImage = gegner_rot;
-        gegnerTurret = turret_rot;
+        gegnerTurretImage = turret_rot;
         farbe = "rot";
       }
     } else {
       gegnerImage = gegner_lila;
-      gegnerTurret = turret_lila;
+      gegnerTurretImage = turret_lila;
       farbe = "lila";
     }
   }
@@ -303,52 +326,70 @@ public class MapGeneration {
   private void placeGegner(Pane root) {
     int attempts = 0;
     boolean placed = false;
-    ImageView tank = new ImageView();
+    gegner = new ImageView(); // Stelle sicher, dass gegner initialisiert wird
+    gegnerTurret = new ImageView(); // Initialisiere das Turret des Gegners
 
     while (attempts < maxAttempts && !placed) {
-      boolean overlap = true;
+        boolean overlap = false;
 
-      tank.setFitWidth(100 * multi);
-      tank.setFitHeight(75 * multi);
+        gegner.setFitWidth(100 * multi);
+        gegner.setFitHeight(75 * multi);
 
-      int availableHeight = (int) (windowHeight - tank.getFitHeight());
+        int availableHeight = (int) (windowHeight - gegner.getFitHeight());
+        gegner.setX((bildschirmBreite / 4) * 3 + Math.random() * (bildschirmBreite / 4) - gegner.getFitWidth());
+        gegner.setY(random.nextInt(availableHeight));
+        gegner.setRotate(180);
 
-      // setX generiert im rechten Viertel ein random Wert von 0 bis 1 * Größe von
-      // einem Viertel für einen random Wert im rechten Viertel
-      tank.setX((bildschirmBreite / 4) * 3 + Math.random() * (bildschirmBreite / 4) - tank.getFitWidth());
-      tank.setY(random.nextInt(availableHeight));
-      tank.setRotate(180);
-
-      overlap = false;
-      for (ImageView existingWall : alleWaende) {
-        if (tank.intersects(existingWall.getBoundsInParent())) {
-          overlap = true;
-          break;
+        for (ImageView existingWall : alleWaende) {
+            if (gegner.intersects(existingWall.getBoundsInParent())) {
+                overlap = true;
+                break;
+            }
         }
-      }
+        // geht sicher, dass gegner nicht ineinander spawnen können
+        for (Gegner existingGegner : gegnerListe) {
+            if (gegner.intersects(existingGegner.getImage().getBoundsInParent())) {
+                overlap = true;
+                break;
+            }
+        }
 
-      Gegner gTest = new Gegner("rot", tank, null);
-      if (gTest.siehtSpieler(spieler, tank, alleWaende)) {
-        overlap = true;
-      }
+        if (!overlap) {
+            root.getChildren().add(gegner);
+            gegnerFarbe();
+            gegner.setImage(gegnerImage);
+            Gegner g = new Gegner(farbe, gegner, gegnerTurret);
+            gegnerListe.add(g);
 
-      if (!overlap) {
-        root.getChildren().add(tank);
-        tank.setImage(panzer);
-        gegner = tank;
-        placed = true;
-      }
+            // Setze das Turret des Gegners
+            gegnerTurret.setFitWidth(114 * multi);
+            gegnerTurret.setFitHeight(50 * multi);
+            gegnerTurret.setX(gegner.getX() + (gegner.getFitWidth() / 2) - (gegnerTurret.getFitWidth() / 2));
+            gegnerTurret.setY(gegner.getY() + (gegner.getFitHeight() / 2) - (gegnerTurret.getFitHeight() / 2));
+            gegnerTurret.setImage(gegnerTurretImage);
+            root.getChildren().add(gegnerTurret);
 
-      attempts++;
+            placed = true;
+        }
+        attempts++;
     }
 
-    // Backup Spawn falls das Spawning nicht geht
+    // Falls kein gültiger Platz gefunden wurde, setze einen Backup-Spawn
     if (!placed) {
-      tank.setX(bildschirmBreite - 150);
-      tank.setY(bildschirmHoehe / 2);
-      root.getChildren().add(tank);
-      gegner = tank;
-      gegner.setImage(panzer);
+        gegner.setX(bildschirmBreite - 150);
+        gegner.setY(bildschirmHoehe / 2);
+        root.getChildren().add(gegner);
+        gegner.setImage(panzer);
+        Gegner g = new Gegner(farbe, gegner, gegnerTurret);
+        gegnerListe.add(g);
+
+        // Setze das Turret des Gegners
+        gegnerTurret.setFitWidth(114 * multi);
+        gegnerTurret.setFitHeight(50 * multi);
+        gegnerTurret.setX(gegner.getX() + (gegner.getFitWidth() / 2) - (gegnerTurret.getFitWidth() / 2));
+        gegnerTurret.setY(gegner.getY() + (gegner.getFitHeight() / 2) - (gegnerTurret.getFitHeight() / 2));
+        gegnerTurret.setImage(gegnerTurretImage);
+        root.getChildren().add(gegnerTurret);
     }
   }
 
@@ -359,10 +400,11 @@ public class MapGeneration {
       placeWalls(root);
     }
     placePlayer(root);
-    placeGegner(root);
+    for (int i = 0; i < 3; i++){
+      placeGegner(root);
+    }
     placeBorder(root);
     placePowerUps(root);
-    gegnerFarbe();
     return root;
   }
 

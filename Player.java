@@ -24,7 +24,7 @@ public class Player {
   private double turretAltY;
   private double altRotation;
   private boolean isAlive;
-
+  
   private FpsLimiter fpsLimiter = new FpsLimiter(60);
 
   public Player(ImageView panzer, ImageView panzerTurret) {

@@ -62,6 +62,10 @@ public class PostGame {
 
         text1 = new Label("Level " + level + " geschafft!");
       } else {
+        nextRound.setOnAction((event) -> neuerTry(event));
+        nextRound.setText("Erneut versuchen");
+        nextRound.getStyleClass().add("button");
+        nextRound.setVisible(true);
         text1 = new Label("An Level " + level + " gescheitert!");
       }
       text1.getStyleClass().add("label");
@@ -82,6 +86,14 @@ public class PostGame {
 
   public void nextRound_Action(Event event) {
     Map map = new Map();
+    map.initialize(stageTemp);
+    stageTemp.setFullScreen(true);
+    stageTemp.setFullScreenExitHint("");
+  }
+
+  public void neuerTry(Event event) {
+    Map map = new Map();
+    map.resetLevel();
     map.initialize(stageTemp);
     stageTemp.setFullScreen(true);
     stageTemp.setFullScreenExitHint("");
