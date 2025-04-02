@@ -62,6 +62,10 @@ public class Gegner {
         return gegnerTurret;
     }
 
+    public void setNachgeladen(boolean neu) {
+        nachgeladen = neu;
+    }  
+
     public void start(ImageView spieler, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
         if (!started) {
             isAlive = true;
@@ -78,32 +82,32 @@ public class Gegner {
                     switch (FARBE) {
                         case "grau":
                             if (isAlive) {
-                                if (siehtSpieler(spieler, gegner, wandListe)) {
-                                    schießen(gegner, gegnerTurret, spieler);
+                                if (siehtSpieler(spieler, wandListe)) {
+                                    schießen(spieler);
                                 } else {
-                                    idlen(gegnerTurret);
+                                    idlen();
                                 }
                             }
                             break;
                         case "rot":
                             if (isAlive) {
-                                if (siehtSpieler(spieler, gegner, wandListe)) {
-                                    schießen(gegner, gegnerTurret, spieler);
-                                    idleFahren(gegner, gegnerTurret, wandListe, borderListe);
+                                if (siehtSpieler(spieler, wandListe)) {
+                                    schießen(spieler);
+                                    idleFahren(wandListe, borderListe);
                                 } else {
-                                    idleFahren(gegner, gegnerTurret, wandListe, borderListe);
-                                    idlen(gegnerTurret);
+                                    idleFahren(wandListe, borderListe);
+                                    idlen();
                                 }
                             }
                             break;
                         case "lila":
                             if (isAlive) {
-                                if (siehtSpieler(spieler, gegner, wandListe)) {
-                                    schießen(gegner, gegnerTurret, spieler);
-                                    idleFahren(gegner, gegnerTurret, wandListe, borderListe);
+                                if (siehtSpieler(spieler, wandListe)) {
+                                    schießen(spieler);
+                                    idleFahren(wandListe, borderListe);
                                 } else {
-                                    idleFahren(gegner, gegnerTurret, wandListe, borderListe);
-                                    idlen(gegnerTurret);
+                                    idleFahren(wandListe, borderListe);
+                                    idlen();
                                 }
                             }
                             break;
@@ -116,7 +120,7 @@ public class Gegner {
         gegnerAlgo.start();
     }
 
-    public boolean siehtSpieler(ImageView spieler, ImageView gegner, ArrayList<ImageView> wandListe) {
+    public boolean siehtSpieler(ImageView spieler, ArrayList<ImageView> wandListe) {
         linie = new Line(gegner.getX() + (gegner.getFitWidth()/2), gegner.getY() + (gegner.getFitHeight()/2), spieler.getX() + (spieler.getFitWidth()/2), spieler.getY() + (spieler.getFitHeight()/2));
         for (ImageView wand : wandListe) {
             Bounds wandBounds = wand.getBoundsInParent();
@@ -131,9 +135,9 @@ public class Gegner {
         return true;
     }
 
-    public boolean schießen(ImageView gegner, ImageView gegnerTurret, ImageView spieler) {
-        double deltaX = spieler.getX() - gegner.getX();
-        double deltaY = spieler.getY() - gegner.getY();
+    public boolean schießen(ImageView spieler) {
+        double deltaX = spieler.getX() + (spieler.getFitWidth() / 2) - (gegner.getX() + (gegner.getFitWidth() / 2));
+        double deltaY = spieler.getY() + (spieler.getFitHeight() / 2) - (gegner.getY() + (gegner.getFitHeight() / 2));
         double zielWinkel = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
         double aktuelleRotation = gegnerTurret.getRotate() % 360;
@@ -148,33 +152,42 @@ public class Gegner {
 
         if (Math.abs(differenz) > 2) {
             gegnerTurret.setRotate(gegnerTurret.getRotate() + Math.signum(differenz) * 2);
+            return false; // Turm dreht sich noch
         } else {
-            PauseTransition nachladen = new PauseTransition(Duration.seconds(2.5));
+            gegnerTurret.setRotate(zielWinkel);
             if (nachgeladen) {
-                update = true;
-            } else {
-                update = false;
+                update = true; // Schießen erlauben
+                nachgeladen = false;
+                PauseTransition nachladen = new PauseTransition(Duration.seconds(2.5));
+                nachladen.setOnFinished(nachladEvent -> {
+                    nachgeladen = true;
+                    update = false; // Reset update after reloading
+                });
                 nachladen.play();
+            } else {
+                update = false; // Noch nicht nachgeladen
             }
-            nachladen.setOnFinished(nachladEvent -> nachgeladen = true);
         }
-        return false;
+
+        boolean canShoot = update; // Store the current state of update
+        update = false; // Immediately reset update after firing
+        return canShoot;
     }
 
-    public void idlen(ImageView gegnerTurret) {
+    public void idlen() {
         update = false;
         gegnerTurret.setRotate(gegnerTurret.getRotate() + 1);
     }
 
-    public boolean kollision(ImageView panzer, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
+    public boolean kollision( ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
         for (ImageView wand : wandListe) {
-            if (panzer.intersects(wand.getBoundsInParent())) {
+            if (gegner.intersects(wand.getBoundsInParent())) {
                 return true;
             }
         }
 
         for (Rectangle border : borderListe) {
-            if (panzer.intersects(border.getBoundsInParent())) {
+            if (gegner.intersects(border.getBoundsInParent())) {
                 return true;
             }
         }
@@ -182,7 +195,7 @@ public class Gegner {
         return false;
     }
 
-    public void idleFahren(ImageView gegner, ImageView gegnerTurret, ArrayList<ImageView> walls, ArrayList<Rectangle> borders) {
+    public void idleFahren(ArrayList<ImageView> walls, ArrayList<Rectangle> borders) {
         if (zaehler > 180) {
             Random random = new Random();
             richtung = random.nextInt(4);
@@ -214,7 +227,7 @@ public class Gegner {
                 System.out.println("Fehler 42: Ungültige Richtung");
         }
         zaehler++;
-        if (kollision(gegner, walls, borders)) {
+        if (kollision(walls, borders)) {
             switch (richtung) {
                 case 0:
                     richtung = 2;
@@ -237,51 +250,4 @@ public class Gegner {
             }
         }
     }
-
-    // New method to detect incoming shots
-    public boolean detectIncomingShot(ImageView shot, ImageView gegner) {
-        Line shotPath = new Line(shot.getX(), shot.getY(), shot.getX() + shot.getFitWidth(), shot.getY() + shot.getFitHeight());
-        Bounds gegnerBounds = gegner.getBoundsInParent();
-        Rectangle gegnerShape = new Rectangle(gegnerBounds.getMinX(), gegnerBounds.getMinY(), gegnerBounds.getWidth(), gegnerBounds.getHeight());
-        Shape intersection = Shape.intersect(shotPath, gegnerShape);
-        return intersection.getBoundsInLocal().getWidth() != -1;
-    }
-
-    // New method to evade incoming shots
-    public void evadeShot(ImageView gegner, ArrayList<ImageView> walls, ArrayList<Rectangle> borders) {
-        Random random = new Random();
-        int evadeDirection = random.nextInt(4);
-        switch (evadeDirection) {
-            case 0:
-                gegner.setX(gegner.getX() + speed);
-                break;
-            case 1:
-                gegner.setY(gegner.getY() + speed);
-                break;
-            case 2:
-                gegner.setX(gegner.getX() - speed);
-                break;
-            case 3:
-                gegner.setY(gegner.getY() - speed);
-                break;
-        }
-        if (kollision(gegner, walls, borders)) {
-            switch (evadeDirection) {
-                case 0:
-                    gegner.setX(gegner.getX() - speed);
-                    break;
-                case 1:
-                    gegner.setY(gegner.getY() - speed);
-                    break;
-                case 2:
-                    gegner.setX(gegner.getX() + speed);
-                    break;
-                case 3:
-                    gegner.setY(gegner.getY() + speed);
-                    break;
-            }
-        }
-    }
-    
-
 }

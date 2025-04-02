@@ -142,20 +142,21 @@ public class Schuss{
   private void reflektiereSchuss(ImageView schussBild, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
     double testX = schussBild.getX() + geschwindigkeitX;
     double testY = schussBild.getY() + geschwindigkeitY;
-    
+
     boolean kollisionX = kollisionsCheckVirtuell(testX, schussBild.getY(), schussBild, wandListe, borderListe);
     boolean kollisionY = kollisionsCheckVirtuell(schussBild.getX(), testY, schussBild, wandListe, borderListe);
+
     if (kollisionX) {
-      this.geschwindigkeitX = -this.geschwindigkeitX;
-      double neuerWinkel = berechneReflexionswinkel(schussBild.getRotate(), true);  // true für X-Achse
-      schussBild.setRotate(neuerWinkel);
+        this.geschwindigkeitX = -this.geschwindigkeitX;
     }
-    
     if (kollisionY) {
-      this.geschwindigkeitY = -this.geschwindigkeitY;
-      double neuerWinkel = berechneReflexionswinkel(schussBild.getRotate(), false);  // false für Y-Achse
-      schussBild.setRotate(neuerWinkel);
+        this.geschwindigkeitY = -this.geschwindigkeitY;
     }
+
+    // Berechne neuen Winkel basierend auf der neuen Geschwindigkeit
+    double neuerWinkel = Math.toDegrees(Math.atan2(geschwindigkeitY, geschwindigkeitX));
+    schussBild.setRotate(neuerWinkel);
+
     Sounds.bounceSound();
   }
 

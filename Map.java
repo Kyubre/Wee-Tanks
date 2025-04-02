@@ -22,10 +22,8 @@ public class Map {
   private double multi = (bildschirmBreite / 1920.0);
   private static double speedPowerUpValue = 1.0;
   private double reloadPowerUpValue = 1.5;
-  private ImageView turret = new ImageView();
+  private ImageView turret;
   private Image gegnerTurretImage;
-  private ImageView gegner;
-  private ImageView gegnerTurret;
   private boolean istNachgeladen = true;
   private boolean gegnerNachgeladen = true;
   private ArrayList<ImageView> schuesse = new ArrayList<ImageView>();
@@ -55,11 +53,6 @@ public class Map {
     gegnerListe = generation.getGegnerListe();
     panzer = generation.getPanzer();
     turret = generation.getTurret();
-    gegner = generation.getGegner();
-    gegnerTurret = generation.getGegnerTurret();
-    gegnerTurretImage = generation.getColorTurret();
-    gegnerTurret.setImage(gegnerTurretImage);
-    gegner.setImage(generation.getColor());
     p1 = new Player(panzer, turret);
     // fängt an die hintergrundmusik abzuspielen
     //if (Sounds.getMusicStarted() == false) {
@@ -86,14 +79,15 @@ public class Map {
       @Override
       public void handle(long now) {
         // Spiel vorbei
+        boolean einerLebt = false;
         for(Gegner g : gegnerListe){
           if (g.getAlive()) {
-            break;
+            einerLebt = true;
           }
-          else if (!g.getAlive() && !restart) {
-            bRestart_Action(true);
-            restart = true;
-          }
+        }
+        if (!einerLebt && !restart) {
+          bRestart_Action(true);
+          restart = true;
         }
         
 
@@ -104,20 +98,20 @@ public class Map {
             root.getChildren().add(gegnerSchuss);
             Schuss sGegner;
             if (g.getColor().equals("lila")) {
-              sGegner = new Schuss(gegnerTurret, false, true);
+              sGegner = new Schuss(g.getGegnerTurret(), false, true);
             } else {
-              sGegner = new Schuss(gegnerTurret, false, false);
+              sGegner = new Schuss(g.getGegnerTurret(), false, false);
             }
   
             addSchuss(gegnerSchuss, sGegner);
-            gegnerNachgeladen = false;
-            PauseTransition nachladenGegner = new PauseTransition(Duration.seconds(1.5));
-            if (gegnerNachgeladen == false) {
-              nachladenGegner.play();
-            }
-            nachladenGegner.setOnFinished(event2 -> {
-              gegnerNachgeladen = true;
-            });
+            g.setNachgeladen(false);
+            // PauseTransition nachladenGegner = new PauseTransition(Duration.seconds(1.5));
+            // if (gegnerNachgeladen == false) {
+            //   nachladenGegner.play();
+            // }
+            // nachladenGegner.setOnFinished(event2 -> {
+            //   gegnerNachgeladen = true;
+            // });
           }
         }
         
