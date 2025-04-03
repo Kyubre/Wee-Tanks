@@ -232,10 +232,28 @@ public class Map {
 
 
     // Ende Komponenten
-    stage.setOnCloseRequest(e -> System.exit(0));
+    stage.setOnCloseRequest(e -> {
+      aufraeumen();
+      System.exit(0);
+    });
     stage.setTitle("Wee Tanks");
     stage.setScene(scene);
     stage.show();
+  }
+
+  private void aufraeumen() {
+    for (Gegner g : gegnerListe) {
+      g.stopAI();
+    }
+
+    schuesse.clear();
+    schussDaten.clear();
+    gegnerListe.clear();
+    wandListe.clear();
+    borderListe.clear();
+
+    // Remove all children from the root pane
+    root.getChildren().clear();
   }
 
   public void resetLevel() {

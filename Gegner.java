@@ -20,9 +20,10 @@ public class Gegner {
     private int zaehler = 0;
     private int richtung;
     private double speed;
-    private double difficulty = Map.getLevel() / 10 + 1;
+    private double difficulty = Map.getLevel() / 5 + 2;
     private ImageView gegner;
     private ImageView gegnerTurret;
+    private AnimationTimer gegnerAlgo;
 
     public Gegner(String i_Farbe, ImageView gegner, ImageView gegnerTurret) {
         this.FARBE = i_Farbe;
@@ -78,8 +79,14 @@ public class Gegner {
         }
     }
 
+    public void stopAI() {
+        if (gegnerAlgo != null) {
+            gegnerAlgo.stop();
+        }
+    }
+
     public void ai(ImageView spieler, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
-        AnimationTimer gegnerAlgo = new AnimationTimer() {
+        gegnerAlgo = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (fpsLimiter.canRender(now)) {
