@@ -66,6 +66,10 @@ public class Gegner {
         nachgeladen = neu;
     }  
 
+    public void setUpdate(boolean neu) {
+        update = neu;
+    }
+
     public void start(ImageView spieler, ArrayList<ImageView> wandListe, ArrayList<Rectangle> borderListe) {
         if (!started) {
             isAlive = true;
@@ -161,17 +165,11 @@ public class Gegner {
                 PauseTransition nachladen = new PauseTransition(Duration.seconds(2.5));
                 nachladen.setOnFinished(nachladEvent -> {
                     nachgeladen = true;
-                    update = false; // Reset update after reloading
                 });
                 nachladen.play();
-            } else {
-                update = false; // Noch nicht nachgeladen
             }
         }
-
-        boolean canShoot = update; // Store the current state of update
-        update = false; // Immediately reset update after firing
-        return canShoot;
+        return update; // Return true if ready to shoot
     }
 
     public void idlen() {

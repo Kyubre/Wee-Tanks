@@ -15,7 +15,6 @@ import javafx.util.Duration;
 import javafx.stage.Screen;
 import java.util.HashMap;
 import javafx.scene.input.KeyCombination;
-
 public class Map {
   private double bildschirmBreite = Screen.getPrimary().getBounds().getWidth();
   private double bildschirmHoehe = Screen.getPrimary().getBounds().getHeight();
@@ -23,7 +22,6 @@ public class Map {
   private static double speedPowerUpValue = 1.0;
   private double reloadPowerUpValue = 1.5;
   private ImageView turret;
-  private Image gegnerTurretImage;
   private boolean istNachgeladen = true;
   private boolean gegnerNachgeladen = true;
   private ArrayList<ImageView> schuesse = new ArrayList<ImageView>();
@@ -92,7 +90,7 @@ public class Map {
         
 
         // Gegner Schuss
-        for(Gegner g : gegnerListe){
+        for (Gegner g : gegnerListe) {
           if (g.getUpdate() && gegnerNachgeladen) {
             ImageView gegnerSchuss = gegnerSchussErstellen(g);
             root.getChildren().add(gegnerSchuss);
@@ -105,13 +103,7 @@ public class Map {
   
             addSchuss(gegnerSchuss, sGegner);
             g.setNachgeladen(false);
-            // PauseTransition nachladenGegner = new PauseTransition(Duration.seconds(1.5));
-            // if (gegnerNachgeladen == false) {
-            //   nachladenGegner.play();
-            // }
-            // nachladenGegner.setOnFinished(event2 -> {
-            //   gegnerNachgeladen = true;
-            // });
+            g.setUpdate(false); // Reset update after shooting
           }
         }
         
