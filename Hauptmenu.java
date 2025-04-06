@@ -54,8 +54,6 @@ public class Hauptmenu extends Application {
     buttons.setLayoutX(0);
     buttons.setLayoutY(50);
 
-    berechneHighscore();
-
     highscoreLabel.getStyleClass().add("label");
     highscoreLabel.setPrefHeight(33);
     highscoreLabel.setText("Highscore: " + highscore);
@@ -210,11 +208,7 @@ public class Hauptmenu extends Application {
     tutorialButton.setVisible(false);
     spielBeendenButton.setVisible(false);
     highscoreLabel.setVisible(false);
-    // Der FullScreenExitHint wird genutzt, um kurz eine Nachricht auf dem
-    // Bildschirm gut sichtbar anzuzeigen
-    stage.setFullScreenExitHint("Drücke eine beliebige Taste um zum Hauptmenu zurück zu kehren.");
-    stage.setFullScreen(false);
-    Platform.runLater(() -> stage.setFullScreen(true));
+
     // Key Listener, damit man zum Hauptmenu zurück kommt
     scene.setOnKeyPressed(event -> zurueckButton_Action(event));
     tutorialGeschaut = true;
@@ -241,12 +235,5 @@ public class Hauptmenu extends Application {
     }
   }
 
-  public void berechneHighscore() {
-    if (Settings.highscore > highscore) {
-      highscore = Settings.highscore;
-      highscoreLabel.setText("Highscore: " + highscore);
-    } else {
-      highscoreLabel.setText("Highscore: " + highscore);
-    }
-  }
+  
 }

@@ -65,10 +65,18 @@ public class PostGame {
         text1 = new Label("Tag " + level + " geschafft!");
       } else {
         nextRound.setOnAction((event) -> neuerTry(event));
-        nextRound.setText("Erneut versuchen");
+        nextRound.setText("Neue Mission starten");
         nextRound.getStyleClass().add("button");
         nextRound.setVisible(true);
         text1 = new Label("An Tag " + level + " gescheitert!");
+      }
+
+      if(level == 14){
+        nextRound.getStyleClass().add("widebutton");
+        hauptmenu.getStyleClass().add("widebutton");
+        text1.setText("Du hast 14 Tage überlebt! \nHerzlichen Glückwunsch!");
+        nextRound.setText("Mal schauen, wie lange du es schaffst!");
+        hauptmenu.setText("Mission abbrechen und zurück zur Familie");
       }
       text1.getStyleClass().add("label");
       text1.setVisible(true);
