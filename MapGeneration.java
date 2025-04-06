@@ -5,6 +5,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javafx.scene.image.*;
@@ -294,104 +295,129 @@ public class MapGeneration {
     }
   }
 
-  private void gegnerFarbe() {
-    int level = Map.getLevel();
-    if (level <= 5) {
-      if (level != 5) {
+  private void gegnerFarbe(String color) {
+    switch (color) {
+      case "grau":
         gegnerImage = gegner_grau;
         gegnerTurretImage = turret_grau;
         farbe = "grau";
-      } else {
+        break;
+      case "rot":
         gegnerImage = gegner_rot;
         gegnerTurretImage = turret_rot;
         farbe = "rot";
-      }
-    } else if (level <= 20) {
-      if ((level % 5) == 0) {
+        break;
+      case "lila":
         gegnerImage = gegner_lila;
         gegnerTurretImage = turret_lila;
         farbe = "lila";
-      } else {
-        gegnerImage = gegner_rot;
-        gegnerTurretImage = turret_rot;
-        farbe = "rot";
-      }
-    } else {
-      gegnerImage = gegner_lila;
-      gegnerTurretImage = turret_lila;
-      farbe = "lila";
+        break;
     }
   }
 
-  private void placeGegner(Pane root) {
+  private boolean placeGegner(Pane root, ImageView gegner, ImageView gegnerTurret) {
     int attempts = 0;
     boolean placed = false;
-    gegner = new ImageView(); // Stelle sicher, dass gegner initialisiert wird
-    gegnerTurret = new ImageView(); // Initialisiere das Turret des Gegners
+
+    gegner.setFitWidth(100 * multi);
+    gegner.setFitHeight(75 * multi);
 
     while (attempts < maxAttempts && !placed) {
         boolean overlap = false;
 
-        gegner.setFitWidth(100 * multi);
-        gegner.setFitHeight(75 * multi);
-
-        int availableHeight = (int) (windowHeight - gegner.getFitHeight());
-        gegner.setX((bildschirmBreite / 4) * 3 + Math.random() * (bildschirmBreite / 4) - gegner.getFitWidth());
-        gegner.setY(random.nextInt(availableHeight));
+        int availableHeight = (int) (bildschirmHoehe - gegner.getFitHeight());
+        gegner.setX((bildschirmBreite / 4) * 3 + Math.random() * (bildschirmBreite / 4 - gegner.getFitWidth()));
+        gegner.setY(Math.random() * availableHeight);
         gegner.setRotate(180);
 
         for (ImageView existingWall : alleWaende) {
-            if (gegner.intersects(existingWall.getBoundsInParent())) {
+            if (gegner.getBoundsInParent().intersects(existingWall.getBoundsInParent())) {
                 overlap = true;
                 break;
             }
         }
-        // geht sicher, dass gegner nicht ineinander spawnen können
+
         for (Gegner existingGegner : gegnerListe) {
-            if (gegner.intersects(existingGegner.getImage().getBoundsInParent())) {
+            if (gegner.getBoundsInParent().intersects(existingGegner.getImage().getBoundsInParent())) {
                 overlap = true;
                 break;
             }
         }
 
         if (!overlap) {
-            root.getChildren().add(gegner);
-            gegnerFarbe();
-            gegner.setImage(gegnerImage);
-            Gegner g = new Gegner(farbe, gegner, gegnerTurret);
-            gegnerListe.add(g);
-
-            // Setze das Turret des Gegners
             gegnerTurret.setFitWidth(114 * multi);
             gegnerTurret.setFitHeight(50 * multi);
             gegnerTurret.setX(gegner.getX() + (gegner.getFitWidth() / 2) - (gegnerTurret.getFitWidth() / 2));
             gegnerTurret.setY(gegner.getY() + (gegner.getFitHeight() / 2) - (gegnerTurret.getFitHeight() / 2));
             gegnerTurret.setImage(gegnerTurretImage);
+
+            root.getChildren().add(gegner);
             root.getChildren().add(gegnerTurret);
 
             placed = true;
         }
+
         attempts++;
     }
 
-    // Falls kein gültiger Platz gefunden wurde, setze einen Backup-Spawn
-    if (!placed) {
-        gegner.setX(bildschirmBreite - 150);
-        gegner.setY(bildschirmHoehe / 2);
-        root.getChildren().add(gegner);
-        gegner.setImage(panzer);
-        Gegner g = new Gegner(farbe, gegner, gegnerTurret);
-        gegnerListe.add(g);
+    return placed;
+}
 
-        // Setze das Turret des Gegners
-        gegnerTurret.setFitWidth(114 * multi);
-        gegnerTurret.setFitHeight(50 * multi);
-        gegnerTurret.setX(gegner.getX() + (gegner.getFitWidth() / 2) - (gegnerTurret.getFitWidth() / 2));
-        gegnerTurret.setY(gegner.getY() + (gegner.getFitHeight() / 2) - (gegnerTurret.getFitHeight() / 2));
-        gegnerTurret.setImage(gegnerTurretImage);
-        root.getChildren().add(gegnerTurret);
+  private void spawneGegner(int level, Pane root) {
+
+    int totalGegner = anzahlGegnerBerechnen(level);
+    int maxBosses;
+    if (level == 14) {
+        maxBosses = 2;
+    } else if (level >= 5 && level % 3 == 0) {
+        maxBosses = 1;
+    } else {
+        maxBosses = 0;
+    }
+    int bossesAdded = 0;
+
+    for (int i = 0; i < totalGegner; i++) {
+      Gegner gegner;
+      if (bossesAdded < maxBosses) {
+        gegner = erstelleGegner("lila", root);
+        bossesAdded++;
+      } else {
+        double difficultyChance = level / 14.0;
+        double rand = Math.random();
+
+        if (rand < 0.5 * (1 - difficultyChance)) {
+          gegner = erstelleGegner("grau", root);
+        } else {
+          gegner = erstelleGegner("rot", root);
+        }
+      }
+      gegnerListe.add(gegner);
     }
   }
+
+  private int anzahlGegnerBerechnen(int level) {
+    if (level == 1) return 1;
+    if (level <= 5) return 2;
+    return 3;
+  }
+
+  private Gegner erstelleGegner(String color, Pane root) {
+    gegnerFarbe(color);
+    ImageView gegnerImageView = new ImageView(gegnerImage);
+    ImageView gegnerTurretView = new ImageView(gegnerTurretImage);
+
+    // versuche Platzierung
+    boolean placed = placeGegner(root, gegnerImageView, gegnerTurretView);
+
+    if (placed) {
+        Gegner gegner = new Gegner(color, gegnerImageView, gegnerTurretView);
+        gegnerListe.add(gegner);
+        return gegner;
+    } else {
+        // fallback: gib null zurück oder handle es anders
+        return null;
+    }
+}
 
   public Pane generateMap(Pane root) {
     placeHintergrund(root);
@@ -400,9 +426,7 @@ public class MapGeneration {
       placeWalls(root);
     }
     placePlayer(root);
-    for (int i = 0; i < 3; i++){
-      placeGegner(root);
-    }
+    spawneGegner(Map.getLevel(), root);
     placeBorder(root);
     placePowerUps(root);
     return root;

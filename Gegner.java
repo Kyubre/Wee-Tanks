@@ -20,7 +20,7 @@ public class Gegner {
     private int zaehler = 0;
     private int richtung;
     private double speed;
-    private double difficulty = Math.pow((Map.getLevel() / 5.0), 1.5) + 1;
+    private double difficulty = Math.pow((Map.getLevel() / 6.0), 1.3) + 1;
     private ImageView gegner;
     private ImageView gegnerTurret;
     private AnimationTimer gegnerAlgo;

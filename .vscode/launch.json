@@ -1,13 +1,14 @@
 {
     "version": "0.2.0",
     "configurations": [
-        
+
         {
             "type": "java",
             "name": "Hauptmenu",
             "request": "launch",
             "mainClass": "Hauptmenu",
-            "projectName": "Wee-Tanks",
+            "projectName": "Wee-Tanks_30018c3a",
+            "vmArgs": "--module-path C:\\Programme\\Java\\javafx-sdk\\lib --add-modules javafx.controls,javafx.fxml,javafx.media"
         }
     ]
 }

@@ -31,7 +31,7 @@ public class Hauptmenu extends Application {
   Pane root = new Pane();
   Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
   private static boolean tutorialGeschaut = false;
-  private static int highscore = 0;
+  private static int highscore = TxtManager.readHighscore();
 
   // Ende Attribute
 
@@ -138,7 +138,8 @@ public class Hauptmenu extends Application {
     Button resetHighscore = new Button("Highscore zurücksetzen");
     resetHighscore.getStyleClass().add("longbutton");
     resetHighscore.setOnAction(e -> {
-      highscore = 0;
+      TxtManager.writeHighscore(0); // Highscore zurücksetzen
+      highscore = 0; // Highscore-Variable zurücksetzen
       highscoreLabel.setText("Highscore: " + highscore);
     });
 

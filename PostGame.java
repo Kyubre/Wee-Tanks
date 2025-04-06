@@ -44,29 +44,31 @@ public class PostGame {
       stage.setFullScreenExitKeyCombination(null);
       stage.show();
 
+      TxtManager.updateHighscore(level);
+
       VBox vbox = new VBox(10);
       vbox.setAlignment(Pos.CENTER);
       vbox.setPrefWidth(bildschirmBreite);
       vbox.setPrefHeight(bildschirmHoehe);
 
       hauptmenu.setOnAction((event) -> hauptmenu_Action(event));
-      hauptmenu.setText("Zurück zum Hauptmenu");
+      hauptmenu.setText("Mission abbrechen");
       hauptmenu.setVisible(true);
       hauptmenu.getStyleClass().add("button");
 
       if (win) {
         nextRound.setOnAction((event) -> nextRound_Action(event));
-        nextRound.setText("Nächste Runde");
+        nextRound.setText("Nächster Tag");
         nextRound.getStyleClass().add("button");
         nextRound.setVisible(true);
 
-        text1 = new Label("Level " + level + " geschafft!");
+        text1 = new Label("Tag " + level + " geschafft!");
       } else {
         nextRound.setOnAction((event) -> neuerTry(event));
         nextRound.setText("Erneut versuchen");
         nextRound.getStyleClass().add("button");
         nextRound.setVisible(true);
-        text1 = new Label("An Level " + level + " gescheitert!");
+        text1 = new Label("An Tag " + level + " gescheitert!");
       }
       text1.getStyleClass().add("label");
       text1.setVisible(true);

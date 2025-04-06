@@ -313,6 +313,7 @@ public class Map {
   }
 
   public void bRestart_Action(boolean win) {
+    aufraeumen();
     Settings.highscore = level;
     Sounds.pauseBgmMusic();
     PostGame postGame = new PostGame(level, win);
