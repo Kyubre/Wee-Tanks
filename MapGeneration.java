@@ -367,7 +367,7 @@ public class MapGeneration {
 
     int totalGegner = anzahlGegnerBerechnen(level);
     int maxBosses;
-    if (level == 14) {
+    if (level >= 14) {
         maxBosses = 2;
     } else if (level >= 5 && level % 3 == 0) {
         maxBosses = 1;
@@ -396,8 +396,8 @@ public class MapGeneration {
   }
 
   private int anzahlGegnerBerechnen(int level) {
-    if (level == 1) return 1;
-    if (level <= 5) return 2;
+    if (level <= 3) return 1;
+    if (level <= 8) return 2;
     return 3;
   }
 
@@ -441,6 +441,12 @@ public class MapGeneration {
     speedPowerUp.setId("speed");
     for (ImageView existingWall : alleWaende) {
       if (speedPowerUp.intersects(existingWall.getBoundsInParent())) {
+        speedPowerUp.setX(random.nextInt((int) (bildschirmBreite - speedPowerUp.getFitWidth())));
+        speedPowerUp.setY(random.nextInt((int) (bildschirmHoehe - speedPowerUp.getFitHeight())));
+      }
+    }
+    for(Gegner existingGegner : gegnerListe) {
+      if (speedPowerUp.intersects(existingGegner.getImage().getBoundsInParent())) {
         speedPowerUp.setX(random.nextInt((int) (bildschirmBreite - speedPowerUp.getFitWidth())));
         speedPowerUp.setY(random.nextInt((int) (bildschirmHoehe - speedPowerUp.getFitHeight())));
       }
