@@ -5,8 +5,8 @@ import javafx.stage.Stage;
 import javafx.event.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-//import javafx.scene.image.Image;
-//import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Screen;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -20,6 +20,8 @@ public class PostGame {
   private Button hauptmenu = new Button();
   private Label text1;
   private Stage stageTemp;
+  private Image hintergrundImage = new Image(getClass().getResourceAsStream("src/assets/images/postgame_bg.png"));
+  private ImageView hintergrund = new ImageView(hintergrundImage);
 
   public PostGame(int lvl, boolean win) {
     this.level = lvl;
@@ -45,6 +47,11 @@ public class PostGame {
       stage.show();
 
       TxtManager.updateHighscore(level);
+
+      hintergrund.setFitWidth(bildschirmBreite);
+      hintergrund.setFitHeight(bildschirmHoehe);
+      hintergrund.setVisible(true);
+      root.getChildren().add(hintergrund);
 
       VBox vbox = new VBox(10);
       vbox.setAlignment(Pos.CENTER);

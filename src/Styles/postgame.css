@@ -48,45 +48,8 @@
     -fx-effect: none;
 }
 
-
-.slider {
-    -fx-background-color: #f0f0f0;
-    -fx-background-insets: 0, 1;
-    -fx-background-radius: 5;
-    -fx-border-color: #ccc;
-    -fx-border-radius: 5;
-    -fx-border-width: 1;
-}
-
-.slider .track {
-    -fx-background-color: #4CAF50; /* Green color for the track */
-    -fx-background-radius: 5;
-    -fx-height: 8px;
-}
-
-.slider .thumb {
-    -fx-background-color: #ffffff; /* White color for the thumb */
-    -fx-background-insets: 0, 1;
-    -fx-background-radius: 50%;
-    -fx-pref-width: 20px;
-    -fx-pref-height: 20px;
-    -fx-border-color: #4CAF50;
-    -fx-border-radius: 50%;
-    -fx-border-width: 2px;
-}
-
-.slider .tick-mark {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
-
-.slider .value-label {
-    -fx-text-fill: #4CAF50; /* Text color for value label */
-}
-
-
 .label{
     -fx-font-size: 26px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333;
+    -fx-text-fill: #ffffff;
 }

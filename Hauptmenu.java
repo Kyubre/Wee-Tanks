@@ -31,8 +31,6 @@ public class Hauptmenu extends Application {
   Pane root = new Pane();
   Scene scene = new Scene(root, bildschirmBreite, bildschirmHoehe);
   private static boolean tutorialGeschaut = false;
-  private static int highscore = TxtManager.readHighscore();
-
   // Ende Attribute
 
   public void start(Stage primaryStage) {
@@ -56,7 +54,10 @@ public class Hauptmenu extends Application {
 
     highscoreLabel.getStyleClass().add("label");
     highscoreLabel.setPrefHeight(33);
-    highscoreLabel.setText("Highscore: " + highscore);
+    highscoreLabel.setText("Highscore: " + TxtManager.readHighscore());
+    if(TxtManager.readHighscore() >= 14){
+      highscoreLabel.setTextFill(javafx.scene.paint.Color.web("#FFD700"));
+    }
     highscoreLabel.setLayoutX(bildschirmBreite / 2 - (113 / 2) - 40);
     highscoreLabel.setLayoutY(bildschirmHoehe / 2 - (33 / 2) - 50);
     root.getChildren().add(highscoreLabel);
@@ -84,7 +85,7 @@ public class Hauptmenu extends Application {
     tutorialButton.setLayoutY(bildschirmHoehe / 2 - (33 / 2) + 100);
     tutorialButton.setText("Tutorial");
     if (!tutorialGeschaut) {
-      tutorialButton.setStyle("-fx-border-width: 4; -fx-border-color: #DC143C");
+      tutorialButton.setStyle("-fx-border-width: 6; -fx-border-color: #DC143C");
     }
     tutorialButton.setOnAction((event) -> {
       tutorialButton_Action(event);
@@ -133,16 +134,33 @@ public class Hauptmenu extends Application {
     lautstaerkeBox.setAlignment(Pos.CENTER);
     lautstaerkeBox.getChildren().addAll(lautstaerkeLabel, lautstaerke);    
 
+    Label musikLabel = new Label("Musik: " + (int) (Settings.musikLautstaerke * 100) + "%");
+    musikLabel.getStyleClass().add("label");
+
+    Slider musikLautstaerke = new Slider();
+    musikLautstaerke.setMaxWidth(300);
+    musikLautstaerke.setStyle("-fx-background-color: lightgray;");
+    musikLautstaerke.setMin(0); // Minimale Lautstärke
+    musikLautstaerke.setMax(1); // Maximale Lautstärke
+    musikLautstaerke.setValue(Settings.musikLautstaerke);
+    musikLautstaerke.getStyleClass().add("slider");
+    musikLautstaerke.valueProperty().addListener((observable, oldValue, newValue) -> {
+      Settings.musikLautstaerke = newValue.doubleValue(); // Lautstärke in Settings aktualisieren
+      musikLabel.setText("Musik: " + (int) (Settings.musikLautstaerke * 100) + "%"); // Label aktualisieren
+    });
+    VBox musikBox = new VBox(10);
+    musikBox.setAlignment(Pos.CENTER);
+    musikBox.getChildren().addAll(musikLabel, musikLautstaerke);
+
     Button resetHighscore = new Button("Highscore zurücksetzen");
     resetHighscore.getStyleClass().add("longbutton");
     resetHighscore.setOnAction(e -> {
       TxtManager.writeHighscore(0); // Highscore zurücksetzen
-      highscore = 0; // Highscore-Variable zurücksetzen
-      highscoreLabel.setText("Highscore: " + highscore);
+      highscoreLabel.setText("Highscore: " + TxtManager.readHighscore()); // Label aktualisieren
     });
 
 
-    einstellungen.getChildren().addAll(zurueckButton, lautstaerkeBox, resetHighscore);
+    einstellungen.getChildren().addAll(zurueckButton, lautstaerkeBox, musikBox, resetHighscore);
 
     stackPaneEinstellungen = new StackPane();
     stackPaneEinstellungen.setAlignment(Pos.CENTER);

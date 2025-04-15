@@ -53,11 +53,11 @@ public class Map {
     turret = generation.getTurret();
     p1 = new Player(panzer, turret);
     // fängt an die hintergrundmusik abzuspielen
-    //if (Sounds.getMusicStarted() == false) {
-    //  Sounds.bgmAbspielen();
-    //} else {
-    //  Sounds.resumeBgmMusic();
-    //}
+    if (Sounds.getMusicStarted() == false) {
+      Sounds.bgmAbspielen();
+    } else {
+      Sounds.resumeBgmMusic();
+    }
 
     stage.setX(0);
     stage.setY(0);
@@ -314,7 +314,7 @@ public class Map {
 
   public void bRestart_Action(boolean win) {
     aufraeumen();
-    Settings.highscore = level;
+    TxtManager.writeHighscore(level);
     Sounds.pauseBgmMusic();
     PostGame postGame = new PostGame(level, win);
     postGame.initialize(stage1);
