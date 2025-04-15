@@ -215,18 +215,11 @@ public class Map {
         });
 
       }
-
-      else if (event.getButton().equals(MouseButton.SECONDARY)) {
-        for(Gegner g : gegnerListe){
-          g.setAlive(false);
-        }
-        
-      }
     });
 
     scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode().toString().equals("ESCAPE")) {
-        event.consume(); // Prevent exiting fullscreen
+        event.consume(); // Escape triggert kein Fullscreen verlassen
       }
     });
 
