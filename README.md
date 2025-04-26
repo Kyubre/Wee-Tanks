@@ -1,7 +1,7 @@
 
 # Wee-Tanks
 
-Ein PvE Spiel für ein Schulprojekt, in dem die Spieler Panzer steuern und in verschiedenen Levels Gegner besiegen müssen. Jedes Spiel beginnt mit RNG Upgrades, welche verschiedene Möglichkeiten bieten, das Gameplay zu beeinflussen.
+Ein PvE Spiel für ein Schulprojekt, in dem die Spieler Panzer steuern und in verschiedenen Levels Gegner besiegen müssen.
 
 ## Features
 
